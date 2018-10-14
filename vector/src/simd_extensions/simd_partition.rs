@@ -68,7 +68,7 @@ pub struct IndexedEdgeIteratorMut<'a, T: 'a> {
     right_idx: isize,
     right: *mut T,
     end: *mut T,
-    _marker: std::marker::PhantomData<&'a mut T>,
+    _marker: PhantomData<&'a mut T>,
 }
 
 impl<'a, T> IndexedEdgeIteratorMut<'a, T> {
@@ -89,7 +89,7 @@ impl<'a, T> IndexedEdgeIteratorMut<'a, T> {
                 right_idx: len - right,
                 right: start.offset(len - right),
                 end: start.offset(len - 1),
-                _marker: std::marker::PhantomData,
+                _marker: PhantomData,
             }
         }
     }
