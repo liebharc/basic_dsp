@@ -65,20 +65,18 @@ pub extern "C" fn new_with_performance_options64(is_complex: i32,
 
 }
 
-
-
 #[no_mangle]
 pub extern "C" fn new_with_detailed_performance_options64(is_complex: i32,
-                                                          domain: i32,
-                                                          init_value: f64,
-                                                          length: usize,
-                                                          delta: f64,
-                                                          core_limit: usize,
-                                                          med_dual_core_threshold: usize,
-                                                          med_multi_core_threshold: usize,
-                                                          large_dual_core_threshold: usize,
-                                                          large_multi_core_threshold: usize)
-                                                          -> VecBox {
+                                                 domain: i32,
+                                                 init_value: f64,
+                                                 length: usize,
+                                                 delta: f64,
+                                                 core_limit: usize,
+                                                  med_dual_core_threshold: usize,
+                                                  med_multi_core_threshold: usize,
+                                                  large_dual_core_threshold: usize,
+                                                  large_multi_core_threshold: usize)
+                                                 -> VecBox {
     let domain = if domain == 0 {
         DataDomain::Time
     } else {
