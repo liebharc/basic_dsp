@@ -18,7 +18,7 @@ pub struct EdgeIteratorMut<'a, T: 'a> {
     left: *mut T,
     right: *mut T,
     end: *mut T,
-    _marker: std::marker::PhantomData<&'a mut T>,
+    _marker: PhantomData<&'a mut T>,
 }
 
 impl<'a, T> EdgeIteratorMut<'a, T> {
@@ -33,7 +33,7 @@ impl<'a, T> EdgeIteratorMut<'a, T> {
                 left: start.offset(left - 1),
                 right: start.offset(len - right),
                 end: start.offset(len - 1),
-                _marker: std::marker::PhantomData,
+                _marker: PhantomData,
             }
         }
     }
