@@ -15,9 +15,6 @@ use std::ops::{Add, Mul};
 use {array_to_complex, array_to_complex_mut, memcpy, Zero};
 
 /// Provides interpolation operations for real and complex data vectors.
-/// # Unstable
-/// This functionality has been recently added in order to find out if the definitions
-/// are consistent. However the actual implementation is lacking tests.
 pub trait InterpolationOps<S, T>
 where
     S: ToSliceMut<T>,
@@ -48,7 +45,7 @@ where
     ) where
         B: for<'a> Buffer<'a, S, T>;
 
-    /// Interpolates `self` with the convolution function `function` by the interger value
+    /// Interpolates `self` with the convolution function `function` by the integer value
     /// `interpolation_factor`. InterpolationOps is done in in frequency domain.
     ///
     /// See the description of `interpolatef` for some basic performance considerations.

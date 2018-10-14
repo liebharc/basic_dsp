@@ -13,18 +13,11 @@ where
     T: RealNumber,
 {
     /// Piecewise cubic hermite interpolation between samples.
-    /// # Unstable
-    /// Algorithm might need to be revised.
-    /// This operation and `interpolate_lin` might be merged into one function with an
-    /// additional argument in future.
     fn interpolate_hermite<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
     where
         B: for<'a> Buffer<'a, S, T>;
 
     /// Linear interpolation between samples.
-    /// # Unstable
-    /// This operation and `interpolate_hermite` might be merged into one function with an
-    /// additional argument in future.
     fn interpolate_lin<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
     where
         B: for<'a> Buffer<'a, S, T>;

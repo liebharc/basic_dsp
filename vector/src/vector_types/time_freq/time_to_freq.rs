@@ -41,8 +41,6 @@ where
 
     /// Performs a Fast Fourier Transformation transforming a time domain vector
     /// into a frequency domain vector.
-    /// # Unstable
-    /// FFTs of real vectors are unstable.
     /// # Example
     ///
     /// ```
@@ -89,9 +87,6 @@ where
     ///
     /// 1. `VectorMustBeReal`: if `self` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    ///
-    /// # Unstable
-    /// Symmetric IFFTs are unstable and may only work under certain conditions.
     fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
     where
         B: for<'a> Buffer<'a, S, T>;
@@ -104,9 +99,6 @@ where
     ///
     /// 1. `VectorMustBeReal`: if `self` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    ///
-    /// # Unstable
-    /// Symmetric IFFTs are unstable and may only work under certain conditions.
     fn sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
     where
         B: for<'a> Buffer<'a, S, T>;
@@ -119,9 +111,6 @@ where
     ///
     /// 1. `VectorMustBeReal`: if `self` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    ///
-    /// # Unstable
-    /// Symmetric IFFTs are unstable and may only work under certain conditions.
     fn windowed_sfft<B>(
         self,
         buffer: &mut B,

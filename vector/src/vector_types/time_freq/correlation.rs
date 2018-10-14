@@ -37,9 +37,6 @@ use std::ops::*;
 ///     assert!(f32::abs(vector[i] - expected[i]) < 1e-4);
 /// }
 /// ```
-/// # Unstable
-/// This functionality has been recently added in order to find out if the definitions are
-/// consistent. However the actual implementation is lacking tests.
 /// # Failures
 /// `TransRes` may report the following `ErrorReason` members:
 ///
@@ -153,7 +150,7 @@ where
         let len = self.len();
         let mut temp = buffer.borrow(len);
         // The next steps: fft, mul, ifft
-        // However to keep the impl definition simpler and to avoid uncessary copies
+        // However to keep the impl definition simpler and to avoid unnecessary copies
         // we have to to be creative with where we store our signal and what's the buffer.
         {
             let complex = (&mut self[..]).to_complex_time_vec();
