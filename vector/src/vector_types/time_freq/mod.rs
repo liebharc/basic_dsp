@@ -599,17 +599,7 @@ where
                     }
                 },
             );
-            for (i, num) in dest.iter_mut().enumerate().take(scalar_len) {
-                *num = Self::convolve_iteration(
-                    complex,
-                    other_iter,
-                    i as isize,
-                    conv_len,
-                    full_conv_len,
-                );
-            }
-
-            for (i, num) in dest.iter_mut().enumerate().skip(points - scalar_len) {
+            for (i, num) in IndexedEdgeIteratorMut::new(dest, scalar_len, scalar_len) {
                 *num = Self::convolve_iteration(
                     complex,
                     other_iter,

@@ -234,20 +234,6 @@ where
             let dest = convert_mut(&mut temp[0..new_len]);
             let len = dest.len();
             let scalar_len = vectors[0].points() * interpolation_factor;
-            let mut i = 0;
-            {
-                let data = convert(&data[0..data_len]);
-                for num in &mut dest[0..scalar_len] {
-                    (*num) = Self::interpolate_priv_simd_step(
-                        i,
-                        interpolation_factor,
-                        conv_len,
-                        data,
-                        &vectors[..],
-                    );
-                    i += 1;
-                }
-            }
 
             let partition = Reg::calc_data_alignment_reqs(&data[0..data_len]);
             let left_points = partition.left / step;
@@ -288,19 +274,15 @@ where
                 },
             );
 
-            i = len - scalar_len;
-            {
-                let data = convert(&data[0..data_len]);
-                for num in &mut dest[len - scalar_len..len] {
-                    (*num) = Self::interpolate_priv_simd_step(
-                        i,
-                        interpolation_factor,
-                        conv_len,
-                        data,
-                        &vectors[..],
-                    );
-                    i += 1;
-                }
+            let data = convert(&data[0..data_len]);
+            for (i, num) in IndexedEdgeIteratorMut::new(dest, scalar_len, scalar_len) {
+                (*num) = Self::interpolate_priv_simd_step(
+                    i as usize,
+                    interpolation_factor,
+                    conv_len,
+                    data,
+                    &vectors[..],
+                );
             }
         }
         self.valid_len = new_len;
