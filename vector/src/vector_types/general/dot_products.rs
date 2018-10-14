@@ -3,11 +3,11 @@ use super::super::{
     RealNumberSpace, ScalarResult, ToSlice, Vector,
 };
 use super::kahan_sum;
-use inline_vector::InlineVector;
 use multicore_support::*;
 use numbers::*;
 use simd_extensions::*;
 use std::ops::*;
+use array_to_complex;
 
 /// An operation which multiplies each vector element with a constant
 pub trait DotProductOps<A, R, T, N, D>
@@ -83,14 +83,13 @@ where
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if partition.center.is_some() {
-            let center = partition.center.unwrap();
+        let chunks =
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 self.multicore_settings,
-                &other[partition.left..center],
+                partition.center(other),
                 Reg::LEN,
-                &array[partition.left..center],
+                partition.center(array),
                 Reg::LEN,
                 |original, range, target| {
                     let mut result = Reg::splat(T::zero());
@@ -103,23 +102,12 @@ where
 
                     result.sum_real()
                 },
-            )
-        } else {
-            InlineVector::empty()
-        };
+            );
 
-        let mut i = 0;
-        let mut sum = T::zero();
-        while i < partition.left {
-            sum = sum + array[i] * other[i];
-            i += 1;
-        }
+        let sum =
+            partition.edge_iter(array).zip(partition.edge_iter(other))
+                .fold(T::zero(), |sum, (a, b)| sum + *a * *b);
 
-        let mut i = partition.right;
-        while i < data_length {
-            sum = sum + array[i] * other[i];
-            i += 1;
-        }
 
         let chunk_sum: T = (&chunks[..]).iter().fold(T::zero(), |a, b| a + *b);
         Ok(chunk_sum + sum)
@@ -147,14 +135,13 @@ where
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if partition.center.is_some() {
-            let center = partition.center.unwrap();
+        let chunks =
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 self.multicore_settings,
-                &other[partition.left..center],
+                partition.center(other),
                 Reg::LEN,
-                &array[partition.left..center],
+                partition.center(array),
                 Reg::LEN,
                 |original, range, target| {
                     let mut result = Reg::splat(T::zero());
@@ -166,27 +153,11 @@ where
                     }
                     result.sum_complex()
                 },
-            )
-        } else {
-            InlineVector::empty()
-        };
+            );
 
-        let mut i = 0;
-        let mut sum = Complex::<T>::new(T::zero(), T::zero());
-        while i < partition.left {
-            let a = Complex::<T>::new(array[i], array[i + 1]);
-            let b = Complex::<T>::new(other[i], other[i + 1]);
-            sum = sum + a * b;
-            i += 2;
-        }
-
-        let mut i = partition.right;
-        while i < data_length {
-            let a = Complex::<T>::new(array[i], array[i + 1]);
-            let b = Complex::<T>::new(other[i], other[i + 1]);
-            sum = sum + a * b;
-            i += 2;
-        }
+        let sum =
+            partition.cedge_iter(array_to_complex(array)).zip(partition.cedge_iter(array_to_complex(other)))
+                .fold(Complex::<T>::zero(), |sum, (a, b)| sum + *a * *b);
 
         let chunk_sum: Complex<T> = (&chunks[..])
             .iter()
@@ -212,14 +183,13 @@ where
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if partition.center.is_some() {
-            let center = partition.center.unwrap();
+        let chunks =
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 self.multicore_settings,
-                &other[partition.left..center],
+                partition.center(&other),
                 Reg::LEN,
-                &array[partition.left..center],
+                partition.center(array),
                 Reg::LEN,
                 |original, range, target| {
                     let mut i = range.start;
@@ -231,23 +201,11 @@ where
                     }))
                     .sum_real()
                 },
-            )
-        } else {
-            InlineVector::empty()
-        };
+            );
 
-        let mut i = 0;
-        let mut sum = T::zero();
-        while i < partition.left {
-            sum = sum + array[i] * other[i];
-            i += 1;
-        }
-
-        let mut i = partition.right;
-        while i < data_length {
-            sum = sum + array[i] * other[i];
-            i += 1;
-        }
+        let sum =
+            partition.edge_iter(array).zip(partition.edge_iter(other))
+                .fold(T::zero(), |sum, (a, b)| sum + *a * *b);
 
         let chunk_sum: T = (&chunks[..]).iter().fold(T::zero(), |a, b| a + *b);
         Ok(chunk_sum + sum)
@@ -275,14 +233,13 @@ where
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if partition.center.is_some() {
-            let center = partition.center.unwrap();
+        let chunks =
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 self.multicore_settings,
-                &other[partition.left..center],
+                partition.center(other),
                 Reg::LEN,
-                &array[partition.left..center],
+                partition.center(array),
                 Reg::LEN,
                 |original, range, target| {
                     let mut i = range.start;
@@ -294,27 +251,11 @@ where
                     }))
                     .sum_complex()
                 },
-            )
-        } else {
-            InlineVector::empty()
-        };
+            );
 
-        let mut i = 0;
-        let mut sum = Complex::<T>::new(T::zero(), T::zero());
-        while i < partition.left {
-            let a = Complex::<T>::new(array[i], array[i + 1]);
-            let b = Complex::<T>::new(other[i], other[i + 1]);
-            sum = sum + a * b;
-            i += 2;
-        }
-
-        let mut i = partition.right;
-        while i < data_length {
-            let a = Complex::<T>::new(array[i], array[i + 1]);
-            let b = Complex::<T>::new(other[i], other[i + 1]);
-            sum = sum + a * b;
-            i += 2;
-        }
+        let sum =
+            partition.cedge_iter(array_to_complex(array)).zip(partition.cedge_iter(array_to_complex(other)))
+                .fold(Complex::<T>::zero(), |sum, (a, b)| sum + *a * *b);
 
         let chunk_sum: Complex<T> = (&chunks[..])
             .iter()

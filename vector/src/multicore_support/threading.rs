@@ -582,6 +582,10 @@ impl Chunk {
         T: Float + Copy + Clone + Send + Sync,
         R: Send,
     {
+        if a.is_empty() {
+            return  InlineVector::empty();
+        }
+
         let a_len = a.len();
         let b_len = b.len();
         let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity, settings);
@@ -631,6 +635,10 @@ impl Chunk {
         R: Send,
         S: Sync + Copy + Send,
     {
+        if a.is_empty() {
+            return InlineVector::empty();
+        }
+
         let a_len = a.len();
         let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity, settings);
         if number_of_chunks > 1 {

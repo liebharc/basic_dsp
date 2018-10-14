@@ -165,6 +165,10 @@ impl Chunk {
         T: Float + Copy + Clone + Send + Sync,
         R: Send,
     {
+        if a.is_empty() {
+            return  InlineVector::empty();
+        }
+
         let a_len = a.len();
         let b_len = b.len();
         let result = function(
@@ -195,6 +199,10 @@ impl Chunk {
         R: Send,
         S: Sync + Copy + Send,
     {
+        if a.is_empty() {
+            return InlineVector::empty();
+        }
+
         let a_len = a.len();
         let result = function(
             &a[0..a_len],

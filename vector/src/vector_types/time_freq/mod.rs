@@ -585,34 +585,31 @@ where
             let partition = Reg::calc_data_alignment_reqs(&data[0..len]);
             let step = if self.is_complex() { 2 } else { 1 };
             let scalar_left_points = partition.left / step;
-            if partition.center.is_some() {
-                let center = partition.center.unwrap();
-                let simd = Reg::array_to_regs(&data[partition.left..center]);
-                Chunk::execute_with_range(
-                    Complexity::Large,
-                    self.multicore_settings,
-                    &mut dest[scalar_len..points - scalar_len],
-                    1,
-                    simd,
-                    move |dest_range, range, simd| {
-                        let mut i = (scalar_len + range.start) as isize;
-                        for num in dest_range {
-                            let end = (i + conv_len) as usize - scalar_left_points;
-                            let shift = end % shifts.len();
-                            let end = (end + shifts.len() - 1) / shifts.len();
-                            let mut sum = Reg::splat(T::zero());
-                            let shifted = &shifts[shift];
-                            let simd_iter = simd[end - shifted.len()..end].iter();
-                            let iteration = simd_iter.zip(shifted.iter());
-                            for (this, other) in iteration {
-                                sum = sum + simd_mul(*this, *other);
-                            }
-                            (*num) = simd_sum(sum);
-                            i += 1;
+            let simd = Reg::array_to_regs(partition.center(data));
+            Chunk::execute_with_range(
+                Complexity::Large,
+                self.multicore_settings,
+                &mut dest[scalar_len..points - scalar_len],
+                1,
+                simd,
+                move |dest_range, range, simd| {
+                    let mut i = (scalar_len + range.start) as isize;
+                    for num in dest_range {
+                        let end = (i + conv_len) as usize - scalar_left_points;
+                        let shift = end % shifts.len();
+                        let end = (end + shifts.len() - 1) / shifts.len();
+                        let mut sum = Reg::splat(T::zero());
+                        let shifted = &shifts[shift];
+                        let simd_iter = simd[end - shifted.len()..end].iter();
+                        let iteration = simd_iter.zip(shifted.iter());
+                        for (this, other) in iteration {
+                            sum = sum + simd_mul(*this, *other);
                         }
-                    },
-                );
-            }
+                        (*num) = simd_sum(sum);
+                        i += 1;
+                    }
+                },
+            );
 
             let mut i = (points - scalar_len) as isize;
             for num in &mut dest[points - scalar_len..points] {

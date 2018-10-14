@@ -161,8 +161,8 @@ impl Simd<f32> for f32x8 {
     fn store_half(self, target: &mut [f32], index: usize) {
         target[index] = self.extract(0);
         target[index + 1] = self.extract(1);
-        target[index + 2] = self.extract(2);
-        target[index + 3] = self.extract(3);
+        target[index + 2] = self.extract(4);
+        target[index + 3] = self.extract(5);
     }
 
     #[inline]

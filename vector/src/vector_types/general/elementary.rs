@@ -393,27 +393,22 @@ macro_rules! impl_binary_vector_operation {
                 let array = self.data.to_slice_mut();
                 let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
-                if partition.center.is_some() {
-                    let center = partition.center.unwrap();
-                    Chunk::from_src_to_dest(
-                        Complexity::Small, self.multicore_settings,
-                        &other[partition.left..center], Reg::LEN,
-                        &mut array[partition.left..center], Reg::LEN, (),
-                        |original, range, target, _arg| {
-                            let mut i = range.start;
-                            let target =
-                                Reg::array_to_regs_mut(&mut target[..]);
-                            for dst in &mut target[..] {
-                                 *dst = dst.$simd_op(Reg::load(original, i));
-                                i += Reg::LEN;
-                            }
-                    });
-                }
-                for i in 0..partition.left {
-                    array[i] = array[i].$scal_op(other[i]);
-                }
-                for i in partition.right..data_length {
-                    array[i] = array[i].$scal_op(other[i]);
+                Chunk::from_src_to_dest(
+                    Complexity::Small, self.multicore_settings,
+                    partition.center(other), Reg::LEN,
+                    partition.center_mut(array), Reg::LEN, (),
+                    |original, range, target, _arg| {
+                        let mut i = range.start;
+                        let target =
+                            Reg::array_to_regs_mut(&mut target[..]);
+                        for dst in &mut target[..] {
+                             *dst = dst.$simd_op(Reg::load(original, i));
+                            i += Reg::LEN;
+                        }
+                });
+
+                for (n, o) in partition.edge_iter_mut(array).zip(partition.edge_iter(other)) {
+                    *n = n.$scal_op(*o);
                 }
             }
 
@@ -435,40 +430,22 @@ macro_rules! impl_binary_complex_vector_operation {
                 let array = self.data.to_slice_mut();
                 let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
-                if partition.center.is_some() {
-                    let center = partition.center.unwrap();
-                    Chunk::from_src_to_dest(
-                        Complexity::Small, self.multicore_settings,
-                        &other[partition.left..center], Reg::LEN,
-                        &mut array[partition.left..center], Reg::LEN, (),
-                        |original, range, target, _arg| {
-                            let mut i = range.start;
-                            let target =
-                                Reg::array_to_regs_mut(&mut target[..]);
-                            for dst in &mut target[..] {
-                                 *dst = dst.$simd_op(Reg::load(original, i));
-                                i += Reg::LEN;
-                            }
-                    });
-                }
-                let mut i = 0;
-                while i < partition.left {
-                    let complex1 = Complex::<T>::new(array[i], array[i + 1]);
-                    let complex2 = Complex::<T>::new(other[i], other[i + 1]);
-                    let result = complex1.$scal_op(complex2);
-                    array[i] = result.re;
-                    array[i + 1] = result.im;
-                    i += 2;
-                }
+                Chunk::from_src_to_dest(
+                    Complexity::Small, self.multicore_settings,
+                    partition.center(other), Reg::LEN,
+                    partition.center_mut(array), Reg::LEN, (),
+                    |original, range, target, _arg| {
+                        let mut i = range.start;
+                        let target =
+                            Reg::array_to_regs_mut(&mut target[..]);
+                        for dst in &mut target[..] {
+                             *dst = dst.$simd_op(Reg::load(original, i));
+                            i += Reg::LEN;
+                        }
+                });
 
-                let mut i = partition.right;
-                while i < data_length {
-                    let complex1 = Complex::<T>::new(array[i], array[i + 1]);
-                    let complex2 = Complex::<T>::new(other[i], other[i + 1]);
-                    let result = complex1.$scal_op(complex2);
-                    array[i] = result.re;
-                    array[i + 1] = result.im;
-                    i += 2;
+                for (n, o) in partition.cedge_iter_mut(array_to_complex_mut(array)).zip(partition.cedge_iter(array_to_complex(other))) {
+                    *n = n.$scal_op(*o);
                 }
             }
 

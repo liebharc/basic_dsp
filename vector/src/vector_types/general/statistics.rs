@@ -439,12 +439,11 @@ where
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if partition.center.is_some() {
-            let center = partition.center.unwrap();
+        let sum = {
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 self.multicore_settings,
-                &array[partition.left..center],
+                partition.center(array),
                 Reg::LEN,
                 (),
                 move |array, _, _| {
@@ -460,28 +459,21 @@ where
                 .iter()
                 .map(|v| v.sum_real())
                 .fold(T::zero(), |a, b| a + b)
-        } else {
-            T::zero()
         };
-        for num in &array[0..partition.left] {
-            sum = sum + *num;
-        }
-        for num in &array[partition.right..data_length] {
-            sum = sum + *num;
-        }
-        sum
+
+        sum +
+            partition.edge_iter(array).fold(T::zero(), |sum, x| sum + *x)
     }
 
     fn sum_sq_real<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> T {
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if partition.center.is_some() {
-            let center = partition.center.unwrap();
+        let sum =  {
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 self.multicore_settings,
-                &array[partition.left..center],
+                partition.center(array),
                 Reg::LEN,
                 (),
                 move |array, _, _| {
@@ -497,28 +489,21 @@ where
                 .iter()
                 .map(|v| v.sum_real())
                 .fold(T::zero(), |a, b| a + b)
-        } else {
-            T::zero()
         };
-        for num in &array[0..partition.left] {
-            sum = sum + *num * *num;
-        }
-        for num in &array[partition.right..data_length] {
-            sum = sum + *num * *num;
-        }
-        sum
+
+        sum +
+            partition.edge_iter(array).fold(T::zero(), |sum, x| sum + *x * *x)
     }
 
     fn sum_complex<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> Complex<T> {
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if partition.center.is_some() {
-            let center = partition.center.unwrap();
+        let sum = {
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 self.multicore_settings,
-                &array[partition.left..center],
+                partition.center(array),
                 Reg::LEN,
                 (),
                 move |array, _, _| {
@@ -534,28 +519,21 @@ where
                 .iter()
                 .map(|v| v.sum_complex())
                 .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
-        } else {
-            Complex::<T>::new(T::zero(), T::zero())
         };
-        for num in array_to_complex(&array[0..partition.left]) {
-            sum = sum + *num;
-        }
-        for num in array_to_complex(&array[partition.right..data_length]) {
-            sum = sum + *num;
-        }
-        sum
+
+        sum +
+            partition.cedge_iter(array_to_complex(array)).fold(Complex::<T>::zero(), |sum, x| sum + *x)
     }
 
     fn sum_sq_complex<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> Complex<T> {
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if partition.center.is_some() {
-            let center = partition.center.unwrap();
+        let sum = {
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 self.multicore_settings,
-                &array[partition.left..center],
+                partition.center(array),
                 Reg::LEN,
                 (),
                 move |array, _, _| {
@@ -571,16 +549,10 @@ where
                 .iter()
                 .map(|v| v.sum_complex())
                 .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
-        } else {
-            Complex::<T>::new(T::zero(), T::zero())
         };
-        for num in array_to_complex(&array[0..partition.left]) {
-            sum = sum + *num * *num;
-        }
-        for num in array_to_complex(&array[partition.right..data_length]) {
-            sum = sum + *num * *num;
-        }
-        sum
+
+        sum +
+            partition.cedge_iter(array_to_complex(array)).fold(Complex::<T>::zero(), |sum, x| sum + *x * *x)
     }
 }
 

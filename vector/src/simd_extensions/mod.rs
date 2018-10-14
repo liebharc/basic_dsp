@@ -104,7 +104,7 @@ where
     /// the process will crash. This method takes a vector an divides it in three ranges:
     /// beginning, center, end. Beginning and end may not be loaded directly as SIMD registers.
     /// Center will contain most of the data.
-    fn calc_data_alignment_reqs(array: &[T]) -> SimdPartition;
+    fn calc_data_alignment_reqs(array: &[T]) -> SimdPartition<T>;
 
     /// Converts a real valued array which has exactly the size of a SIMD register
     /// into a SIMD register.
@@ -195,25 +195,20 @@ macro_rules! simd_generic_impl {
         
         impl SimdGeneric<$data_type> for $mod::$reg {
             #[inline]
-            fn calc_data_alignment_reqs(array: &[$data_type]) -> SimdPartition {
+            fn calc_data_alignment_reqs(array: &[$data_type]) -> SimdPartition<$data_type> {
                 let data_length = array.len();
                 let addr = array.as_ptr();
                 let scalar_left = get_alignment_offset(addr as usize, mem::size_of::<Self>());
                 assert!(scalar_left % mem::size_of::<$data_type>() == 0);
                 let scalar_left = scalar_left / mem::size_of::<$data_type>();
                 if scalar_left + Self::LEN > data_length {
-                    SimdPartition {
-                        left: data_length,
-                        center: None,
-                        right: data_length
-                    }
+                    SimdPartition::new_all_scalar(data_length)
                 } else {
                     let right = (data_length - scalar_left) % Self::LEN;
-                    SimdPartition {
-                        left: scalar_left,
-                        center: Some(data_length - right),
-                        right: data_length - right
-                    }
+                    SimdPartition::new_simd(
+                        scalar_left,
+                        data_length - right,
+                        data_length)
                 }
             }
         
@@ -258,6 +253,10 @@ macro_rules! simd_generic_impl {
         
             #[inline]
             fn array_to_regs(array: &[$data_type]) -> &[Self] {
+                if array.is_empty() {
+                    return &[];
+                }
+
                 assert_eq!(
                     get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()),
                     0
@@ -267,6 +266,10 @@ macro_rules! simd_generic_impl {
         
             #[inline]
             fn array_to_regs_mut(array: &mut [$data_type]) -> &mut [Self] {
+                if array.is_empty() {
+                    return &mut [];
+                }
+
                 assert_eq!(
                     get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()),
                     0

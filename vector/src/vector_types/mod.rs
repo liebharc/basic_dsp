@@ -314,26 +314,21 @@ where
             let data_length = self.valid_len;
             let array = self.data.to_slice_mut();
             let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if partition.center.is_some() {
-                let vectorization_length = partition.center.unwrap();
-                Chunk::execute_partial(
-                    complexity,
-                    self.multicore_settings,
-                    &mut array[partition.left..vectorization_length],
-                    Reg::LEN,
-                    argument,
-                    move |array, argument| {
-                        let array = Reg::array_to_regs_mut(array);
-                        for reg in array {
-                            *reg = simd_op(*reg, argument);
-                        }
-                    },
-                );
-            }
-            for num in &mut array[0..partition.left] {
-                *num = scalar_op(*num, argument);
-            }
-            for num in &mut array[partition.right..data_length] {
+            Chunk::execute_partial(
+                complexity,
+                self.multicore_settings,
+                partition.center_mut(array),
+                Reg::LEN,
+                argument,
+                move |array, argument| {
+                    let array = Reg::array_to_regs_mut(array);
+                    for reg in array {
+                        *reg = simd_op(*reg, argument);
+                    }
+                },
+            );
+
+            for num in partition.edge_iter_mut(&mut array[0..data_length]) {
                 *num = scalar_op(*num, argument);
             }
         }
@@ -378,33 +373,22 @@ where
             let data_length = self.valid_len;
             let array = self.data.to_slice_mut();
             let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if partition.center.is_some() {
-                let center = partition.center.unwrap();
-                Chunk::execute_partial(
-                    complexity,
-                    self.multicore_settings,
-                    &mut array[partition.left..center],
-                    Reg::LEN,
-                    argument,
-                    move |array, argument| {
-                        let array = Reg::array_to_regs_mut(array);
-                        for reg in array {
-                            *reg = simd_op(*reg, argument);
-                        }
-                    },
-                );
-            }
-            {
-                let array = array_to_complex_mut(&mut array[0..partition.left]);
-                for num in array {
-                    *num = scalar_op(*num, argument);
-                }
-            }
-            {
-                let array = array_to_complex_mut(&mut array[partition.right..data_length]);
-                for num in array {
-                    *num = scalar_op(*num, argument);
-                }
+            Chunk::execute_partial(
+                complexity,
+                self.multicore_settings,
+                partition.center_mut(array),
+                Reg::LEN,
+                argument,
+                move |array, argument| {
+                    let array = Reg::array_to_regs_mut(array);
+                    for reg in array {
+                        *reg = simd_op(*reg, argument);
+                    }
+                },
+            );
+
+            for num in partition.cedge_iter_mut(array_to_complex_mut(&mut array[0..data_length])) {
+                *num = scalar_op(*num, argument);
             }
         }
     }
@@ -491,43 +475,28 @@ where
             let array = self.data.to_slice_mut();
             let temp = result.to_slice_mut();
             let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if partition.center.is_some() {
-                let center = partition.center.unwrap();
-                Chunk::from_src_to_dest(
-                    complexity,
-                    self.multicore_settings,
-                    &array[partition.left..center],
-                    Reg::LEN,
-                    &mut temp[partition.left / 2..center / 2],
-                    Reg::LEN / 2,
-                    argument,
-                    move |array, range, target, argument| {
-                        let array = Reg::array_to_regs(&array[range.start..range.end]);
-                        let mut j = 0;
-                        for reg in array {
-                            let result = simd_op(*reg, argument);
-                            result.store_half(target, j);
-                            j += Reg::LEN / 2;
-                        }
-                    },
-                );
-            }
-            {
-                let array = array_to_complex(&array[0..partition.left]);
-                for pair in array.iter().zip(&mut temp[0..partition.left / 2]) {
-                    let (src, dest) = pair;
-                    *dest = scalar_op(*src, argument);
-                }
-            }
-            {
-                let array = array_to_complex(&array[partition.right..data_length]);
-                for pair in array
-                    .iter()
-                    .zip(&mut temp[partition.right / 2..data_length / 2])
-                {
-                    let (src, dest) = pair;
-                    *dest = scalar_op(*src, argument);
-                }
+            Chunk::from_src_to_dest(
+                complexity,
+                self.multicore_settings,
+                partition.center(&array),
+                Reg::LEN,
+                partition.rcenter_mut(temp),
+                Reg::LEN / 2,
+                argument,
+                move |array, range, target, argument| {
+                    let array = Reg::array_to_regs(&array[range.start..range.end]);
+                    let mut j = 0;
+                    for reg in array {
+                        let result = simd_op(*reg, argument);
+                        result.store_half(target, j);
+                        j += Reg::LEN / 2;
+                    }
+                },
+            );
+
+            let array = array_to_complex(&array[0..data_length]);
+            for (src, dest) in partition.cedge_iter(array).zip(partition.redge_iter_mut(temp)) {
+                *dest = scalar_op(*src, argument);
             }
 
             self.valid_len /= 2;

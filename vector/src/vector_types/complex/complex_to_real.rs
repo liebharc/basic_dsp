@@ -7,6 +7,7 @@ use multicore_support::*;
 use numbers::*;
 use simd_extensions::*;
 use std::ops::*;
+use array_to_complex;
 
 /// Defines transformations from complex to real number space.
 ///
@@ -529,40 +530,27 @@ where
         let temp = &mut destination[0..data_length / 2];
         let array = &self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(array);
-        if partition.center.is_some() {
-            let center = partition.center.unwrap();
-            Chunk::from_src_to_dest(
-                complexity,
-                self.multicore_settings,
-                &array[partition.left..center],
-                Reg::LEN,
-                &mut temp[partition.left / 2..center / 2],
-                Reg::LEN / 2,
-                (),
-                move |array, range, target, _arg| {
-                    let mut i = 0;
-                    let array = Reg::array_to_regs(&array[range]);
-                    for n in array {
-                        let result = op_simd(*n);
-                        result.store_half(target, i);
-                        i += Reg::LEN / 2;
-                    }
-                },
-            );
-        }
+        Chunk::from_src_to_dest(
+            complexity,
+            self.multicore_settings,
+            partition.center(array),
+            Reg::LEN,
+            partition.rcenter_mut(temp),
+            Reg::LEN / 2,
+            (),
+            move |array, range, target, _arg| {
+                let mut i = 0;
+                let array = Reg::array_to_regs(&array[range]);
+                for n in array {
+                    let result = op_simd(*n);
+                    result.store_half(target, i);
+                    i += Reg::LEN / 2;
+                }
+            },
+        );
 
-        let mut i = 0;
-        while i < partition.left {
-            let c = Complex::new(array[i], array[i + 1]);
-            temp[i / 2] = op(c);
-            i += 2;
-        }
-
-        let mut i = partition.right;
-        while i < data_length {
-            let c = Complex::new(array[i], array[i + 1]);
-            temp[i / 2] = op(c);
-            i += 2;
+        for (dest, src) in partition.redge_iter_mut(temp).zip(partition.cedge_iter(array_to_complex(array))) {
+            *dest = op(*src);
         }
     }
 }
