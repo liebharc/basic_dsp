@@ -133,7 +133,7 @@ where
                     }
                 }
             } else if step > 1 {
-                // Push complex number onto vector
+                // Push complex number into vector
                 let im = *data.next().unwrap();
                 let re = *data.next().unwrap();
                 current[k] = re;
@@ -149,7 +149,7 @@ where
                     k = 0;
                 }
             } else {
-                // Push real number onto vector
+                // Push real number into vector
                 current[k] = *data.next().unwrap();
                 k += 1;
                 if k >= current.len() {
@@ -528,6 +528,9 @@ where
         }
     }
 
+    /// SIMD optimizatino to convolve two vectors.
+    /// Most of the parameters (convert, convert_mut, simd_mul, simd_sum) are used to have
+    /// a single function for both real valued and complex valued vectors.
     fn convolve_signal_simd_impl<Reg, B, TT, O, C, CMut, RMul, RSum>(
         &mut self,
         buffer: &mut B,
@@ -549,9 +552,7 @@ where
         let points = self.points();
         let other_points = vector.points();
         assert!(other_points < points);
-        let (other_start, other_end, full_conv_len, conv_len) = (
-            0,
-            other_points,
+        let (full_conv_len, conv_len) = (
             other_points,
             other_points - other_points / 2,
         );
@@ -565,22 +566,13 @@ where
             let other = convert(&other[0..vector.len()]);
             let complex = convert(&data[0..len]);
             let dest = convert_mut(&mut temp[0..len]);
-            let other_iter = &other[other_start..other_end];
+            let other_iter = &other[0..other_points];
 
             let shifts = create_shifted_copies(vector);
 
             // The next lines uses + $reg::LEN due to rounding of odd numbers
             let scalar_len = conv_len + Reg::LEN;
             let conv_len = conv_len as isize;
-            for (i, num) in dest[0..scalar_len].iter_mut().enumerate() {
-                *num = Self::convolve_iteration(
-                    complex,
-                    other_iter,
-                    i as isize,
-                    conv_len,
-                    full_conv_len,
-                );
-            }
 
             let partition = Reg::calc_data_alignment_reqs(&data[0..len]);
             let step = if self.is_complex() { 2 } else { 1 };
@@ -610,11 +602,24 @@ where
                     }
                 },
             );
+            for (i, num) in dest.iter_mut().enumerate().take(scalar_len) {
+                *num = Self::convolve_iteration(
+                    complex,
+                    other_iter,
+                    i as isize,
+                    conv_len,
+                    full_conv_len,
+                );
+            }
 
-            let mut i = (points - scalar_len) as isize;
-            for num in &mut dest[points - scalar_len..points] {
-                *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
-                i += 1;
+            for (i, num) in dest.iter_mut().enumerate().skip(points - scalar_len) {
+                *num = Self::convolve_iteration(
+                    complex,
+                    other_iter,
+                    i as isize,
+                    conv_len,
+                    full_conv_len,
+                );
             }
         }
         temp.trade(&mut self.data);
@@ -774,7 +779,7 @@ impl<T> WrappingIterator<T>
 where
     T: Clone,
 {
-    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
+    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> impl Iterator<Item = T> {
         use std::isize;
 
         assert!(slice.len() <= isize::MAX as usize);
@@ -836,7 +841,7 @@ impl<T> ReverseWrappingIterator<T>
 where
     T: Clone,
 {
-    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
+    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> impl Iterator<Item = T> {
         use std::isize;
 
         assert!(slice.len() <= isize::MAX as usize);

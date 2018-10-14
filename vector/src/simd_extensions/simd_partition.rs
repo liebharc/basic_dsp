@@ -12,6 +12,7 @@ pub struct SimdPartition<T> {
     data_type: PhantomData<T>,
 }
 
+/// Creates an iterator for the first `left` and last `right` elements in a slice
 fn create_edge_iter_mut<T>(
     slice: &mut [T],
     right: usize,
