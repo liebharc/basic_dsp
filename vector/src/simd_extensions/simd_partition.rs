@@ -12,7 +12,7 @@ pub struct SimdPartition<T> {
     data_type: PhantomData<T>
 }
 
-fn create_edge_iter_mut<'a, T>(slice: &'a mut [T], right: usize, left: usize, len: usize) -> impl Iterator<Item = &'a mut T> {
+fn create_edge_iter_mut<T>(slice: &mut [T], right: usize, left: usize, len: usize) -> impl Iterator<Item = &mut T> {
     let (left_values, right_values) = slice.split_at_mut(left);
     let right = right - left;
     let right_len = len - left;
@@ -25,16 +25,16 @@ impl<T> SimdPartition<T> {
         Self {
             left: len,
             right: len,
-            len: len,
+            len,
             data_type: PhantomData
         }
     }
 
     pub fn new_simd(left: usize, right: usize, len: usize) -> Self {
         Self {
-            left: left,
-            right: right,
-            len: len,
+            left,
+            right,
+            len,
             data_type: PhantomData
         }
     }

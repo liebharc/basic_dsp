@@ -247,7 +247,7 @@ impl MultiCoreSettings {
         }
         else {
             MultiCoreSettings {
-                core_limit: core_limit,
+                core_limit,
                 med_dual_core_threshold: CALIBRATION.med_dual_core_threshold,
                 med_multi_core_threshold: CALIBRATION.med_multi_core_threshold,
                 large_dual_core_threshold: CALIBRATION.large_dual_core_threshold,
