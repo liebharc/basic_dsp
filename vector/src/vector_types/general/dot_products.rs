@@ -86,7 +86,7 @@ where
         let chunks =
             Chunk::get_a_fold_b(
                 Complexity::Small,
-                self.multicore_settings,
+                &self.multicore_settings,
                 partition.center(other),
                 Reg::LEN,
                 partition.center(array),
@@ -138,7 +138,7 @@ where
         let chunks =
             Chunk::get_a_fold_b(
                 Complexity::Small,
-                self.multicore_settings,
+                &self.multicore_settings,
                 partition.center(other),
                 Reg::LEN,
                 partition.center(array),
@@ -186,7 +186,7 @@ where
         let chunks =
             Chunk::get_a_fold_b(
                 Complexity::Small,
-                self.multicore_settings,
+                &self.multicore_settings,
                 partition.center(&other),
                 Reg::LEN,
                 partition.center(array),
@@ -236,7 +236,7 @@ where
         let chunks =
             Chunk::get_a_fold_b(
                 Complexity::Small,
-                self.multicore_settings,
+                &self.multicore_settings,
                 partition.center(other),
                 Reg::LEN,
                 partition.center(array),

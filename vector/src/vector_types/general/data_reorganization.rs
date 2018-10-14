@@ -263,7 +263,7 @@ macro_rules! zero_interleave {
             let source = &$self_.data.to_slice();
             Chunk::from_src_to_dest(
                 Complexity::Small,
-                $self_.multicore_settings,
+                &$self_.multicore_settings,
                 &source[0..old_len],
                 $tuple,
                 &mut target[0..new_len],

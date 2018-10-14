@@ -29,6 +29,18 @@ impl MultiCoreSettings {
     pub fn new(_: usize) -> MultiCoreSettings {
         MultiCoreSettings
     }
+
+    /// Creates multi core settings. The argument will be ignored
+    /// since multi threading is disabled. The method only exists
+    /// to stay compatible with the multi-threaded version of this lib.
+    pub fn with_thresholds(
+        _core_limit: usize,
+        _med_dual_core_threshold: usize,
+        _med_multi_core_threshold: usize,
+        _large_dual_core_threshold: usize,
+        _large_multi_core_threshold: usize) -> MultiCoreSettings {
+        MultiCoreSettings
+    }
 }
 
 /// Simplified version which has the same interface as the the `threading version`.
@@ -39,7 +51,7 @@ impl Chunk {
     #[inline]
     pub fn execute_partial<'a, T, S, F>(
         _: Complexity,
-        _: MultiCoreSettings,
+        _: &MultiCoreSettings,
         array: &mut [T],
         _: usize,
         arguments: S,
@@ -57,7 +69,7 @@ impl Chunk {
     #[inline]
     pub fn execute_with_range<'a, T, S, F>(
         _: Complexity,
-        _: MultiCoreSettings,
+        _: &MultiCoreSettings,
         array: &mut [T],
         _: usize,
         arguments: S,
@@ -83,7 +95,7 @@ impl Chunk {
     #[inline]
     pub fn map_on_array_chunks<'a, T, S, F, R>(
         _: Complexity,
-        _: MultiCoreSettings,
+        _: &MultiCoreSettings,
         array: &[T],
         _: usize,
         arguments: S,
@@ -118,7 +130,7 @@ impl Chunk {
     #[inline]
     pub fn execute_sym_pairs_with_range<'a, T, S, F>(
         _: Complexity,
-        _: MultiCoreSettings,
+        _: &MultiCoreSettings,
         array: &mut [T],
         step_size: usize,
         arguments: S,
@@ -153,7 +165,7 @@ impl Chunk {
     #[inline]
     pub fn get_a_fold_b<'a, F, T, R>(
         _: Complexity,
-        _: MultiCoreSettings,
+        _: &MultiCoreSettings,
         a: &[T],
         _: usize,
         b: &[T],
@@ -187,7 +199,7 @@ impl Chunk {
     #[inline]
     pub fn get_chunked_results<'a, F, S, T, R>(
         _: Complexity,
-        _: MultiCoreSettings,
+        _: &MultiCoreSettings,
         a: &[T],
         _: usize,
         arguments: S,
@@ -221,7 +233,7 @@ impl Chunk {
     #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     pub fn from_src_to_dest<'a, T, S, F>(
         _: Complexity,
-        _: MultiCoreSettings,
+        _: &MultiCoreSettings,
         original: &[T],
         _: usize,
         target: &mut [T],

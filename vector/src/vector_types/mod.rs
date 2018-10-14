@@ -242,7 +242,7 @@ where
             let array = self.data.to_slice_mut();
             Chunk::execute_partial(
                 complexity,
-                self.multicore_settings,
+                &self.multicore_settings,
                 &mut array[0..len],
                 1,
                 argument,
@@ -267,7 +267,7 @@ where
             let array = self.data.to_slice_mut();
             Chunk::execute_partial(
                 complexity,
-                self.multicore_settings,
+                &self.multicore_settings,
                 &mut array[0..len],
                 2,
                 argument,
@@ -316,7 +316,7 @@ where
             let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
             Chunk::execute_partial(
                 complexity,
-                self.multicore_settings,
+                &self.multicore_settings,
                 partition.center_mut(array),
                 Reg::LEN,
                 argument,
@@ -375,7 +375,7 @@ where
             let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
             Chunk::execute_partial(
                 complexity,
-                self.multicore_settings,
+                &self.multicore_settings,
                 partition.center_mut(array),
                 Reg::LEN,
                 argument,
@@ -414,7 +414,7 @@ where
                 let temp = result.to_slice_mut();
                 Chunk::from_src_to_dest(
                     complexity,
-                    self.multicore_settings,
+                    &self.multicore_settings,
                     &array[0..data_length],
                     2,
                     &mut temp[0..data_length / 2],
@@ -477,7 +477,7 @@ where
             let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
             Chunk::from_src_to_dest(
                 complexity,
-                self.multicore_settings,
+                &self.multicore_settings,
                 partition.center(&array),
                 Reg::LEN,
                 partition.rcenter_mut(temp),
@@ -544,7 +544,7 @@ where
                 let converted = convert_mut(&mut data[0..len]);
                 Chunk::execute_with_range(
                     Complexity::Medium,
-                    self.multicore_settings,
+                    &self.multicore_settings,
                     converted,
                     1,
                     function_arg,
@@ -565,7 +565,7 @@ where
                 let converted = convert_mut(&mut data[0..len]);
                 Chunk::execute_sym_pairs_with_range(
                     Complexity::Medium,
-                    self.multicore_settings,
+                    &self.multicore_settings,
                     converted,
                     1,
                     function_arg,

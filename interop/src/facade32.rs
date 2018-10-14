@@ -65,6 +65,41 @@ pub extern "C" fn new_with_performance_options32(is_complex: i32,
 }
 
 #[no_mangle]
+pub extern "C" fn new_with_detailed_performance_options32(is_complex: i32,
+                                                 domain: i32,
+                                                 init_value: f32,
+                                                 length: usize,
+                                                 delta: f32,
+                                                 core_limit: usize,
+                                                  med_dual_core_threshold: usize,
+                                                  med_multi_core_threshold: usize,
+                                                  large_dual_core_threshold: usize,
+                                                  large_multi_core_threshold: usize)
+                                                 -> VecBox {
+    let domain = if domain == 0 {
+        DataDomain::Time
+    } else {
+        DataDomain::Frequency
+    };
+
+    let mut vector = Box::new(VecBuf {
+        vec: vec!(init_value; length).to_gen_dsp_vec(is_complex != 0, domain),
+        buffer: SingleBuffer::new(),
+    });
+    vector.vec.set_delta(delta);
+    let multicore_settings =
+        MultiCoreSettings::with_thresholds(
+            core_limit,
+            med_dual_core_threshold,
+            med_multi_core_threshold,
+            large_dual_core_threshold,
+            large_multi_core_threshold);
+    vector.vec.set_multicore_settings(multicore_settings);
+    vector
+
+}
+
+#[no_mangle]
 pub extern "C" fn get_value32(vector: &VecBuf, index: usize) -> f32 {
     vector.vec[index]
 }

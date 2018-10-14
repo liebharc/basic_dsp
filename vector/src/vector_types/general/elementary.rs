@@ -394,7 +394,7 @@ macro_rules! impl_binary_vector_operation {
                 let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
-                    Complexity::Small, self.multicore_settings,
+                    Complexity::Small, &self.multicore_settings,
                     partition.center(other), Reg::LEN,
                     partition.center_mut(array), Reg::LEN, (),
                     |original, range, target, _arg| {
@@ -431,7 +431,7 @@ macro_rules! impl_binary_complex_vector_operation {
                 let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
-                    Complexity::Small, self.multicore_settings,
+                    Complexity::Small, &self.multicore_settings,
                     partition.center(other), Reg::LEN,
                     partition.center_mut(array), Reg::LEN, (),
                     |original, range, target, _arg| {
@@ -467,7 +467,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let array = self.data.to_slice_mut();
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
-                    Complexity::Small, self.multicore_settings,
+                    Complexity::Small, &self.multicore_settings,
                     &other, Reg::LEN,
                     &mut array[0..data_length], 1, (),
                     |operand, range, target, _arg| {
@@ -497,7 +497,7 @@ macro_rules! impl_binary_smaller_complex_vector_ops {
                 let array = self.data.to_slice_mut();
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
-                    Complexity::Small, self.multicore_settings,
+                    Complexity::Small, &self.multicore_settings,
                     &other, Reg::LEN,
                     &mut array[0..data_length], 2, (),
                     |operand, range, target, _arg| {

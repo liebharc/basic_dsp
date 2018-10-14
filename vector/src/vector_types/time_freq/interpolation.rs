@@ -103,7 +103,7 @@ fn interpolate_priv_scalar<T, TT>(
 {
     Chunk::execute_with_range(
         Complexity::Large,
-        multicore_settings,
+        &multicore_settings,
         temp,
         1,
         data,
@@ -257,7 +257,7 @@ where
             let simd_len_in_t = Reg::LEN / step;
             Chunk::execute_with_range(
                 Complexity::Large,
-                self.multicore_settings,
+                &self.multicore_settings,
                 &mut dest[scalar_len..len - scalar_len],
                 1,
                 simd,

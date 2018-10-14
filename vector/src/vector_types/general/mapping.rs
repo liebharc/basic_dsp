@@ -64,7 +64,7 @@ where
         let length = array.len();
         Chunk::execute_with_range(
             Complexity::Small,
-            self.multicore_settings,
+            &self.multicore_settings,
             &mut array[0..length],
             1,
             argument,
@@ -112,7 +112,7 @@ where
             }
             Chunk::map_on_array_chunks(
                 Complexity::Small,
-                self.multicore_settings,
+                &self.multicore_settings,
                 &array[0..length],
                 1,
                 argument,
@@ -174,7 +174,7 @@ where
         let length = array.len();
         Chunk::execute_with_range(
             Complexity::Small,
-            self.multicore_settings,
+            &self.multicore_settings,
             &mut array[0..length],
             2,
             argument,
@@ -223,7 +223,7 @@ where
             }
             Chunk::map_on_array_chunks(
                 Complexity::Small,
-                self.multicore_settings,
+                &self.multicore_settings,
                 &array[0..length],
                 2,
                 argument,

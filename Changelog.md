@@ -11,6 +11,7 @@ compile options before this update.
 - `ComplexData` is now in `meta::Complex`. `RealData`, `RealOrComplexData`, `TimeData`, `FrequencyData` and 
 `TimeOrFrequencyData` have been moved similarly. If you used those types then consider to implement against the vector 
 type definitions or traits instead.
+- `MultiCoreSettings` now allow more fine grained control over the threading behavior.
 
 ## Version 0.5.6
 

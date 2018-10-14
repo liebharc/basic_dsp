@@ -490,7 +490,7 @@ where
         let source = &self.data.to_slice();
         Chunk::from_src_to_dest(
             complexity,
-            self.multicore_settings,
+            &self.multicore_settings,
             &source[0..len],
             2,
             array,
@@ -532,7 +532,7 @@ where
         let partition = Reg::calc_data_alignment_reqs(array);
         Chunk::from_src_to_dest(
             complexity,
-            self.multicore_settings,
+            &self.multicore_settings,
             partition.center(array),
             Reg::LEN,
             partition.rcenter_mut(temp),

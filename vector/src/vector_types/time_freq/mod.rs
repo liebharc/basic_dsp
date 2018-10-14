@@ -310,7 +310,7 @@ where
                 let conv_len = conv_len as isize;
                 Chunk::execute_with_range(
                     Complexity::Large,
-                    self.multicore_settings,
+                    &self.multicore_settings,
                     dest,
                     1,
                     (complex, other_iter),
@@ -342,7 +342,7 @@ where
                 let conv_len = conv_len as isize;
                 Chunk::execute_with_range(
                     Complexity::Large,
-                    self.multicore_settings,
+                    &self.multicore_settings,
                     dest,
                     1,
                     (data, other_iter),
@@ -588,7 +588,7 @@ where
             let simd = Reg::array_to_regs(partition.center(data));
             Chunk::execute_with_range(
                 Complexity::Large,
-                self.multicore_settings,
+                &self.multicore_settings,
                 &mut dest[scalar_len..points - scalar_len],
                 1,
                 simd,
@@ -642,7 +642,7 @@ where
             let converted = convert_mut(&mut data[0..len]);
             Chunk::execute_with_range(
                 Complexity::Medium,
-                self.multicore_settings,
+                &self.multicore_settings,
                 converted,
                 1,
                 (ratio, function_arg),
@@ -666,7 +666,7 @@ where
             let points = converted.len();
             Chunk::execute_sym_pairs_with_range(
                 Complexity::Medium,
-                self.multicore_settings,
+                &self.multicore_settings,
                 converted,
                 1,
                 (ratio, function_arg),

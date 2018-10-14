@@ -14,52 +14,6 @@ use std::slice::{Chunks, ChunksMut};
 use std::sync::{Arc, Mutex};
 use time;
 
-/// Holds parameters which specify how multiple cores are used
-/// to execute an operation.
-#[derive(Debug, Copy, Clone)]
-#[repr(C)]
-pub struct MultiCoreSettings {
-    /// All operations will be limited to not create more threads than specified here
-    pub core_limit: usize,
-}
-
-lazy_static! {
-    static ref NUMBER_OF_CORES: usize = num_cpus::get();
-}
-
-impl MultiCoreSettings {
-    /// Creates multi core settings with default values
-    pub fn default() -> MultiCoreSettings {
-        Self::single_threaded()
-    }
-
-    /// Creates multi core settings so that no thread will be spawned.
-    pub fn single_threaded() -> MultiCoreSettings {
-        Self::new(1)
-    }
-
-    /// Creates multi core so that threads will be spawned if this appears to be beneficial.
-    pub fn parallel() -> MultiCoreSettings {
-        if *NUMBER_OF_CORES == 1 {
-            Self::new(1)
-        } else if *NUMBER_OF_CORES == 2 {
-            // If two cores are available then use both of them if multi-threading is requested
-            Self::new(2)
-        } else {
-            // Half because we assume hyper threading and that we will keep a core so busy
-            // that hyper threading isn't of any use
-            Self::new(*NUMBER_OF_CORES / 2)
-        }
-    }
-
-    /// Creates multi core settings with the given values.
-    pub fn new(core_limit: usize) -> MultiCoreSettings {
-        MultiCoreSettings {
-            core_limit: if core_limit >= 1 { core_limit } else { 1 },
-        }
-    }
-}
-
 /// Calibration information which determines when multi threaded code will be used.
 #[derive(Debug, PartialEq)]
 struct Calibration {
@@ -210,6 +164,11 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
     })
 }
 
+static MED_DUAL_CORE_DEFAULT: usize = 50_000;
+static MED_MULTI_CORE_DEFAULT: usize = 100_000;
+static LARGE_DUAL_CORE_DEFAULT: usize = 20_000;
+static LARGE_MULTI_CORE_DEFAULT: usize = 30_000;
+
 fn calibrate(number_of_cores: usize) -> Calibration {
     let start = time::precise_time_s();
     match attempt_calibrate(number_of_cores) {
@@ -218,10 +177,10 @@ fn calibrate(number_of_cores: usize) -> Calibration {
             calibration
         }
         Err(err_code) => Calibration {
-            med_dual_core_threshold: 50_000,
-            med_multi_core_threshold: 100_000,
-            large_dual_core_threshold: 20_000,
-            large_multi_core_threshold: 30_000,
+            med_dual_core_threshold: MED_DUAL_CORE_DEFAULT,
+            med_multi_core_threshold: MED_MULTI_CORE_DEFAULT,
+            large_dual_core_threshold: LARGE_DUAL_CORE_DEFAULT,
+            large_multi_core_threshold: LARGE_MULTI_CORE_DEFAULT,
             duration_cal_routine: time::precise_time_s() - start,
             cal_routine_result_code: err_code,
         },
@@ -230,6 +189,93 @@ fn calibrate(number_of_cores: usize) -> Calibration {
 
 lazy_static! {
     static ref CALIBRATION: Calibration = calibrate(*NUMBER_OF_CORES);
+    static ref NUMBER_OF_CORES: usize = num_cpus::get();
+}
+
+/// Holds parameters which specify how multiple cores are used
+/// to execute an operation.
+#[derive(Debug, Copy, Clone)]
+#[repr(C)]
+pub struct MultiCoreSettings {
+    /// All operations will be limited to not create more threads than specified here
+    pub core_limit: usize,
+    pub med_dual_core_threshold: usize,
+    pub med_multi_core_threshold: usize,
+    pub large_dual_core_threshold: usize,
+    pub large_multi_core_threshold: usize,
+}
+
+impl MultiCoreSettings {
+    /// Creates multi core settings with default values
+    pub fn default() -> MultiCoreSettings {
+        Self::single_threaded()
+    }
+
+    /// Creates multi core settings so that no thread will be spawned.
+    pub fn single_threaded() -> MultiCoreSettings {
+        Self::new(1)
+    }
+
+    /// Creates multi core so that threads will be spawned if this appears to be beneficial.
+    pub fn parallel() -> MultiCoreSettings {
+        if *NUMBER_OF_CORES == 1 {
+            Self::new(1)
+        } else if *NUMBER_OF_CORES == 2 {
+            // If two cores are available then use both of them if multi-threading is requested
+            Self::new(2)
+        } else {
+            // Half because we assume hyper threading and that we will keep a core so busy
+            // that hyper threading isn't of any use
+            Self::new(*NUMBER_OF_CORES / 2)
+        }
+    }
+
+    /// Creates multi core settings with the given values.
+    ///
+    /// If `core_limit > 1` then the first time this function is executed a calibration run
+    /// will be performed which determines the details for the multi threading strategy. This
+    /// run takes between 200ms and 500ms.
+    pub fn new(core_limit: usize) -> MultiCoreSettings {
+        if core_limit <= 1 {
+            MultiCoreSettings {
+                core_limit: 1,
+                med_dual_core_threshold: MED_DUAL_CORE_DEFAULT,
+                med_multi_core_threshold: MED_MULTI_CORE_DEFAULT,
+                large_dual_core_threshold: LARGE_DUAL_CORE_DEFAULT,
+                large_multi_core_threshold: LARGE_MULTI_CORE_DEFAULT,
+            }
+        }
+        else {
+            MultiCoreSettings {
+                core_limit: core_limit,
+                med_dual_core_threshold: CALIBRATION.med_dual_core_threshold,
+                med_multi_core_threshold: CALIBRATION.med_multi_core_threshold,
+                large_dual_core_threshold: CALIBRATION.large_dual_core_threshold,
+                large_multi_core_threshold: CALIBRATION.large_multi_core_threshold,
+            }
+        }
+    }
+
+    /// Creates multi core settings with explicit thresholds.
+    ///
+    /// The arguments allow to specify the number of cores which are used at maximum and as
+    /// well as starting from which slice size the lib will start to use two or all cores.
+    /// `med` denotes operations of medium complexity, e.g. such as log and sin.
+    /// `large` denotes operations like convolution and interpolation.
+    pub fn with_thresholds(
+        core_limit: usize,
+        med_dual_core_threshold: usize,
+        med_multi_core_threshold: usize,
+        large_dual_core_threshold: usize,
+        large_multi_core_threshold: usize) -> MultiCoreSettings {
+        MultiCoreSettings {
+            core_limit,
+            med_dual_core_threshold,
+            med_multi_core_threshold: med_multi_core_threshold.max(med_dual_core_threshold + 1),
+            large_dual_core_threshold,
+            large_multi_core_threshold: large_multi_core_threshold.max(large_dual_core_threshold + 1),
+        }
+    }
 }
 
 /// Prints debug information about the calibration. The calibration determines when the library
@@ -269,7 +315,7 @@ impl Chunk {
     fn determine_number_of_chunks(
         array_length: usize,
         complexity: Complexity,
-        settings: MultiCoreSettings,
+        settings: &MultiCoreSettings,
     ) -> usize {
         if settings.core_limit == 1 {
             settings.core_limit
@@ -367,7 +413,7 @@ impl Chunk {
     #[inline]
     pub fn execute_partial<'a, T, S, F>(
         complexity: Complexity,
-        settings: MultiCoreSettings,
+        settings: &MultiCoreSettings,
         array: &mut [T],
         step_size: usize,
         arguments: S,
@@ -413,7 +459,7 @@ impl Chunk {
     #[inline]
     pub fn execute_with_range<'a, T, S, F>(
         complexity: Complexity,
-        settings: MultiCoreSettings,
+        settings: &MultiCoreSettings,
         array: &mut [T],
         step_size: usize,
         arguments: S,
@@ -453,7 +499,7 @@ impl Chunk {
     #[inline]
     pub fn map_on_array_chunks<'a, T, S, F, R>(
         complexity: Complexity,
-        settings: MultiCoreSettings,
+        settings: &MultiCoreSettings,
         array: &[T],
         step_size: usize,
         arguments: S,
@@ -506,7 +552,7 @@ impl Chunk {
     #[inline]
     pub fn execute_sym_pairs_with_range<'a, T, S, F>(
         complexity: Complexity,
-        settings: MultiCoreSettings,
+        settings: &MultiCoreSettings,
         array: &mut [T],
         step_size: usize,
         arguments: S,
@@ -570,7 +616,7 @@ impl Chunk {
     #[inline]
     pub fn get_a_fold_b<'a, F, T, R>(
         complexity: Complexity,
-        settings: MultiCoreSettings,
+        settings: &MultiCoreSettings,
         a: &[T],
         a_step: usize,
         b: &[T],
@@ -623,7 +669,7 @@ impl Chunk {
     #[inline]
     pub fn get_chunked_results<'a, F, S, T, R>(
         complexity: Complexity,
-        settings: MultiCoreSettings,
+        settings: &MultiCoreSettings,
         a: &[T],
         a_step: usize,
         arguments: S,
@@ -676,7 +722,7 @@ impl Chunk {
     #[inline]
     pub fn from_src_to_dest<'a, T, S, F>(
         complexity: Complexity,
-        settings: MultiCoreSettings,
+        settings: &MultiCoreSettings,
         original: &[T],
         original_step: usize,
         target: &mut [T],
