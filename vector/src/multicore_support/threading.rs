@@ -326,20 +326,18 @@ impl Chunk {
             // is already fast enough to occupy the max memory bandwidth
             1
         } else if complexity == Complexity::Medium {
-            let calibration = &CALIBRATION;
-            if array_length < calibration.med_dual_core_threshold {
+            if array_length < settings.med_dual_core_threshold {
                 1
-            } else if array_length < calibration.med_multi_core_threshold {
+            } else if array_length < settings.med_multi_core_threshold {
                 2
             } else {
                 settings.core_limit
             }
         } else {
             // Complexity::Large
-            let calibration = &CALIBRATION;
-            if array_length < calibration.large_dual_core_threshold {
+            if array_length < settings.large_dual_core_threshold {
                 1
-            } else if array_length < calibration.large_multi_core_threshold {
+            } else if array_length < settings.large_multi_core_threshold {
                 2
             } else {
                 settings.core_limit
