@@ -27,11 +27,11 @@
 
 use super::{Simd, SimdApproximations, SimdFrom};
 use numbers::*;
-#[cfg(feature = "use_avx2")]
+#[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
 use simd::x86::avx::*;
-#[cfg(feature = "use_sse2")]
+#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
 use simd::x86::sse2::*;
-#[cfg(feature = "use_sse2")]
+#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
 use simd::*;
 use std::mem;
 use std::ops::*;
@@ -348,17 +348,17 @@ macro_rules! simd_approx_impl {
     };
 }
 
-#[cfg(feature = "use_sse2")]
+#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
 simd_approx_impl!(f32, 32, f32x4, i32x4, u32x4);
-#[cfg(feature = "use_sse2")]
+#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
 simd_approx_impl!(f64, 64, f64x2, i64x2, u64x2);
-#[cfg(feature = "use_avx2")]
+#[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
 simd_approx_impl!(f32, 32, f32x8, i32x8, u32x8);
-#[cfg(feature = "use_avx2")]
+#[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
 simd_approx_impl!(f64, 64, f64x4, i64x4, u64x4);
 
 #[cfg(test)]
-#[cfg(feature = "use_sse2")]
+#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
 mod tests {
     use super::super::*;
     use simd::f32x4;

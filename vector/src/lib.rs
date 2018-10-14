@@ -160,14 +160,14 @@ pub mod numbers {
     impl ToSimd for f32 {
         type RegFallback = simd_extensions::fallback::f32x4;
 
-        #[cfg(feature = "use_sse2")]
+        #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
         type RegSse = simd::f32x4;
-        #[cfg(not(feature = "use_sse2"))]
+        #[cfg(not(all(feature = "use_sse2", target_feature = "sse2")))]
         type RegSse = simd_extensions::fallback::f32x4;
 
-        #[cfg(feature = "use_avx2")]
+        #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
         type RegAvx = simd::x86::avx::f32x8;
-        #[cfg(not(feature = "use_avx2"))]
+        #[cfg(not(all(feature = "use_avx2", target_feature = "avx2")))]
         type RegAvx = simd_extensions::fallback::f32x4;
 
         #[cfg(feature = "use_avx512")]
@@ -181,14 +181,14 @@ pub mod numbers {
     impl ToSimd for f64 {
         type RegFallback = simd_extensions::fallback::f64x2;
 
-        #[cfg(feature = "use_sse2")]
+        #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
         type RegSse = simd::x86::sse2::f64x2;
-        #[cfg(not(feature = "use_sse2"))]
+        #[cfg(not(all(feature = "use_sse2", target_feature = "sse2")))]
         type RegSse = simd_extensions::fallback::f64x2;
 
-        #[cfg(feature = "use_avx2")]
+        #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
         type RegAvx = simd::x86::avx::f64x4;
-        #[cfg(not(feature = "use_avx2"))]
+        #[cfg(not(all(feature = "use_avx2", target_feature = "avx2")))]
         type RegAvx = simd_extensions::fallback::f64x2;
 
         #[cfg(feature = "use_avx512")]

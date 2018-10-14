@@ -170,26 +170,24 @@ where
                 "Meta data should agree since we constructed the argument from this \
                  vector",
             );
+        } else if self.is_complex() {
+            self.convolve_function_priv(
+                buffer,
+                ratio,
+                len,
+                |data| array_to_complex(data),
+                |temp| array_to_complex_mut(temp),
+                |x| Complex::<T>::new(function.calc(x), T::zero()),
+            );
         } else {
-            if self.is_complex() {
-                self.convolve_function_priv(
-                    buffer,
-                    ratio,
-                    len,
-                    |data| array_to_complex(data),
-                    |temp| array_to_complex_mut(temp),
-                    |x| Complex::<T>::new(function.calc(x), T::zero()),
-                );
-            } else {
-                self.convolve_function_priv(
-                    buffer,
-                    ratio,
-                    len,
-                    |data| data,
-                    |temp| temp,
-                    |x| function.calc(x),
-                );
-            }
+            self.convolve_function_priv(
+                buffer,
+                ratio,
+                len,
+                |data| data,
+                |temp| temp,
+                |x| function.calc(x),
+            );
         }
     }
 }
