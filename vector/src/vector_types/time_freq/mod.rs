@@ -552,10 +552,7 @@ where
         let points = self.points();
         let other_points = vector.points();
         assert!(other_points < points);
-        let (full_conv_len, conv_len) = (
-            other_points,
-            other_points - other_points / 2,
-        );
+        let (full_conv_len, conv_len) = (other_points, other_points - other_points / 2);
         let len = self.len();
         let mut temp = buffer.borrow(len);
         {

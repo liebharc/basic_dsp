@@ -198,14 +198,14 @@ macro_rules! simd_generic_impl {
             fn calc_data_alignment_reqs(array: &[$data_type]) -> SimdPartition<$data_type> {
                 let data_length = array.len();
                 let addr = array.as_ptr();
-                let scalar_left = get_alignment_offset(addr as usize, mem::size_of::<Self>());
-                assert!(scalar_left % mem::size_of::<$data_type>() == 0);
-                let scalar_left = scalar_left / mem::size_of::<$data_type>();
-                if scalar_left + Self::LEN > data_length {
+                let left = get_alignment_offset(addr as usize, mem::size_of::<Self>());
+                assert!(left % mem::size_of::<$data_type>() == 0);
+                let left = left / mem::size_of::<$data_type>();
+                if left + Self::LEN > data_length {
                     SimdPartition::new_all_scalar(data_length)
                 } else {
-                    let right = (data_length - scalar_left) % Self::LEN;
-                    SimdPartition::new_simd(scalar_left, data_length - right, data_length)
+                    let right = (data_length - left) % Self::LEN;
+                    SimdPartition::new_simd(left, right, data_length)
                 }
             }
 
