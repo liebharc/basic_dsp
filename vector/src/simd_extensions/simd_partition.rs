@@ -22,7 +22,7 @@ pub struct EdgeIteratorMut<'a, T: 'a> {
 }
 
 impl<'a, T> EdgeIteratorMut<'a, T> {
-    pub fn new(slice: &mut [T], left: usize, right: usize) -> impl Iterator<Item = &mut T> {
+    pub fn new(slice: &mut [T], left: usize, right: usize) -> Self {
         let start = slice.as_mut_ptr();
         let len = slice.len() as isize;
         let left = left as isize;
@@ -50,7 +50,7 @@ impl<'a, T> Iterator for EdgeIteratorMut<'a, T> {
             }
 
             if self.pos > self.end {
-                return None;
+                None
             } else {
                 let value = &mut *self.pos;
                 self.pos = self.pos.offset(1);
@@ -72,11 +72,7 @@ pub struct IndexedEdgeIteratorMut<'a, T: 'a> {
 }
 
 impl<'a, T> IndexedEdgeIteratorMut<'a, T> {
-    pub fn new(
-        slice: &mut [T],
-        left: usize,
-        right: usize,
-    ) -> impl Iterator<Item = (isize, &mut T)> {
+    pub fn new(slice: &mut [T], left: usize, right: usize) -> Self {
         let start = slice.as_mut_ptr();
         let len = slice.len() as isize;
         let left = left as isize;
@@ -107,7 +103,7 @@ impl<'a, T> Iterator for IndexedEdgeIteratorMut<'a, T> {
             }
 
             if self.pos > self.end {
-                return None;
+                None
             } else {
                 let value = &mut *self.pos;
                 let idx = self.idx;

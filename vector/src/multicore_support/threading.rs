@@ -333,15 +333,12 @@ impl Chunk {
             } else {
                 settings.core_limit
             }
+        } else if array_length < settings.large_dual_core_threshold {
+            1
+        } else if array_length < settings.large_multi_core_threshold {
+            2
         } else {
-            // Complexity::Large
-            if array_length < settings.large_dual_core_threshold {
-                1
-            } else if array_length < settings.large_multi_core_threshold {
-                2
-            } else {
-                settings.core_limit
-            }
+            settings.core_limit
         }
     }
 

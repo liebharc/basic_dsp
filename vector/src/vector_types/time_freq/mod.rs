@@ -766,7 +766,7 @@ impl<T> WrappingIterator<T>
 where
     T: Clone,
 {
-    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> impl Iterator<Item = T> {
+    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
         use std::isize;
 
         assert!(slice.len() <= isize::MAX as usize);
@@ -828,7 +828,7 @@ impl<T> ReverseWrappingIterator<T>
 where
     T: Clone,
 {
-    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> impl Iterator<Item = T> {
+    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
         use std::isize;
 
         assert!(slice.len() <= isize::MAX as usize);
