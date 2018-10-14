@@ -1,10 +1,9 @@
+use super::super::meta;
 use super::{
-    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec,
-    GenDspVec, NumberSpace, RealFreqVec, RealTimeVec,
-    ToSlice, TypeMetaData,
+    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, GenDspVec, NumberSpace,
+    RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
 use super::{ToComplexVector, ToDspVector, ToRealVector};
-use super::super::meta;
 use multicore_support::MultiCoreSettings;
 /// ! Support for types in Rust std
 use numbers::*;
@@ -104,7 +103,7 @@ impl<Type: ToDspVector<T>, T: RealNumber> ToDspVectorPar<T> for Type {
 }
 
 impl<Type: ToRealVector<T>, T: RealNumber> ToRealVectorPar<T> for Type {
-    fn to_real_time_vec_par(self) -> DspVec<Self, T, meta::Real,  meta::Time> {
+    fn to_real_time_vec_par(self) -> DspVec<Self, T, meta::Real, meta::Time> {
         let mut vec = self.to_real_time_vec();
         vec.set_multicore_settings(MultiCoreSettings::parallel());
         vec

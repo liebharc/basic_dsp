@@ -226,10 +226,14 @@ impl Simd<f32> for f32x16 {
     }
 
     #[inline]
-    fn max(self, other: Self) -> Self { self.max(other) }
+    fn max(self, other: Self) -> Self {
+        self.max(other)
+    }
 
     #[inline]
-    fn min(self, other: Self) -> Self { self.min(other) }
+    fn min(self, other: Self) -> Self {
+        self.min(other)
+    }
 }
 
 impl Simd<f64> for f64x8 {
@@ -244,8 +248,7 @@ impl Simd<f64> for f64x8 {
 
     type ComplexArray = [Complex<f64>; 4];
 
-    const LEN: usize = 8; f64x8::load(&temp, 0)
-    }
+    const LEN: usize = 8;
 
     #[inline]
     fn from_complex(value: Complex<f64>) -> f64x8 {
@@ -389,10 +392,14 @@ impl Simd<f64> for f64x8 {
     }
 
     #[inline]
-    fn max(self, other: Self) -> Self { self.max(other) }
+    fn max(self, other: Self) -> Self {
+        self.max(other)
+    }
 
     #[inline]
-    fn min(self, other: Self) -> Self { self.min(other) }
+    fn min(self, other: Self) -> Self {
+        self.min(other)
+    }
 }
 
 impl SimdFrom<f32x16> for i32x8 {

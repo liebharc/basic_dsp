@@ -1,10 +1,10 @@
 use numbers::*;
+#[cfg(feature = "use_sse2")]
+use simd;
 #[cfg(feature = "use_avx2")]
 use simd::x86::avx as simdavx;
 #[cfg(feature = "use_sse2")]
 use simd::x86::sse2 as simdsse;
-#[cfg(feature = "use_sse2")]
-use simd;
 use std;
 use std::mem;
 use std::ops::*;
@@ -192,7 +192,7 @@ macro_rules! simd_generic_impl {
                 Self::splat(0.0)
             }
         }
-        
+
         impl SimdGeneric<$data_type> for $mod::$reg {
             #[inline]
             fn calc_data_alignment_reqs(array: &[$data_type]) -> SimdPartition<$data_type> {
@@ -205,28 +205,25 @@ macro_rules! simd_generic_impl {
                     SimdPartition::new_all_scalar(data_length)
                 } else {
                     let right = (data_length - scalar_left) % Self::LEN;
-                    SimdPartition::new_simd(
-                        scalar_left,
-                        data_length - right,
-                        data_length)
+                    SimdPartition::new_simd(scalar_left, data_length - right, data_length)
                 }
             }
-        
+
             #[inline]
             fn from_array(array: Self::Array) -> Self {
                 Self::load(&array, 0)
             }
-        
+
             #[inline]
             fn to_complex_array(self) -> Self::ComplexArray {
                 unsafe { mem::transmute(self.to_array()) }
             }
-        
+
             #[inline]
             fn from_complex_array(array: Self::ComplexArray) -> Self {
                 Self::from_array(unsafe { mem::transmute(array) })
             }
-        
+
             #[inline]
             fn iter_over_vector<F>(self, mut op: F) -> Self
             where
@@ -238,7 +235,7 @@ macro_rules! simd_generic_impl {
                 }
                 Self::from_array(array)
             }
-        
+
             #[inline]
             fn iter_over_complex_vector<F>(self, mut op: F) -> Self
             where
@@ -250,7 +247,7 @@ macro_rules! simd_generic_impl {
                 }
                 Self::from_complex_array(array)
             }
-        
+
             #[inline]
             fn array_to_regs(array: &[$data_type]) -> &[Self] {
                 if array.is_empty() {
@@ -263,7 +260,7 @@ macro_rules! simd_generic_impl {
                 );
                 super::transmute_slice(array)
             }
-        
+
             #[inline]
             fn array_to_regs_mut(array: &mut [$data_type]) -> &mut [Self] {
                 if array.is_empty() {
@@ -286,12 +283,12 @@ macro_rules! simd_generic_impl {
             fn store(self, array: &mut [$data_type], index: usize) {
                 Self::store(self, array, index);
             }
-        
+
             #[inline]
             fn extract(self, idx: u32) -> $data_type {
                 Self::extract(self, idx)
             }
-        
+
             #[inline]
             fn splat(value: $data_type) -> Self {
                 Self::splat(value)

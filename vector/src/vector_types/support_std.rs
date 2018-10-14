@@ -1,20 +1,16 @@
-/// ! Support for types in Rust std
-
-use super::{
-    Buffer, BufferBorrow, ComplexFreqVec, ComplexTimeVec, DataDomain,
-    Domain, DspVec, ErrorReason, GenDspVec, MetaData, NumberSpace,
-    RealFreqVec, RealTimeVec, ToSlice,
-    TypeMetaData,
-};
 use super::super::meta;
+/// ! Support for types in Rust std
+use super::{
+    Buffer, BufferBorrow, ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, ErrorReason,
+    GenDspVec, MetaData, NumberSpace, RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
+};
 use super::{Resize, ToComplexVector, ToDspVector, ToRealVector, ToSliceMut, VoidResult};
 use multicore_support::MultiCoreSettings;
 use numbers::*;
+use simd_extensions::*;
 use std::mem;
 use std::ops::*;
 use std::result;
-use simd_extensions::*;
-
 
 /// Rounds a length so that it always divides by the length of a SIMD
 /// register. This function assumes that `Reg32::LEN > Reg64::LEN`.
@@ -164,26 +160,26 @@ where
 }
 
 /// A vector with real numbers in time domain.
-pub type RealTimeVec32 = DspVec<Vec<f32>, f32,  meta::Real, meta::Time>;
+pub type RealTimeVec32 = DspVec<Vec<f32>, f32, meta::Real, meta::Time>;
 /// A vector with real numbers in frequency domain.
-pub type RealFreqVec32 = DspVec<Vec<f32>, f32,  meta::Real, meta::Freq>;
+pub type RealFreqVec32 = DspVec<Vec<f32>, f32, meta::Real, meta::Freq>;
 /// A vector with complex numbers in time domain.
-pub type ComplexTimeVec32 = DspVec<Vec<f32>, f32,  meta::Complex, meta::Time>;
+pub type ComplexTimeVec32 = DspVec<Vec<f32>, f32, meta::Complex, meta::Time>;
 /// A vector with complex numbers in frequency domain.
-pub type ComplexFreqVec32 = DspVec<Vec<f32>, f32,  meta::Complex, meta::Freq>;
+pub type ComplexFreqVec32 = DspVec<Vec<f32>, f32, meta::Complex, meta::Freq>;
 /// A vector with no information about number space or domain at compile time.
-pub type GenDspVec32 = DspVec<Vec<f32>, f32,  meta::RealOrComplex, meta::TimeOrFreq>;
+pub type GenDspVec32 = DspVec<Vec<f32>, f32, meta::RealOrComplex, meta::TimeOrFreq>;
 
 /// A vector with real numbers in time domain.
-pub type RealTimeVec64 = DspVec<Vec<f64>, f64,  meta::Real, meta::Time>;
+pub type RealTimeVec64 = DspVec<Vec<f64>, f64, meta::Real, meta::Time>;
 /// A vector with real numbers in frequency domain.
-pub type RealFreqVec64 = DspVec<Vec<f64>, f64,  meta::Real, meta::Freq>;
+pub type RealFreqVec64 = DspVec<Vec<f64>, f64, meta::Real, meta::Freq>;
 /// A vector with complex numbers in time domain.
-pub type ComplexTimeVec64 = DspVec<Vec<f64>, f64,  meta::Complex, meta::Time>;
+pub type ComplexTimeVec64 = DspVec<Vec<f64>, f64, meta::Complex, meta::Time>;
 /// A vector with complex numbers in frequency domain.
-pub type ComplexFreqVec64 = DspVec<Vec<f64>, f64,  meta::Complex, meta::Freq>;
+pub type ComplexFreqVec64 = DspVec<Vec<f64>, f64, meta::Complex, meta::Freq>;
 /// A vector with no information about number space or domain at compile time.
-pub type GenDspVec64 = DspVec<Vec<f64>, f64,  meta::RealOrComplex,  meta::TimeOrFreq>;
+pub type GenDspVec64 = DspVec<Vec<f64>, f64, meta::RealOrComplex, meta::TimeOrFreq>;
 
 impl<T> ToSlice<T> for Vec<T>
 where
@@ -314,8 +310,8 @@ where
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain:  meta::Time,
-            number_space:  meta::Real,
+            domain: meta::Time,
+            number_space: meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -327,8 +323,8 @@ where
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain:  meta::Freq,
-            number_space:  meta::Real,
+            domain: meta::Freq,
+            number_space: meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -449,8 +445,8 @@ where
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain:  meta::Time,
-            number_space:  meta::Real,
+            domain: meta::Time,
+            number_space: meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -461,8 +457,8 @@ where
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain:  meta::Freq,
-            number_space:  meta::Real,
+            domain: meta::Freq,
+            number_space: meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }

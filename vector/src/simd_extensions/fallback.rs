@@ -30,7 +30,7 @@ impl f32x4 {
             array[index],
             array[index + 1],
             array[index + 2],
-            array[index + 3]
+            array[index + 3],
         )
     }
 

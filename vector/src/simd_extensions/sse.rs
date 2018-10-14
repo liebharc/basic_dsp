@@ -1,8 +1,8 @@
 use super::{Simd, SimdFrom};
 use numbers::*;
+use simd;
 use simd::x86::sse2::*;
 use simd::*;
-use simd;
 use std::arch::x86_64::*;
 use std::mem;
 

@@ -152,7 +152,7 @@ macro_rules! impl_common_stats {
             if stats.is_empty() {
                 return StatsVec::new();
             }
-        
+
             let len = stats[0].len();
             let mut results = StatsVec::new();
             for i in 0..len {
@@ -160,13 +160,13 @@ macro_rules! impl_common_stats {
                 for s in stats.iter() {
                     reordered.push(s[i]);
                 }
-        
+
                 let merged = Statistics::merge(&reordered);
                 results.push(merged);
             }
             results
         }
-        
+
         fn empty_vec(len: usize) -> StatsVec<Self> {
             let mut results = StatsVec::new();
             for _ in 0..len {
@@ -461,15 +461,16 @@ where
                 .fold(T::zero(), |a, b| a + b)
         };
 
-        sum +
-            partition.edge_iter(array).fold(T::zero(), |sum, x| sum + *x)
+        sum + partition
+            .edge_iter(array)
+            .fold(T::zero(), |sum, x| sum + *x)
     }
 
     fn sum_sq_real<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> T {
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let sum =  {
+        let sum = {
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 &self.multicore_settings,
@@ -491,8 +492,9 @@ where
                 .fold(T::zero(), |a, b| a + b)
         };
 
-        sum +
-            partition.edge_iter(array).fold(T::zero(), |sum, x| sum + *x * *x)
+        sum + partition
+            .edge_iter(array)
+            .fold(T::zero(), |sum, x| sum + *x * *x)
     }
 
     fn sum_complex<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> Complex<T> {
@@ -521,8 +523,9 @@ where
                 .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
         };
 
-        sum +
-            partition.cedge_iter(array_to_complex(array)).fold(Complex::<T>::zero(), |sum, x| sum + *x)
+        sum + partition
+            .cedge_iter(array_to_complex(array))
+            .fold(Complex::<T>::zero(), |sum, x| sum + *x)
     }
 
     fn sum_sq_complex<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> Complex<T> {
@@ -551,8 +554,9 @@ where
                 .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
         };
 
-        sum +
-            partition.cedge_iter(array_to_complex(array)).fold(Complex::<T>::zero(), |sum, x| sum + *x * *x)
+        sum + partition
+            .cedge_iter(array_to_complex(array))
+            .fold(Complex::<T>::zero(), |sum, x| sum + *x * *x)
     }
 }
 

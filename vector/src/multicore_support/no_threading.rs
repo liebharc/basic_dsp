@@ -38,7 +38,8 @@ impl MultiCoreSettings {
         _med_dual_core_threshold: usize,
         _med_multi_core_threshold: usize,
         _large_dual_core_threshold: usize,
-        _large_multi_core_threshold: usize) -> MultiCoreSettings {
+        _large_multi_core_threshold: usize,
+    ) -> MultiCoreSettings {
         MultiCoreSettings
     }
 }
@@ -178,7 +179,7 @@ impl Chunk {
         R: Send,
     {
         if a.is_empty() {
-            return  InlineVector::empty();
+            return InlineVector::empty();
         }
 
         let a_len = a.len();

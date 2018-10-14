@@ -3,11 +3,11 @@ use super::super::{
     RealNumberSpace, ScalarResult, ToSlice, Vector,
 };
 use super::kahan_sum;
+use array_to_complex;
 use multicore_support::*;
 use numbers::*;
 use simd_extensions::*;
 use std::ops::*;
-use array_to_complex;
 
 /// An operation which multiplies each vector element with a constant
 pub trait DotProductOps<A, R, T, N, D>
@@ -83,31 +83,30 @@ where
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks =
-            Chunk::get_zipped(
-                Complexity::Small,
-                &self.multicore_settings,
-                partition.center(other),
-                Reg::LEN,
-                partition.center(array),
-                Reg::LEN,
-                |original, range, target| {
-                    let mut result = Reg::splat(T::zero());
-                    let mut i = range.start;
-                    let target = Reg::array_to_regs(&target[..]);
-                    for a in target {
-                        result = result + *a * Reg::load(original, i);
-                        i += Reg::LEN;
-                    }
+        let chunks = Chunk::get_zipped(
+            Complexity::Small,
+            &self.multicore_settings,
+            partition.center(other),
+            Reg::LEN,
+            partition.center(array),
+            Reg::LEN,
+            |original, range, target| {
+                let mut result = Reg::splat(T::zero());
+                let mut i = range.start;
+                let target = Reg::array_to_regs(&target[..]);
+                for a in target {
+                    result = result + *a * Reg::load(original, i);
+                    i += Reg::LEN;
+                }
 
-                    result.sum_real()
-                },
-            );
+                result.sum_real()
+            },
+        );
 
-        let sum =
-            partition.edge_iter(array).zip(partition.edge_iter(other))
-                .fold(T::zero(), |sum, (a, b)| sum + *a * *b);
-
+        let sum = partition
+            .edge_iter(array)
+            .zip(partition.edge_iter(other))
+            .fold(T::zero(), |sum, (a, b)| sum + *a * *b);
 
         let chunk_sum: T = (&chunks[..]).iter().fold(T::zero(), |a, b| a + *b);
         Ok(chunk_sum + sum)
@@ -135,29 +134,29 @@ where
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks =
-            Chunk::get_zipped(
-                Complexity::Small,
-                &self.multicore_settings,
-                partition.center(other),
-                Reg::LEN,
-                partition.center(array),
-                Reg::LEN,
-                |original, range, target| {
-                    let mut result = Reg::splat(T::zero());
-                    let mut i = range.start;
-                    let target = Reg::array_to_regs(&target[..]);
-                    for a in target {
-                        result = result + a.mul_complex(Reg::load(original, i));
-                        i += Reg::LEN;
-                    }
-                    result.sum_complex()
-                },
-            );
+        let chunks = Chunk::get_zipped(
+            Complexity::Small,
+            &self.multicore_settings,
+            partition.center(other),
+            Reg::LEN,
+            partition.center(array),
+            Reg::LEN,
+            |original, range, target| {
+                let mut result = Reg::splat(T::zero());
+                let mut i = range.start;
+                let target = Reg::array_to_regs(&target[..]);
+                for a in target {
+                    result = result + a.mul_complex(Reg::load(original, i));
+                    i += Reg::LEN;
+                }
+                result.sum_complex()
+            },
+        );
 
-        let sum =
-            partition.cedge_iter(array_to_complex(array)).zip(partition.cedge_iter(array_to_complex(other)))
-                .fold(Complex::<T>::zero(), |sum, (a, b)| sum + *a * *b);
+        let sum = partition
+            .cedge_iter(array_to_complex(array))
+            .zip(partition.cedge_iter(array_to_complex(other)))
+            .fold(Complex::<T>::zero(), |sum, (a, b)| sum + *a * *b);
 
         let chunk_sum: Complex<T> = (&chunks[..])
             .iter()
@@ -183,29 +182,29 @@ where
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks =
-            Chunk::get_zipped(
-                Complexity::Small,
-                &self.multicore_settings,
-                partition.center(&other),
-                Reg::LEN,
-                partition.center(array),
-                Reg::LEN,
-                |original, range, target| {
-                    let mut i = range.start;
-                    let target = Reg::array_to_regs(&target[..]);
-                    kahan_sum(target.iter().map(|a| {
-                        let res = *a * Reg::load(original, i);
-                        i += Reg::LEN;
-                        res
-                    }))
-                    .sum_real()
-                },
-            );
+        let chunks = Chunk::get_zipped(
+            Complexity::Small,
+            &self.multicore_settings,
+            partition.center(&other),
+            Reg::LEN,
+            partition.center(array),
+            Reg::LEN,
+            |original, range, target| {
+                let mut i = range.start;
+                let target = Reg::array_to_regs(&target[..]);
+                kahan_sum(target.iter().map(|a| {
+                    let res = *a * Reg::load(original, i);
+                    i += Reg::LEN;
+                    res
+                }))
+                .sum_real()
+            },
+        );
 
-        let sum =
-            partition.edge_iter(array).zip(partition.edge_iter(other))
-                .fold(T::zero(), |sum, (a, b)| sum + *a * *b);
+        let sum = partition
+            .edge_iter(array)
+            .zip(partition.edge_iter(other))
+            .fold(T::zero(), |sum, (a, b)| sum + *a * *b);
 
         let chunk_sum: T = (&chunks[..]).iter().fold(T::zero(), |a, b| a + *b);
         Ok(chunk_sum + sum)
@@ -233,29 +232,29 @@ where
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks =
-            Chunk::get_zipped(
-                Complexity::Small,
-                &self.multicore_settings,
-                partition.center(other),
-                Reg::LEN,
-                partition.center(array),
-                Reg::LEN,
-                |original, range, target| {
-                    let mut i = range.start;
-                    let target = Reg::array_to_regs(&target[..]);
-                    kahan_sum(target.iter().map(|a| {
-                        let res = a.mul_complex(Reg::load(original, i));
-                        i += Reg::LEN;
-                        res
-                    }))
-                    .sum_complex()
-                },
-            );
+        let chunks = Chunk::get_zipped(
+            Complexity::Small,
+            &self.multicore_settings,
+            partition.center(other),
+            Reg::LEN,
+            partition.center(array),
+            Reg::LEN,
+            |original, range, target| {
+                let mut i = range.start;
+                let target = Reg::array_to_regs(&target[..]);
+                kahan_sum(target.iter().map(|a| {
+                    let res = a.mul_complex(Reg::load(original, i));
+                    i += Reg::LEN;
+                    res
+                }))
+                .sum_complex()
+            },
+        );
 
-        let sum =
-            partition.cedge_iter(array_to_complex(array)).zip(partition.cedge_iter(array_to_complex(other)))
-                .fold(Complex::<T>::zero(), |sum, (a, b)| sum + *a * *b);
+        let sum = partition
+            .cedge_iter(array_to_complex(array))
+            .zip(partition.cedge_iter(array_to_complex(other)))
+            .fold(Complex::<T>::zero(), |sum, (a, b)| sum + *a * *b);
 
         let chunk_sum: Complex<T> = (&chunks[..])
             .iter()

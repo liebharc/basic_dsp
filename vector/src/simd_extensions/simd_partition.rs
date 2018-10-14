@@ -9,15 +9,22 @@ pub struct SimdPartition<T> {
     /// Right  part of the slice which must not be accessed with SIMD operations
     right: usize,
     len: usize,
-    data_type: PhantomData<T>
+    data_type: PhantomData<T>,
 }
 
-fn create_edge_iter_mut<T>(slice: &mut [T], right: usize, left: usize, len: usize) -> impl Iterator<Item = &mut T> {
+fn create_edge_iter_mut<T>(
+    slice: &mut [T],
+    right: usize,
+    left: usize,
+    len: usize,
+) -> impl Iterator<Item = &mut T> {
     let (left_values, right_values) = slice.split_at_mut(left);
     let right = right - left;
     let right_len = len - left;
 
-    left_values.iter_mut().chain(right_values[right..right_len].iter_mut())
+    left_values
+        .iter_mut()
+        .chain(right_values[right..right_len].iter_mut())
 }
 
 impl<T> SimdPartition<T> {
@@ -26,7 +33,7 @@ impl<T> SimdPartition<T> {
             left: len,
             right: len,
             len,
-            data_type: PhantomData
+            data_type: PhantomData,
         }
     }
 
@@ -35,7 +42,7 @@ impl<T> SimdPartition<T> {
             left,
             right,
             len,
-            data_type: PhantomData
+            data_type: PhantomData,
         }
     }
 
@@ -46,7 +53,9 @@ impl<T> SimdPartition<T> {
 
     /// Iterator over the left and right side of the slice. Expects complex data.
     pub fn cedge_iter<'a>(&self, slice: &'a [Complex<T>]) -> impl Iterator<Item = &'a Complex<T>> {
-        slice[0..self.left / 2].iter().chain(slice[self.right / 2..].iter())
+        slice[0..self.left / 2]
+            .iter()
+            .chain(slice[self.right / 2..].iter())
     }
 
     /// Iterator over the left and right side of the slice. Expects the real part of complex data.
@@ -55,7 +64,10 @@ impl<T> SimdPartition<T> {
     }
 
     /// Iterator over the left and right side of the slice. Expects complex data.
-    pub fn cedge_iter_mut<'a>(&self, slice: &'a mut [Complex<T>]) -> impl Iterator<Item = &'a mut Complex<T>> {
+    pub fn cedge_iter_mut<'a>(
+        &self,
+        slice: &'a mut [Complex<T>],
+    ) -> impl Iterator<Item = &'a mut Complex<T>> {
         create_edge_iter_mut(slice, self.right / 2, self.left / 2, self.len / 2)
     }
 
@@ -66,17 +78,28 @@ impl<T> SimdPartition<T> {
 
     /// Gets the center of a slice.
     pub fn center<'a>(&self, slice: &'a [T]) -> &'a [T] {
-        if self.left == self.len { &[] } else { &slice[self.left.. self.right] }
+        if self.left == self.len {
+            &[]
+        } else {
+            &slice[self.left..self.right]
+        }
     }
 
     // Gets the center of a slice.
     pub fn center_mut<'a>(&self, slice: &'a mut [T]) -> &'a mut [T] {
-        if self.left == self.len { &mut [] } else { &mut slice[self.left.. self.right] }
+        if self.left == self.len {
+            &mut []
+        } else {
+            &mut slice[self.left..self.right]
+        }
     }
 
     // Gets the center of a slice, expects the real part of complex data.
     pub fn rcenter_mut<'a>(&self, slice: &'a mut [T]) -> &'a mut [T] {
-
-        if self.left == self.len { &mut [] } else { &mut slice[self.left / 2 .. self.right / 2] }
+        if self.left == self.len {
+            &mut []
+        } else {
+            &mut slice[self.left / 2..self.right / 2]
+        }
     }
 }

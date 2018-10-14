@@ -3,11 +3,11 @@ use super::super::{
     PosEq, RealNumberSpace, RededicateForceOps, Resize, ToRealResult, ToSlice, ToSliceMut, Vector,
     VoidResult,
 };
+use array_to_complex;
 use multicore_support::*;
 use numbers::*;
 use simd_extensions::*;
 use std::ops::*;
-use array_to_complex;
 
 /// Defines transformations from complex to real number space.
 ///
@@ -549,7 +549,10 @@ where
             },
         );
 
-        for (dest, src) in partition.redge_iter_mut(temp).zip(partition.cedge_iter(array_to_complex(array))) {
+        for (dest, src) in partition
+            .redge_iter_mut(temp)
+            .zip(partition.cedge_iter(array_to_complex(array)))
+        {
             *dest = op(*src);
         }
     }

@@ -206,14 +206,12 @@ where
     super::transmute_slice_mut(complex)
 }
 
-
 impl<S: ToSliceMut<T>, T: RealNumber> DspVec<S, T, meta::RealOrComplex, meta::TimeOrFreq> {
-
     /// Indicates whether or not the operations on this vector have been successful.
     /// Consider using the statically typed vector versions so that this check doesn't need to be
     /// performed.
     pub fn is_erroneous(&self) -> bool {
-       self.valid_len == 0 && self.delta.is_nan()
+        self.valid_len == 0 && self.delta.is_nan()
     }
 }
 
@@ -495,7 +493,10 @@ where
             );
 
             let array = array_to_complex(&array[0..data_length]);
-            for (src, dest) in partition.cedge_iter(array).zip(partition.redge_iter_mut(temp)) {
+            for (src, dest) in partition
+                .cedge_iter(array)
+                .zip(partition.redge_iter_mut(temp))
+            {
                 *dest = scalar_op(*src, argument);
             }
 

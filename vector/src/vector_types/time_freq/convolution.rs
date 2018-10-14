@@ -113,10 +113,13 @@ fn can_use_simd<T: RealNumber>(points: usize) -> bool {
     points <= InlineVector::<T>::max_capacity()
 }
 
-fn calc_points<T: RealNumber>(imp_len: usize, ratio : T, is_complex: bool) -> usize {
+fn calc_points<T: RealNumber>(imp_len: usize, ratio: T, is_complex: bool) -> usize {
     let step = if is_complex { 2 } else { 1 };
-    let ratio_usize: usize = ratio.abs().round().to_usize().expect(
-        "Converting ratio to usize failed, interpolation factor is likely too large");
+    let ratio_usize: usize = ratio
+        .abs()
+        .round()
+        .to_usize()
+        .expect("Converting ratio to usize failed, interpolation factor is likely too large");
     step * (2 * imp_len + 1) * ratio_usize
 }
 
@@ -167,8 +170,7 @@ where
                 "Meta data should agree since we constructed the argument from this \
                  vector",
             );
-        }
-        else {
+        } else {
             if self.is_complex() {
                 self.convolve_function_priv(
                     buffer,
@@ -178,17 +180,16 @@ where
                     |temp| array_to_complex_mut(temp),
                     |x| Complex::<T>::new(function.calc(x), T::zero()),
                 );
+            } else {
+                self.convolve_function_priv(
+                    buffer,
+                    ratio,
+                    len,
+                    |data| data,
+                    |temp| temp,
+                    |x| function.calc(x),
+                );
             }
-                else {
-                    self.convolve_function_priv(
-                        buffer,
-                        ratio,
-                        len,
-                        |data| data,
-                        |temp| temp,
-                        |x| function.calc(x),
-                    );
-                }
         }
     }
 }
@@ -242,8 +243,7 @@ where
                 "Meta data should agree since we constructed the argument from this \
                  vector",
             );
-        }
-        else {
+        } else {
             self.convolve_function_priv(
                 buffer,
                 ratio,

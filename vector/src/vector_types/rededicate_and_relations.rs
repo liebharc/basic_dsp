@@ -1,10 +1,9 @@
 //! Specifies the conversions between data types.
-use super::{
-    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec,
-    GenDspVec, MetaData, NumberSpace, RealFreqVec, RealTimeVec,
-    ResizeOps, ToSlice, Vector,
-};
 use super::super::meta;
+use super::{
+    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, GenDspVec, MetaData, NumberSpace,
+    RealFreqVec, RealTimeVec, ResizeOps, ToSlice, Vector,
+};
 use numbers::*;
 
 /// This trait allows to change a data type. The operations will
@@ -229,8 +228,8 @@ where
         RealFreqVec {
             data: origin.data,
             delta: origin.delta,
-            domain:  meta::Freq,
-            number_space:  meta::Real,
+            domain: meta::Freq,
+            number_space: meta::Real,
             valid_len: origin.valid_len,
             multicore_settings: origin.multicore_settings,
         }

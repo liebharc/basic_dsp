@@ -1,10 +1,10 @@
 //! Conversions to and from vectors which serve as constructors.
+use super::super::meta;
 use super::{
-    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec,
-    GenDspVec, NumberSpace, RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
+    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, GenDspVec, NumberSpace,
+    RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
 use multicore_support::MultiCoreSettings;
-use super::super::meta;
 use numbers::*;
 use std::convert::From;
 

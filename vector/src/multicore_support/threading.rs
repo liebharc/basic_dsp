@@ -244,8 +244,7 @@ impl MultiCoreSettings {
                 large_dual_core_threshold: LARGE_DUAL_CORE_DEFAULT,
                 large_multi_core_threshold: LARGE_MULTI_CORE_DEFAULT,
             }
-        }
-        else {
+        } else {
             MultiCoreSettings {
                 core_limit,
                 med_dual_core_threshold: CALIBRATION.med_dual_core_threshold,
@@ -267,13 +266,15 @@ impl MultiCoreSettings {
         med_dual_core_threshold: usize,
         med_multi_core_threshold: usize,
         large_dual_core_threshold: usize,
-        large_multi_core_threshold: usize) -> MultiCoreSettings {
+        large_multi_core_threshold: usize,
+    ) -> MultiCoreSettings {
         MultiCoreSettings {
             core_limit,
             med_dual_core_threshold,
             med_multi_core_threshold: med_multi_core_threshold.max(med_dual_core_threshold + 1),
             large_dual_core_threshold,
-            large_multi_core_threshold: large_multi_core_threshold.max(large_dual_core_threshold + 1),
+            large_multi_core_threshold: large_multi_core_threshold
+                .max(large_dual_core_threshold + 1),
         }
     }
 }
@@ -629,7 +630,7 @@ impl Chunk {
         R: Send,
     {
         if a.is_empty() {
-            return  InlineVector::empty();
+            return InlineVector::empty();
         }
 
         let a_len = a.len();
