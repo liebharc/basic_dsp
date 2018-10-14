@@ -119,22 +119,6 @@ impl<'a, T> Iterator for IndexedEdgeIteratorMut<'a, T> {
     }
 }
 
-/// Creates an iterator for the first `left` and last `right` elements in a slice
-fn create_edge_iter_mut<T>(
-    slice: &mut [T],
-    right: usize,
-    left: usize,
-    len: usize,
-) -> impl Iterator<Item = &mut T> {
-    let (left_values, right_values) = slice.split_at_mut(left);
-    let right = right - left;
-    let right_len = len - left;
-
-    left_values
-        .iter_mut()
-        .chain(right_values[right..right_len].iter_mut())
-}
-
 impl<T> SimdPartition<T> {
     pub fn new_all_scalar(len: usize) -> Self {
         Self {
