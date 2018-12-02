@@ -359,6 +359,19 @@
 <span id="359">359</span>
 <span id="360">360</span>
 <span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! In this lib a matrix is simply a collection of</span>
 <span class="doccomment">//! vectors. The idea is that the matrix types can be used to reduce the size</span>
@@ -368,8 +381,8 @@
 
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">basic_dsp_vector</span>;
 
-<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 
 <span class="kw">mod</span> <span class="ident">mat_impl</span>;
@@ -389,9 +402,10 @@
 
 <span class="doccomment">/// A matrix which can hold 1 to N vectors.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-          <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="ident">rows</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
     <span class="ident">storage_type</span>: <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
@@ -400,8 +414,9 @@
 
 <span class="doccomment">/// A matrix which can hold exactly 2 vectors.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="ident">rows</span>: [<span class="ident">V</span>; <span class="number">2</span>],
     <span class="ident">storage_type</span>: <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
@@ -410,8 +425,9 @@
 
 <span class="doccomment">/// A matrix which can hold exactly 3 vectors.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Matrix3xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="ident">rows</span>: [<span class="ident">V</span>; <span class="number">3</span>],
     <span class="ident">storage_type</span>: <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
@@ -420,8 +436,9 @@
 
 <span class="doccomment">/// A matrix which can hold exactly 4 vectors.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Matrix4xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="ident">rows</span>: [<span class="ident">V</span>; <span class="number">4</span>],
     <span class="ident">storage_type</span>: <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
@@ -515,9 +532,12 @@
 <span class="doccomment">/// Internal trait to transform a row storage type to another</span>
 <span class="kw">trait</span> <span class="ident">TransformContent</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">D</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Output</span>;
-    <span class="kw">fn</span> <span class="ident">transform</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span> <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>;
+    <span class="kw">fn</span> <span class="ident">transform</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>;
     <span class="kw">fn</span> <span class="ident">transform_res</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>;
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">trait</span> <span class="ident">IntoFixedLength</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
@@ -531,25 +551,24 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">try_conv</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">op</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">err</span>: <span class="ident">ident</span>) <span class="op">=&gt;</span> {
-        {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">op</span>;
-            <span class="kw">match</span> <span class="ident">res</span> {
-                <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>,
-                <span class="prelude-val">Err</span>((<span class="ident">r</span>, <span class="ident">v</span>)) <span class="op">=&gt;</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">err</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>);
-                    <span class="ident">v</span>
-                }
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">op</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">err</span>: <span class="ident">ident</span>) <span class="op">=&gt;</span> {{
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">op</span>;
+        <span class="kw">match</span> <span class="ident">res</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>,
+            <span class="prelude-val">Err</span>((<span class="ident">r</span>, <span class="ident">v</span>)) <span class="op">=&gt;</span> {
+                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">err</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>);
+                <span class="ident">v</span>
             }
         }
-    }
+    }};
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">TransformContent</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">transform</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>,
     {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rows</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">len</span>());
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">len</span>() {
@@ -561,7 +580,8 @@
     }
 
     <span class="kw">fn</span> <span class="ident">transform_res</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
     {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rows</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">error</span> <span class="op">=</span> <span class="prelude-val">None</span>;
@@ -582,7 +602,8 @@
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">D</span>; <span class="number">2</span>];
 
     <span class="kw">fn</span> <span class="ident">transform</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>,
     {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="number">0</span>], <span class="ident">mem</span>::<span class="ident">uninitialized</span>());
@@ -595,7 +616,8 @@
     }
 
     <span class="kw">fn</span> <span class="ident">transform_res</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
     {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">error</span> <span class="op">=</span> <span class="prelude-val">None</span>;
@@ -617,7 +639,8 @@
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">D</span>; <span class="number">3</span>];
 
     <span class="kw">fn</span> <span class="ident">transform</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>,
     {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="number">0</span>], <span class="ident">mem</span>::<span class="ident">uninitialized</span>());
@@ -632,7 +655,8 @@
     }
 
     <span class="kw">fn</span> <span class="ident">transform_res</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
     {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">error</span> <span class="op">=</span> <span class="prelude-val">None</span>;
@@ -656,7 +680,8 @@
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">D</span>; <span class="number">4</span>];
 
     <span class="kw">fn</span> <span class="ident">transform</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">D</span>,
     {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="number">0</span>], <span class="ident">mem</span>::<span class="ident">uninitialized</span>());
@@ -673,7 +698,8 @@
     }
 
     <span class="kw">fn</span> <span class="ident">transform_res</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">conversion</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">S</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
     {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">error</span> <span class="op">=</span> <span class="prelude-val">None</span>;

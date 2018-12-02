@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `basic_dsp_vector` crate."><meta name="keywords" content="rust, rustlang, rust-lang, basic_dsp_vector"><title>basic_dsp_vector - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate basic_dsp_vector</p><a id='all-types' href='all.html'><p>See all basic_dsp_vector's items</p></a><div class="sidebar-elems"><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'basic_dsp_vector', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/basic_dsp_vector/lib.rs.html#1-255' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>basic_dsp_vector</a></span></h1><div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `basic_dsp_vector` crate."><meta name="keywords" content="rust, rustlang, rust-lang, basic_dsp_vector"><title>basic_dsp_vector - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate basic_dsp_vector</p><a id='all-types' href='all.html'><p>See all basic_dsp_vector's items</p></a><div class="sidebar-elems"><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'basic_dsp_vector', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/basic_dsp_vector/lib.rs.html#1-313' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>basic_dsp_vector</a></span></h1><div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
 <p>Digital signal processing based on real or complex vectors in time or frequency domain.
 Vectors are expected to typically have a size which is at least in the order
 of magnitude of a couple of thousand elements. This crate tries to balance between a clear
@@ -41,24 +41,18 @@ And the type <code>GenDspVec</code> serves as wild card at compile time since it
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class="mod" href="combined_ops/index.html"
-                                  title='mod basic_dsp_vector::combined_ops'>combined_ops</a></td>
-                           <td class='docblock-short'>
-                                <p>This module allows to combine certain operations into one operation. Since one
-many machines the speed of many DSP operations is limited by the memory bus speed
-this approach may result in better register and cache usage and thus decrease
-the pressure on the memory bus. As with all performance hints remember
-rule number 1: Benchmark your code. This is especially true at this very early
-state of the library.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
                            <td><a class="mod" href="conv_types/index.html"
                                   title='mod basic_dsp_vector::conv_types'>conv_types</a></td>
                            <td class='docblock-short'>
                                 <p>Types around a convolution, see also https://en.wikipedia.org/wiki/Convolution.</p>
 
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="meta/index.html"
+                                  title='mod basic_dsp_vector::meta'>meta</a></td>
+                           <td class='docblock-short'>
+                                
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -79,14 +73,6 @@ few standard windows. See the <code>WindowFunction</code> type for more informat
                            </td>
                        </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.ComplexData.html"
-                                  title='struct basic_dsp_vector::ComplexData'>ComplexData</a></td>
-                           <td class='docblock-short'>
-                                <p>Marker for types containing complex data.</p>
-
-                           </td>
-                       </tr>
                        <tr class=' module-item'>
                            <td><a class="struct" href="struct.DspVec.html"
                                   title='struct basic_dsp_vector::DspVec'>DspVec</a></td>
@@ -109,14 +95,6 @@ few standard windows. See the <code>WindowFunction</code> type for more informat
                                   title='struct basic_dsp_vector::FixedLenBufferBurrow'>FixedLenBufferBurrow</a></td>
                            <td class='docblock-short'>
                                 <p>Buffer borrow type for <code>SingleBuffer</code>.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.FrequencyData.html"
-                                  title='struct basic_dsp_vector::FrequencyData'>FrequencyData</a></td>
-                           <td class='docblock-short'>
-                                <p>Marker for types containing frequency data.</p>
 
                            </td>
                        </tr>
@@ -154,22 +132,6 @@ to execute an operation.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class="struct" href="struct.RealData.html"
-                                  title='struct basic_dsp_vector::RealData'>RealData</a></td>
-                           <td class='docblock-short'>
-                                <p>Marker for types containing real data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.RealOrComplexData.html"
-                                  title='struct basic_dsp_vector::RealOrComplexData'>RealOrComplexData</a></td>
-                           <td class='docblock-short'>
-                                <p>Marker for types containing real or complex data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
                            <td><a class="struct" href="struct.SingleBuffer.html"
                                   title='struct basic_dsp_vector::SingleBuffer'>SingleBuffer</a></td>
                            <td class='docblock-short'>
@@ -190,22 +152,6 @@ to execute an operation.</p>
                                   title='struct basic_dsp_vector::Statistics'>Statistics</a></td>
                            <td class='docblock-short'>
                                 <p>Statistics about numeric data</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.TimeData.html"
-                                  title='struct basic_dsp_vector::TimeData'>TimeData</a></td>
-                           <td class='docblock-short'>
-                                <p>Marker for types containing time data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.TimeOrFrequencyData.html"
-                                  title='struct basic_dsp_vector::TimeOrFrequencyData'>TimeOrFrequencyData</a></td>
-                           <td class='docblock-short'>
-                                <p>Marker for types containing time or frequency data.</p>
 
                            </td>
                        </tr>
@@ -561,7 +507,7 @@ or to change the vector.</p>
                            <td><a class="trait" href="trait.PosEq.html"
                                   title='trait basic_dsp_vector::PosEq'>PosEq</a></td>
                            <td class='docblock-short'>
-                                <p>Expresses at compile time that two classes could potentially represent the same number space or domain. </p>
+                                <p>Expresses at compile time that two classes could potentially represent the same number space or domain.</p>
 
                            </td>
                        </tr>
@@ -829,8 +775,28 @@ the 0 Hz element itself is real.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="trait" href="trait.ToComplexVectorPar.html"
+                                  title='trait basic_dsp_vector::ToComplexVectorPar'>ToComplexVectorPar</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a generic data type into a dsp vector with complex data.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="trait" href="trait.ToDspVector.html"
                                   title='trait basic_dsp_vector::ToDspVector'>ToDspVector</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a generic data type into a dsp vector which tracks
+its meta information (domain and number space)
+only at runtime. See <code>ToRealVector</code> and
+<code>ToComplexVector</code> for alternatives which track most of the meta data
+with the type system and therefore avoid runtime errors.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.ToDspVectorPar.html"
+                                  title='trait basic_dsp_vector::ToDspVectorPar'>ToDspVectorPar</a></td>
                            <td class='docblock-short'>
                                 <p>Conversion from a generic data type into a dsp vector which tracks
 its meta information (domain and number space)
@@ -873,6 +839,14 @@ with the type system and therefore avoid runtime errors.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="trait" href="trait.ToRealVectorPar.html"
+                                  title='trait basic_dsp_vector::ToRealVectorPar'>ToRealVectorPar</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a generic data type into a dsp vector with real data.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="trait" href="trait.ToSlice.html"
                                   title='trait basic_dsp_vector::ToSlice'>ToSlice</a></td>
                            <td class='docblock-short'>
@@ -909,6 +883,17 @@ with the type system and therefore avoid runtime errors.</p>
                                   title='trait basic_dsp_vector::Vector'>Vector</a></td>
                            <td class='docblock-short'>
                                 <p>A trait for vector types.</p>
+
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.print_calibration.html"
+                                  title='fn basic_dsp_vector::print_calibration'>print_calibration</a></td>
+                           <td class='docblock-short'>
+                                <p>Prints debug information about the calibration. The calibration determines when the library
+will start to spawn threads. If a calibration hasn't been performed yet
+than calling this function will trigger the calibration.</p>
 
                            </td>
                        </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>

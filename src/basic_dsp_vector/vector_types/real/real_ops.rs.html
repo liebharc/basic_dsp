@@ -352,11 +352,31 @@
 <span id="352">352</span>
 <span id="353">353</span>
 <span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">MetaData</span>, <span class="ident">RealNumberSpace</span>, <span class="ident">ToSliceMut</span>, <span class="ident">Vector</span>};
 <span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Vector</span>, <span class="ident">MetaData</span>, <span class="ident">DspVec</span>, <span class="ident">ToSliceMut</span>, <span class="ident">Domain</span>, <span class="ident">RealNumberSpace</span>};
 
 <span class="doccomment">/// Operations on real types.</span>
 <span class="doccomment">///</span>
@@ -390,7 +410,8 @@
 <span class="doccomment">/// the resulting types will already check at compile time (using the type system)</span>
 <span class="doccomment">/// that the data is real.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ModuloOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
     <span class="doccomment">/// Each value in the vector is dividable by the divisor and the remainder</span>
     <span class="doccomment">/// is stored in the resulting</span>
@@ -438,7 +459,8 @@
 <span class="doccomment">/// the resulting types will already check at compile time (using the type system)</span>
 <span class="doccomment">/// that the data is real.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ApproximatedOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
     <span class="doccomment">/// Computes the principal value approximation of natural logarithm of every element in the vector.</span>
     <span class="doccomment">///</span>
@@ -447,7 +469,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// ```no_run</span>
     <span class="doccomment">/// # use std::f64;</span>
     <span class="doccomment">/// use basic_dsp_vector::*;</span>
     <span class="doccomment">/// let mut vector = vec!(2.718281828459045, 7.389056, 20.085537).to_real_time_vec();</span>
@@ -469,7 +491,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// ```no_run</span>
     <span class="doccomment">/// # use std::f64;</span>
     <span class="doccomment">/// use basic_dsp_vector::*;</span>
     <span class="doccomment">/// let mut vector = vec!(1.0, 2.0, 3.0).to_real_time_vec();</span>
@@ -522,7 +544,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// ```no_run</span>
     <span class="doccomment">/// # use std::f64;</span>
     <span class="doccomment">/// use basic_dsp_vector::*;</span>
     <span class="doccomment">/// let mut vector = vec!(10.0, 100.0, 1000.0).to_real_time_vec();</span>
@@ -544,7 +566,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// ```no_run</span>
     <span class="doccomment">/// use basic_dsp_vector::*;</span>
     <span class="doccomment">/// use std::f32;</span>
     <span class="doccomment">/// let vector: Vec&lt;f32&gt; = vec!(1.0, 2.0, 3.0);</span>
@@ -564,7 +586,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// ```no_run</span>
     <span class="doccomment">/// use basic_dsp_vector::*;</span>
     <span class="doccomment">/// use std::f32;</span>
     <span class="doccomment">/// let vector: Vec&lt;f32&gt; = vec!(1.0, 2.0, 3.0);</span>
@@ -580,33 +602,36 @@
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">assert_real</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">self_</span>: <span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">if</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">self_</span>.<span class="ident">is_complex</span>() {
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">self_</span>.<span class="ident">valid_len</span> <span class="op">=</span> <span class="number">0</span>;
+            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">self_</span>.<span class="ident">mark_vector_as_invalid</span>();
             <span class="kw">return</span>;
         }
-    }
+    };
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">RealOps</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">abs</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
         <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
-                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> (<span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>).<span class="ident">sqrt</span>(),
-                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">abs</span>(),
-                                 (),
-                                 <span class="ident">Complexity</span>::<span class="ident">Small</span>));
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> (<span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>).<span class="ident">sqrt</span>(),
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">abs</span>(),
+            (),
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>
+        ));
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">ModuloOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">wrap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">divisor</span>: <span class="ident">T</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
@@ -638,73 +663,88 @@
     }
 }
 
-<span class="doccomment">/// Complexity of all approximation functions. Medium, because even if the approximations are faster</span>
-<span class="doccomment">/// than the standard version, it seems to be benificial to spawn threads early.</span>
-<span class="kw">const</span> <span class="ident">APPROX_COMPLEXITY</span>: <span class="ident">Complexity</span> <span class="op">=</span> <span class="ident">Complexity</span>::<span class="ident">Medium</span>;
+<span class="doccomment">/// Complexity of all approximation functions. Small, because with the SIMD optimizations</span>
+<span class="doccomment">/// threading becomes less beneficial.</span>
+<span class="kw">const</span> <span class="ident">APPROX_COMPLEXITY</span>: <span class="ident">Complexity</span> <span class="op">=</span> <span class="ident">Complexity</span>::<span class="ident">Small</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">ApproximatedOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">ln_approx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
-        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln_approx</span>(),
-                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln</span>(),
-                                 (),
-                                 <span class="ident">APPROX_COMPLEXITY</span>));
+        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln_approx</span>(),
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln</span>(),
+            (),
+            <span class="ident">APPROX_COMPLEXITY</span>
+        ));
     }
 
     <span class="kw">fn</span> <span class="ident">exp_approx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
-        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">exp_approx</span>(),
-                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">exp</span>(),
-                                 (),
-                                 <span class="ident">APPROX_COMPLEXITY</span>));
+        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">exp_approx</span>(),
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">exp</span>(),
+            (),
+            <span class="ident">APPROX_COMPLEXITY</span>
+        ));
     }
 
     <span class="kw">fn</span> <span class="ident">sin_approx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
-        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sin_approx</span>(),
-                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sin</span>(),
-                                 (),
-                                 <span class="ident">APPROX_COMPLEXITY</span>));
+        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sin_approx</span>(),
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sin</span>(),
+            (),
+            <span class="ident">APPROX_COMPLEXITY</span>
+        ));
     }
 
     <span class="kw">fn</span> <span class="ident">cos_approx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
-        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">cos_approx</span>(),
-                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">cos</span>(),
-                                 (),
-                                 <span class="ident">APPROX_COMPLEXITY</span>));
+        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">cos_approx</span>(),
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">cos</span>(),
+            (),
+            <span class="ident">APPROX_COMPLEXITY</span>
+        ));
     }
 
     <span class="kw">fn</span> <span class="ident">log_approx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">base</span>: <span class="ident">T</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
-        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operationf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln_approx</span>() <span class="op">/</span> <span class="ident">b</span>,
-                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln</span>() <span class="op">/</span> <span class="ident">b</span>.<span class="ident">extract</span>(<span class="number">0</span>),
-                                 <span class="ident">base</span>.<span class="ident">ln</span>(),
-                                 <span class="ident">APPROX_COMPLEXITY</span>));
+        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operationf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln_approx</span>() <span class="op">/</span> <span class="ident">b</span>,
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln</span>() <span class="op">/</span> <span class="ident">b</span>.<span class="ident">extract</span>(<span class="number">0</span>),
+            <span class="ident">base</span>.<span class="ident">ln</span>(),
+            <span class="ident">APPROX_COMPLEXITY</span>
+        ));
     }
 
     <span class="kw">fn</span> <span class="ident">expf_approx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">base</span>: <span class="ident">T</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
         <span class="comment">// Transform base with:</span>
         <span class="comment">// x^y = e^(ln(x)*y)</span>
-        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operationf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">y</span>, <span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span> <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp_approx</span>(),
-                                <span class="op">|</span><span class="ident">y</span>, <span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">extract</span>(<span class="number">0</span>) <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp</span>(),
-                                <span class="ident">base</span>.<span class="ident">ln</span>(),
-                                <span class="ident">APPROX_COMPLEXITY</span>));
+        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operationf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+            <span class="op">|</span><span class="ident">y</span>, <span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span> <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp_approx</span>(),
+            <span class="op">|</span><span class="ident">y</span>, <span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">extract</span>(<span class="number">0</span>) <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp</span>(),
+            <span class="ident">base</span>.<span class="ident">ln</span>(),
+            <span class="ident">APPROX_COMPLEXITY</span>
+        ));
     }
 
     <span class="kw">fn</span> <span class="ident">powf_approx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">exponent</span>: <span class="ident">T</span>) {
         <span class="macro">assert_real</span><span class="macro">!</span>(<span class="self">self</span>);
         <span class="comment">// Transform base with the same equation as for `expf_approx`</span>
-        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operationf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">ln_approx</span>() <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp_approx</span>(),
-                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">ln</span>() <span class="op">*</span> <span class="ident">y</span>.<span class="ident">extract</span>(<span class="number">0</span>)).<span class="ident">exp</span>(),
-                                 <span class="ident">exponent</span>,
-                                 <span class="ident">APPROX_COMPLEXITY</span>));
+        <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operationf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">ln_approx</span>() <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp_approx</span>(),
+            <span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">ln</span>() <span class="op">*</span> <span class="ident">y</span>.<span class="ident">extract</span>(<span class="number">0</span>)).<span class="ident">exp</span>(),
+            <span class="ident">exponent</span>,
+            <span class="ident">APPROX_COMPLEXITY</span>
+        ));
     }
 }
 </pre>

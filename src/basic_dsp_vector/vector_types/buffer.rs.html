@@ -28,12 +28,13 @@
 <span id="28">28</span>
 <span id="29">29</span>
 <span id="30">30</span>
+<span id="31">31</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! Defines the buffers. Finding a good general purpose buffering scheme is hard.</span>
 <span class="doccomment">//! So the best option seems to be to create an abstraction so that the buffering can be adjusted</span>
 <span class="doccomment">//! to what an application needs.</span>
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">ToSliceMut</span>;
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// A &quot;slice-like&quot; type which also allows to</span>
@@ -46,8 +47,9 @@
 <span class="doccomment">/// A buffer which can be used by other types. Types will call buffers to create new arrays.</span>
 <span class="doccomment">/// A buffer may can implement any buffering strategy.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
     <span class="doccomment">/// The type of the burrow which is returned.</span>
     <span class="kw">type</span> <span class="ident">Borrow</span>: <span class="ident">BufferBorrow</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;

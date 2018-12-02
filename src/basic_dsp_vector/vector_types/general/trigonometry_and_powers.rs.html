@@ -365,11 +365,21 @@
 <span id="365">365</span>
 <span id="366">366</span>
 <span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">MetaData</span>, <span class="ident">NumberSpace</span>, <span class="ident">ToSliceMut</span>};
 <span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">DspVec</span>, <span class="ident">MetaData</span>, <span class="ident">ToSliceMut</span>, <span class="ident">NumberSpace</span>, <span class="ident">Domain</span>};
 <span class="doccomment">/// Trigonometry methods.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TrigOps</span> {
     <span class="doccomment">/// Calculates the sine of each element in radians.</span>
@@ -432,7 +442,8 @@
 
 <span class="doccomment">/// Roots, powers, exponentials and logarithms.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PowerOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
     <span class="doccomment">/// Gets the square root of all vector elements.</span>
     <span class="doccomment">///</span>
@@ -559,13 +570,14 @@
 }
 
 <span class="kw">const</span> <span class="ident">TRIG_COMPLEXITY</span>: <span class="ident">Complexity</span> <span class="op">=</span> <span class="ident">Complexity</span>::<span class="ident">Medium</span>;
-<span class="kw">const</span> <span class="ident">DEF_POW_COMPLEXITY</span>: <span class="ident">Complexity</span> <span class="op">=</span> <span class="ident">Complexity</span>::<span class="ident">Large</span>;
+<span class="kw">const</span> <span class="ident">DEF_POW_COMPLEXITY</span>: <span class="ident">Complexity</span> <span class="op">=</span> <span class="ident">Complexity</span>::<span class="ident">Medium</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">TrigOps</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">sin</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_complex</span>() {
@@ -665,19 +677,22 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PowerOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">sqrt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_complex</span>() {
             <span class="self">self</span>.<span class="ident">pure_complex_operation</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sqrt</span>(), (), <span class="ident">Complexity</span>::<span class="ident">Small</span>);
         } <span class="kw">else</span> {
-            <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sqrt</span>(),
-                                     <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sqrt</span>(),
-                                     (),
-                                     <span class="ident">Complexity</span>::<span class="ident">Small</span>));
+            <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+                <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sqrt</span>(),
+                <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sqrt</span>(),
+                (),
+                <span class="ident">Complexity</span>::<span class="ident">Small</span>
+            ));
         }
     }
 
@@ -685,7 +700,12 @@
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_complex</span>() {
             <span class="self">self</span>.<span class="ident">pure_complex_operation</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>, (), <span class="ident">Complexity</span>::<span class="ident">Small</span>);
         } <span class="kw">else</span> {
-            <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>, <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>, (), <span class="ident">Complexity</span>::<span class="ident">Small</span>));
+            <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">simd_real_operation</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+                <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>,
+                <span class="op">|</span><span class="ident">x</span>, <span class="ident">_arg</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>,
+                (),
+                <span class="ident">Complexity</span>::<span class="ident">Small</span>
+            ));
         }
     }
 

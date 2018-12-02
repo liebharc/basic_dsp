@@ -454,14 +454,35 @@
 <span id="454">454</span>
 <span id="455">455</span>
 <span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">IntoFixedLength</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>;
 
@@ -477,7 +498,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>;
 
@@ -493,7 +515,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>; <span class="number">2</span>];
 
@@ -509,7 +532,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>; <span class="number">2</span>];
 
@@ -525,7 +549,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix3xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>; <span class="number">3</span>];
 
@@ -541,7 +566,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix3xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>; <span class="number">3</span>];
 
@@ -557,7 +583,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix4xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">StatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>; <span class="number">4</span>];
 
@@ -573,7 +600,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix4xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">StatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>; <span class="number">4</span>];
 
@@ -589,7 +617,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
@@ -613,7 +642,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">SumOps</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">2</span>]<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> [<span class="ident">T</span>; <span class="number">2</span>] {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
@@ -637,7 +667,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">SumOps</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">3</span>]<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> [<span class="ident">T</span>; <span class="number">3</span>] {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
@@ -661,7 +692,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">SumOps</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">4</span>]<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">SumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> [<span class="ident">T</span>; <span class="number">4</span>] {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
@@ -685,7 +717,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>;
 
@@ -701,7 +734,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>;
 
@@ -717,7 +751,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>; <span class="number">2</span>];
 
@@ -733,7 +768,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>; <span class="number">2</span>];
 
@@ -749,7 +785,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix3xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>; <span class="number">3</span>];
 
@@ -765,7 +802,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix3xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>; <span class="number">3</span>];
 
@@ -781,7 +819,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix4xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>; <span class="number">4</span>];
 
@@ -797,7 +836,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Matrix4xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> [<span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>; <span class="number">4</span>];
 
@@ -814,7 +854,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span>, <span class="ident">O</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;&gt;</span>
     <span class="kw">for</span> <span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
@@ -839,7 +880,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span>, <span class="ident">O</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span>[<span class="ident">O</span>; <span class="number">2</span>]<span class="op">&gt;</span>
     <span class="kw">for</span> <span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> [<span class="ident">O</span>; <span class="number">2</span>] {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
@@ -864,7 +906,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span>, <span class="ident">O</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span>[<span class="ident">O</span>; <span class="number">3</span>]<span class="op">&gt;</span>
     <span class="kw">for</span> <span class="ident">Matrix3xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> [<span class="ident">O</span>; <span class="number">3</span>] {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
@@ -889,7 +932,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span>, <span class="ident">O</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span>[<span class="ident">O</span>; <span class="number">4</span>]<span class="op">&gt;</span>
     <span class="kw">for</span> <span class="ident">Matrix4xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> [<span class="ident">O</span>; <span class="number">4</span>] {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());

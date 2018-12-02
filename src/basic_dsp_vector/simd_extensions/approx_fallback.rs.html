@@ -43,54 +43,48 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! Fallback implementation in case no explicit `sse` or `avx` support is available.</span>
 <span class="doccomment">//! In this case we use the standard versions of all functions which and no approximations.</span>
 <span class="doccomment">//! We do that since this way the API doesn&#39;t change (so much) depending on the selected features.</span>
 <span class="doccomment">//! However at the same time finding an alternative approximation implementation without</span>
 <span class="doccomment">//! explicit SIMD support would be too much effort and therefore we use the standard functions.</span>
-<span class="doccomment">//! This way we can also be sure that we achieve the promised unertainty :). </span>
+<span class="doccomment">//! This way we can also be sure that we achieve the promised unertainty :).</span>
 <span class="doccomment">//! The Rust compiler does a good job to remove the otherhead of this implementation.</span>
 <span class="doccomment">//! So in benchmarks this implementation has the same speed as the the standard functions.</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">SimdApproximations</span>, <span class="ident">SimdGeneric</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">fallback</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">SimdApproximations</span>, <span class="ident">SimdGeneric</span>};
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">simd_approx_impl</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>:<span class="ident">ident</span>,
-	 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">regf</span>:<span class="ident">ident</span>)
-    <span class="op">=&gt;</span>
-    {
-		<span class="kw">impl</span> <span class="ident">SimdApproximations</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">fallback</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">regf</span> {
-		    <span class="kw">fn</span> <span class="ident">ln_approx</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-				<span class="self">self</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln</span>())
-			}
-
-		    <span class="kw">fn</span> <span class="ident">exp_approx</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-				<span class="self">self</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">exp</span>())
-			}
-
-		    <span class="kw">fn</span> <span class="ident">sin_approx</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-				<span class="self">self</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sin</span>())
-			}
-
-		    <span class="kw">fn</span> <span class="ident">cos_approx</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-				<span class="self">self</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">cos</span>())
-			}
-
-		    <span class="kw">fn</span> <span class="ident">sin_cos_approx</span>(<span class="self">self</span>, <span class="ident">is_sin</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-				<span class="kw">if</span> <span class="ident">is_sin</span> {
-					<span class="self">self</span>.<span class="ident">sin_approx</span>()
-				}
-				<span class="kw">else</span> {
-					<span class="self">self</span>.<span class="ident">cos_approx</span>()
-				}
-			}
-		}
-	}
+	 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">regf</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
+        <span class="kw">impl</span> <span class="ident">SimdApproximations</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">fallback</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">regf</span> {
+            <span class="kw">fn</span> <span class="ident">ln_approx</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+                <span class="self">self</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">ln</span>())
+            }
+        
+            <span class="kw">fn</span> <span class="ident">exp_approx</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+                <span class="self">self</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">exp</span>())
+            }
+        
+            <span class="kw">fn</span> <span class="ident">sin_approx</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+                <span class="self">self</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">sin</span>())
+            }
+        
+            <span class="kw">fn</span> <span class="ident">cos_approx</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+                <span class="self">self</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">cos</span>())
+            }
+        
+            <span class="kw">fn</span> <span class="ident">sin_cos_approx</span>(<span class="self">self</span>, <span class="ident">is_sin</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+                <span class="kw">if</span> <span class="ident">is_sin</span> {
+                    <span class="self">self</span>.<span class="ident">sin_approx</span>()
+                } <span class="kw">else</span> {
+                    <span class="self">self</span>.<span class="ident">cos_approx</span>()
+                }
+            }
+        }
+    };
 }
 
 <span class="macro">simd_approx_impl</span><span class="macro">!</span>(<span class="ident">f32</span>, <span class="ident">f32x4</span>);

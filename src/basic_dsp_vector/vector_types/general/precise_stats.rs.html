@@ -636,14 +636,52 @@
 <span id="636">636</span>
 <span id="637">637</span>
 <span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">array_to_complex</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">num_complex</span>::<span class="ident">Complex64</span>;
-<span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Vector</span>, <span class="ident">DspVec</span>, <span class="ident">ToSlice</span>, <span class="ident">Domain</span>, <span class="ident">RealNumberSpace</span>, <span class="ident">ComplexNumberSpace</span>,
-                   <span class="ident">Statistics</span>, <span class="ident">Stats</span>, <span class="ident">StatsVec</span>, <span class="ident">STATS_VEC_CAPACTIY</span>, <span class="ident">ScalarResult</span>, <span class="ident">ErrorReason</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{
+    <span class="ident">ComplexNumberSpace</span>, <span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>, <span class="ident">RealNumberSpace</span>, <span class="ident">ScalarResult</span>, <span class="ident">Statistics</span>,
+    <span class="ident">Stats</span>, <span class="ident">StatsVec</span>, <span class="ident">ToSlice</span>, <span class="ident">Vector</span>, <span class="ident">STATS_VEC_CAPACTIY</span>,
+};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">kahan_sum</span>, <span class="ident">kahan_sumb</span>};
+<span class="kw">use</span> <span class="ident">array_to_complex</span>;
+<span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">num_complex</span>::<span class="ident">Complex64</span>;
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// Offers the same functionality as the `StatisticsOps` trait but</span>
 <span class="doccomment">/// the statistics are calculated in a more precise (and slower) way.</span>
@@ -710,7 +748,8 @@
 <span class="doccomment">/// Offers the same functionality as the `SumOps` trait but</span>
 <span class="doccomment">/// the sums are calculated in a more precise (and slower) way.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">Sized</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Sized</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">Sized</span>,
 {
     <span class="doccomment">/// Calculates the sum of the data contained in the vector</span>
     <span class="doccomment">/// using a more precise but slower algorithm.</span>
@@ -756,38 +795,42 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f32</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">statistics_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">1</span>,
-                                                (),
-                                                <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">_arg</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stats</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="ident">empty</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
-            <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="ident">stats</span>.<span class="ident">add</span>(<span class="kw-2">*</span><span class="ident">num</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="ident">j</span>);
-                <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
-            <span class="ident">stats</span>
-        });
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">1</span>,
+            (),
+            <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">_arg</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stats</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="ident">empty</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
+                <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="ident">stats</span>.<span class="ident">add</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">num</span>), <span class="ident">j</span>);
+                    <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
+                <span class="ident">stats</span>
+            },
+        );
 
         <span class="ident">Statistics</span>::<span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f32</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>;
 
@@ -802,62 +845,68 @@
 
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">1</span>,
-                                                <span class="ident">len</span>,
-                                                <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">len</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="ident">empty_vec</span>(<span class="ident">len</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
-            <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="kw">let</span> <span class="ident">stats</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">results</span>[<span class="ident">j</span> <span class="op">%</span> <span class="ident">len</span>];
-                <span class="ident">stats</span>.<span class="ident">add</span>(<span class="kw-2">*</span><span class="ident">num</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="ident">j</span> <span class="op">/</span> <span class="ident">len</span>);
-                <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">1</span>,
+            <span class="ident">len</span>,
+            <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">len</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="ident">empty_vec</span>(<span class="ident">len</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
+                <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="kw">let</span> <span class="ident">stats</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">results</span>[<span class="ident">j</span> <span class="op">%</span> <span class="ident">len</span>];
+                    <span class="ident">stats</span>.<span class="ident">add</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">num</span>), <span class="ident">j</span> <span class="op">/</span> <span class="ident">len</span>);
+                    <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
 
-            <span class="ident">results</span>
-        });
+                <span class="ident">results</span>
+            },
+        );
 
         <span class="prelude-val">Ok</span>(<span class="ident">Statistics</span>::<span class="ident">merge_cols</span>(<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]))
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f64</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">statistics_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">1</span>,
-                                                (),
-                                                <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">_arg</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stats</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="ident">empty</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sumc</span> <span class="op">=</span> <span class="number">0.0</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rmsc</span> <span class="op">=</span> <span class="number">0.0</span>;
-            <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="ident">stats</span>.<span class="ident">add_prec</span>(<span class="kw-2">*</span><span class="ident">num</span>, <span class="ident">j</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sumc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rmsc</span>);
-                <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
-            <span class="ident">stats</span>
-        });
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">1</span>,
+            (),
+            <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">_arg</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stats</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="ident">empty</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sumc</span> <span class="op">=</span> <span class="number">0.0</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rmsc</span> <span class="op">=</span> <span class="number">0.0</span>;
+                <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="ident">stats</span>.<span class="ident">add_prec</span>(<span class="kw-2">*</span><span class="ident">num</span>, <span class="ident">j</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sumc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rmsc</span>);
+                    <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
+                <span class="ident">stats</span>
+            },
+        );
 
         <span class="ident">Statistics</span>::<span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f64</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>;
 
@@ -872,152 +921,159 @@
 
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">1</span>,
-                                                <span class="ident">len</span>,
-                                                <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">len</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="ident">empty_vec</span>(<span class="ident">len</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sumc</span> <span class="op">=</span> <span class="number">0.0</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rmsc</span> <span class="op">=</span> <span class="number">0.0</span>;
-            <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="kw">let</span> <span class="ident">stats</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">results</span>[<span class="ident">j</span> <span class="op">%</span> <span class="ident">len</span>];
-                <span class="ident">stats</span>.<span class="ident">add_prec</span>(<span class="kw-2">*</span><span class="ident">num</span>, <span class="ident">j</span> <span class="op">/</span> <span class="ident">len</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sumc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rmsc</span>);
-                <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">1</span>,
+            <span class="ident">len</span>,
+            <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">len</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="ident">empty_vec</span>(<span class="ident">len</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sumc</span> <span class="op">=</span> <span class="number">0.0</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rmsc</span> <span class="op">=</span> <span class="number">0.0</span>;
+                <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="kw">let</span> <span class="ident">stats</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">results</span>[<span class="ident">j</span> <span class="op">%</span> <span class="ident">len</span>];
+                    <span class="ident">stats</span>.<span class="ident">add_prec</span>(<span class="kw-2">*</span><span class="ident">num</span>, <span class="ident">j</span> <span class="op">/</span> <span class="ident">len</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sumc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rmsc</span>);
+                    <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
 
-            <span class="ident">results</span>
-        });
+                <span class="ident">results</span>
+            },
+        );
 
         <span class="prelude-val">Ok</span>(<span class="ident">Statistics</span>::<span class="ident">merge_cols</span>(<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]))
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f32</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">f64</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">1</span>,
-                                                (),
-                                                <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="number">0.0</span>;
-            <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="ident">sum</span> <span class="op">+=</span> <span class="kw-2">*</span><span class="ident">n</span> <span class="kw">as</span> <span class="ident">f64</span>;
-            }
-            <span class="ident">sum</span>
-        });
-        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="number">0.0</span>, <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">1</span>,
+            (),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="number">0.0</span>;
+                <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="ident">sum</span> <span class="op">+=</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">n</span>);
+                }
+                <span class="ident">sum</span>
+            },
+        );
+        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="number">0.0</span>, <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">sum_sq_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">f64</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">1</span>,
-                                                (),
-                                                <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="number">0.0</span>;
-            <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">n</span> <span class="kw">as</span> <span class="ident">f64</span>;
-                <span class="ident">sum</span> <span class="op">+=</span> <span class="ident">t</span> <span class="op">*</span> <span class="ident">t</span>;
-            }
-            <span class="ident">sum</span>
-        });
-        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="number">0.0</span>, <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">1</span>,
+            (),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="number">0.0</span>;
+                <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">f64</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">n</span>);
+                    <span class="ident">sum</span> <span class="op">+=</span> <span class="ident">t</span> <span class="op">*</span> <span class="ident">t</span>;
+                }
+                <span class="ident">sum</span>
+            },
+        );
+        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="number">0.0</span>, <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f64</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">f64</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">1</span>,
-                                                (),
-                                                <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">kahan_sumb</span>(<span class="ident">array</span>.<span class="ident">iter</span>()));
-        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="number">0.0</span>, <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">1</span>,
+            (),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">kahan_sumb</span>(<span class="ident">array</span>.<span class="ident">iter</span>()),
+        );
+        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="number">0.0</span>, <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">sum_sq_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">f64</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">1</span>,
-                                                (),
-                                                <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
-                                                    <span class="ident">kahan_sum</span>(<span class="ident">array</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>))
-                                                });
-        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="number">0.0</span>, <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">1</span>,
+            (),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">kahan_sum</span>(<span class="ident">array</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>)),
+        );
+        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="number">0.0</span>, <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f32</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">statistics_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">2</span>,
-                                                (),
-                                                <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">_arg</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stat</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="op">&lt;</span><span class="ident">Complex64</span><span class="op">&gt;</span>::<span class="ident">empty</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
-            <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="ident">array</span>);
-            <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="ident">stat</span>.<span class="ident">add</span>(<span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="ident">num</span>.<span class="ident">re</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="ident">num</span>.<span class="ident">im</span> <span class="kw">as</span> <span class="ident">f64</span>), <span class="ident">j</span>);
-                <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
-            <span class="ident">stat</span>
-        });
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">2</span>,
+            (),
+            <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">_arg</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stat</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="op">&lt;</span><span class="ident">Complex64</span><span class="op">&gt;</span>::<span class="ident">empty</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
+                <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="ident">array</span>);
+                <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="ident">stat</span>.<span class="ident">add</span>(<span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">num</span>.<span class="ident">re</span>), <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">num</span>.<span class="ident">im</span>)), <span class="ident">j</span>);
+                    <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
+                <span class="ident">stat</span>
+            },
+        );
 
         <span class="ident">Statistics</span>::<span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f32</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">statistics_split_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                             <span class="ident">len</span>: <span class="ident">usize</span>)
-                             <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">statistics_split_prec</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">len</span>: <span class="ident">usize</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
         <span class="kw">if</span> <span class="ident">len</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">StatsVec</span>::<span class="ident">new</span>());
         }
@@ -1028,70 +1084,80 @@
 
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">2</span>,
-                                                <span class="ident">len</span>,
-                                                <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">len</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>::<span class="ident">empty_vec</span>(<span class="ident">len</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
-            <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="ident">array</span>);
-            <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="kw">let</span> <span class="ident">stat</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">results</span>[<span class="ident">j</span> <span class="op">%</span> <span class="ident">len</span>];
-                <span class="ident">stat</span>.<span class="ident">add</span>(<span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="ident">num</span>.<span class="ident">re</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="ident">num</span>.<span class="ident">im</span> <span class="kw">as</span> <span class="ident">f64</span>), <span class="ident">j</span> <span class="op">/</span> <span class="ident">len</span>);
-                <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">2</span>,
+            <span class="ident">len</span>,
+            <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">len</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>::<span class="ident">empty_vec</span>(<span class="ident">len</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
+                <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="ident">array</span>);
+                <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="kw">let</span> <span class="ident">stat</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">results</span>[<span class="ident">j</span> <span class="op">%</span> <span class="ident">len</span>];
+                    <span class="ident">stat</span>.<span class="ident">add</span>(
+                        <span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">num</span>.<span class="ident">re</span>), <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">num</span>.<span class="ident">im</span>)),
+                        <span class="ident">j</span> <span class="op">/</span> <span class="ident">len</span>,
+                    );
+                    <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
 
-            <span class="ident">results</span>
-        });
+                <span class="ident">results</span>
+            },
+        );
 
         <span class="prelude-val">Ok</span>(<span class="ident">Statistics</span>::<span class="ident">merge_cols</span>(<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]))
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f64</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">statistics_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">2</span>,
-                                                (),
-                                                <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">_arg</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stat</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="op">&lt;</span><span class="ident">Complex64</span><span class="op">&gt;</span>::<span class="ident">empty</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
-            <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="ident">array</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sumc</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rmsc</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
-            <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="ident">stat</span>.<span class="ident">add_prec</span>(<span class="kw-2">*</span><span class="ident">num</span>, <span class="ident">j</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sumc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rmsc</span>);
-                <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
-            <span class="ident">stat</span>
-        });
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">2</span>,
+            (),
+            <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">_arg</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stat</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="op">&lt;</span><span class="ident">Complex64</span><span class="op">&gt;</span>::<span class="ident">empty</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
+                <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="ident">array</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sumc</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rmsc</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
+                <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="ident">stat</span>.<span class="ident">add_prec</span>(<span class="kw-2">*</span><span class="ident">num</span>, <span class="ident">j</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sumc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rmsc</span>);
+                    <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
+                <span class="ident">stat</span>
+            },
+        );
 
         <span class="ident">Statistics</span>::<span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseStatisticsSplitOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f64</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">statistics_split_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                             <span class="ident">len</span>: <span class="ident">usize</span>)
-                             <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">statistics_split_prec</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">len</span>: <span class="ident">usize</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">StatsVec</span><span class="op">&lt;</span><span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
         <span class="kw">if</span> <span class="ident">len</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">StatsVec</span>::<span class="ident">new</span>());
         }
@@ -1102,123 +1168,126 @@
 
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">2</span>,
-                                                <span class="ident">len</span>,
-                                                <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">len</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>::<span class="ident">empty_vec</span>(<span class="ident">len</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
-            <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="ident">array</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sumc</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rmsc</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
-            <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="kw">let</span> <span class="ident">stat</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">results</span>[<span class="ident">j</span> <span class="op">%</span> <span class="ident">len</span>];
-                <span class="ident">stat</span>.<span class="ident">add_prec</span>(<span class="kw-2">*</span><span class="ident">num</span>, <span class="ident">j</span> <span class="op">/</span> <span class="ident">len</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sumc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rmsc</span>);
-                <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">2</span>,
+            <span class="ident">len</span>,
+            <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">len</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Statistics</span>::<span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>::<span class="ident">empty_vec</span>(<span class="ident">len</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
+                <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="ident">array</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sumc</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rmsc</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
+                <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="kw">let</span> <span class="ident">stat</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">results</span>[<span class="ident">j</span> <span class="op">%</span> <span class="ident">len</span>];
+                    <span class="ident">stat</span>.<span class="ident">add_prec</span>(<span class="kw-2">*</span><span class="ident">num</span>, <span class="ident">j</span> <span class="op">/</span> <span class="ident">len</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">sumc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rmsc</span>);
+                    <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
 
-            <span class="ident">results</span>
-        });
+                <span class="ident">results</span>
+            },
+        );
 
         <span class="prelude-val">Ok</span>(<span class="ident">Statistics</span>::<span class="ident">merge_cols</span>(<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]))
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f32</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">2</span>,
-                                                (),
-                                                <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
-            <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>()]);
-            <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="ident">sum</span> <span class="op">=</span> <span class="ident">sum</span> <span class="op">+</span> <span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="ident">n</span>.<span class="ident">re</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="ident">n</span>.<span class="ident">im</span> <span class="kw">as</span> <span class="ident">f64</span>);
-            }
-            <span class="ident">sum</span>
-        });
-        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="ident">Complex64</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">2</span>,
+            (),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">zero</span>();
+                <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>()]);
+                <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="ident">sum</span> <span class="op">+=</span> <span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">n</span>.<span class="ident">re</span>), <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">n</span>.<span class="ident">im</span>));
+                }
+                <span class="ident">sum</span>
+            },
+        );
+        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="ident">Complex64</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">sum_sq_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">2</span>,
-                                                (),
-                                                <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="ident">Complex</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">zero</span>();
-            <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>()]);
-            <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">array</span> {
-                <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="ident">n</span>.<span class="ident">re</span> <span class="kw">as</span> <span class="ident">f64</span>, <span class="ident">n</span>.<span class="ident">im</span> <span class="kw">as</span> <span class="ident">f64</span>);
-                <span class="ident">sum</span> <span class="op">=</span> <span class="ident">sum</span> <span class="op">+</span> <span class="ident">t</span> <span class="op">*</span> <span class="ident">t</span>;
-            }
-            <span class="ident">sum</span>
-        });
-        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="ident">Complex64</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">2</span>,
+            (),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="ident">Complex</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">zero</span>();
+                <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>()]);
+                <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">array</span> {
+                    <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">n</span>.<span class="ident">re</span>), <span class="ident">f64</span>::<span class="ident">from</span>(<span class="ident">n</span>.<span class="ident">im</span>));
+                    <span class="ident">sum</span> <span class="op">+=</span> <span class="ident">t</span> <span class="op">*</span> <span class="ident">t</span>;
+                }
+                <span class="ident">sum</span>
+            },
+        );
+        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="ident">Complex64</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseSumOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">f64</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
-          <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
     <span class="kw">fn</span> <span class="ident">sum_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">2</span>,
-                                                (),
-                                                <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
-                                                    <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span>
-                                                        <span class="ident">array_to_complex</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>()]);
-                                                    <span class="ident">kahan_sumb</span>(<span class="ident">array</span>.<span class="ident">iter</span>())
-                                                });
-        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="ident">Complex64</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">2</span>,
+            (),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>()]);
+                <span class="ident">kahan_sumb</span>(<span class="ident">array</span>.<span class="ident">iter</span>())
+            },
+        );
+        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="ident">Complex64</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">sum_sq_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">data_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
-                                                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
-                                                <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
-                                                <span class="number">2</span>,
-                                                (),
-                                                <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
-                                                    <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span>
-                                                        <span class="ident">array_to_complex</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>()]);
-                                                    <span class="ident">kahan_sum</span>(<span class="ident">array</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>))
-                                                });
-        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="ident">Complex64</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
+        <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">get_chunked_results</span>(
+            <span class="ident">Complexity</span>::<span class="ident">Small</span>,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
+            <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>],
+            <span class="number">2</span>,
+            (),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">array</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">array_to_complex</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>()]);
+                <span class="ident">kahan_sum</span>(<span class="ident">array</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">*</span> <span class="ident">x</span>))
+            },
+        );
+        (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="ident">Complex64</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>)
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">PreciseStats</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">add_prec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">elem</span>: <span class="ident">T</span>, <span class="ident">index</span>: <span class="ident">usize</span>, <span class="ident">sumc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span>, <span class="ident">rmsc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span>) {
@@ -1246,14 +1315,17 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">PreciseStats</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">Statistics</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">add_prec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-                <span class="ident">elem</span>: <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-                <span class="ident">index</span>: <span class="ident">usize</span>,
-                <span class="ident">sumc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-                <span class="ident">rmsc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">add_prec</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">elem</span>: <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">index</span>: <span class="ident">usize</span>,
+        <span class="ident">sumc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">rmsc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    ) {
         <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">elem</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">sumc</span>;
         <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sum</span> <span class="op">+</span> <span class="ident">y</span>;
         <span class="kw-2">*</span><span class="ident">sumc</span> <span class="op">=</span> (<span class="ident">t</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">sum</span>) <span class="op">-</span> <span class="ident">y</span>;

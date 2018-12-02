@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["IID_NULL",""]],"fn":[["IsEqualGUID",""]],"struct":[["GUID",""]],"type":[["CLSID",""],["FMTID",""],["IID",""],["LPCGUID",""],["LPCLSID",""],["LPFMTID",""],["LPGUID",""],["LPIID",""],["REFCLSID",""],["REFFMTID",""],["REFGUID",""],["REFIID",""]]});

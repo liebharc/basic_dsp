@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ArcCell","A type providing atomic storage and retrieval of an `Arc<T>`."]],"trait":[["AtomicConsume","Trait which allows reading from an atomic type with \"consume\" ordering."]]});
