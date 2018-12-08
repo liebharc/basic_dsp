@@ -7,6 +7,7 @@ homepage = "https://github.com/liebharc/basic_dsp"
 repository = "https://github.com/liebharc/basic_dsp"
 documentation = "https://liebharc.github.io/basic_dsp/basic_dsp_matrix/index.html"
 keywords = ["dsp", "matrix", "interpolation", "convolution"]
+edition="2018"
 description = """
 This lib offers the same operations defined in `basic_dsp_vector` for matrices.
 It doesn't offer complete matrix algebra by itself and instead is meant to be used in combination with other matrix libs.

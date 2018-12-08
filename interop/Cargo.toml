@@ -7,6 +7,7 @@ homepage = "https://github.com/liebharc/basic_dsp"
 repository = "https://github.com/liebharc/basic_dsp"
 documentation = "https://liebharc.github.io/basic_dsp/basic_dsp/"
 keywords = ["dsp", "vector", "interpolation", "convolution", "matrix"]
+edition="2018"
 description = """
 This lib offers a C compatible interface for `basic_dsp_vector`, so that it can be used from programs written in languages other than Rust.
 
