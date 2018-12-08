@@ -44,8 +44,9 @@ build_all: build
 	
 clippy:
 ifeq ($(RUST_NIGHTLY), nightly)
-	$(CARGO_CMD) clean 
-	$(CARGO_CMD) clippy --no-default-features --features std,use_sse2,matrix
+	#$(CARGO_CMD) clean 
+	#$(CARGO_CMD) clippy --no-default-features --features std,use_sse2,matrix
+	@echo "Skipping clippy due to issue in nightly: component 'clippy' for target 'x86_64-unknown-linux-gnu' is unavailable for download"
 else
 	@echo "Skipping clippy for $(RUST_VERSION)"	
 endif	
