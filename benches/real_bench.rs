@@ -9,7 +9,7 @@ pub mod tools;
 mod real {
     use basic_dsp::*;
     use test::Bencher;
-    use tools::*;
+    use crate::tools::*;
 
     #[inline(never)]
     pub fn add_offset_reference32(mut array: Vec<f32>, offset: f32) -> Vec<f32> {

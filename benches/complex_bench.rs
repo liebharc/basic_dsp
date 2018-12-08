@@ -12,7 +12,7 @@ mod complex {
     use basic_dsp::*;
     use num::complex::Complex32;
     use test::Bencher;
-    use tools::*;
+    use crate::tools::*;
 
     #[bench]
     fn complex_offset_32s_benchmark(b: &mut Bencher) {

@@ -73,7 +73,7 @@ fn fill_vectors_with_prbs(
 fn complex_vector_to_file(vector: &ComplexTimeVec64, f: &mut File) -> io::Result<()> {
     let mut i = 0;
     while i < vector.len() {
-        try! { writeln!(f, "{}, {}", vector[i], vector[i + 1]) };
+        r#try! { writeln!(f, "{}, {}", vector[i], vector[i + 1]) };
         i += 2;
     }
     Ok(())
@@ -82,7 +82,7 @@ fn complex_vector_to_file(vector: &ComplexTimeVec64, f: &mut File) -> io::Result
 fn real_vector_to_file(vector: &RealTimeVec64, f: &mut File) -> io::Result<()> {
     let mut i = 0;
     while i < vector.len() {
-        try! { writeln!(f, "{}", vector[i]) };
+        r#try! { writeln!(f, "{}", vector[i]) };
         i += 2;
     }
     Ok(())

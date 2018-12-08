@@ -7,7 +7,7 @@ mod inter_test {
     use basic_dsp::conv_types::*;
     use basic_dsp::*;
     use num::complex::*;
-    use tools::*;
+    use crate::tools::*;
 
     #[test]
     fn compare_interpolatef_and_interpolatei() {

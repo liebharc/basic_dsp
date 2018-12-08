@@ -8,7 +8,7 @@ mod time_freq_test {
     use basic_dsp::*;
     use num::complex::*;
     use std::f64::consts::PI;
-    use tools::*;
+    use crate::tools::*;
 
     #[test]
     fn complex_plain_fft_plain_ifft_vector32_large() {

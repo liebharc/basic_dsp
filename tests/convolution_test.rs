@@ -6,7 +6,7 @@ pub mod tools;
 mod conv_test {
     use basic_dsp::conv_types::*;
     use basic_dsp::*;
-    use tools::*;
+    use crate::tools::*;
 
     #[test]
     fn compare_conv_freq_multiplication_for_rc() {

@@ -6,7 +6,7 @@ pub mod tools;
 mod complex_test {
     use basic_dsp::*;
     use num::complex::*;
-    use tools::*;
+    use crate::tools::*;
 
     fn to_complex(a: &Vec<f32>) -> Vec<Complex32> {
         let mut result = vec![Complex32::new(0.0, 0.0); a.len() / 2];
