@@ -1,8 +1,8 @@
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::toplevel_ref_arg))]
 
 use super::Complexity;
-use inline_vector::InlineVector;
-use numbers::*;
+use crate::inline_vector::InlineVector;
+use crate::numbers::*;
 use std::iter::Iterator;
 use std::ops::Range;
 use std::slice::ChunksMut;

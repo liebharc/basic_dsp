@@ -1,9 +1,9 @@
 use arrayvec::*;
-use numbers::*;
+use crate::numbers::*;
 use std::iter::FromIterator;
 use std::ops::*;
 use std::slice::{Iter, IterMut};
-use {ErrorReason, VoidResult};
+use crate::{ErrorReason, VoidResult};
 
 const MAX_CAPACITY: usize = 64;
 
