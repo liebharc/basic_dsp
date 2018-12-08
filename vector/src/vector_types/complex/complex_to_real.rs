@@ -3,10 +3,10 @@ use super::super::{
     PosEq, RealNumberSpace, RededicateForceOps, Resize, ToRealResult, ToSlice, ToSliceMut, Vector,
     VoidResult,
 };
-use array_to_complex;
-use multicore_support::*;
-use numbers::*;
-use simd_extensions::*;
+use crate::array_to_complex;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 use std::ops::*;
 
 /// Defines transformations from complex to real number space.

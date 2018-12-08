@@ -3,10 +3,10 @@ use super::super::{
     RealNumberSpace, ScalarResult, ToSlice, Vector,
 };
 use super::kahan_sum;
-use array_to_complex;
-use multicore_support::*;
-use numbers::*;
-use simd_extensions::*;
+use crate::array_to_complex;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 use std::ops::*;
 
 /// An operation which multiplies each vector element with a constant

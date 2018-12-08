@@ -2,11 +2,11 @@ use super::super::{
     Buffer, BufferBorrow, Domain, DspVec, ErrorReason, MetaData, NumberSpace, ResizeOps,
     ToSliceMut, Vector, VoidResult,
 };
-use multicore_support::*;
-use numbers::*;
+use crate::multicore_support::*;
+use crate::numbers::*;
 use std::mem;
 use std::ptr;
-use {array_to_complex_mut, memcpy, memzero};
+use crate::{array_to_complex_mut, memcpy, memzero};
 
 /// This trait allows to reorganize the data by changing positions of the individual elements.
 pub trait ReorganizeDataOps<T>
@@ -312,7 +312,7 @@ where
             return Err(ErrorReason::InvalidArgumentLength);
         }
 
-        try!(self.resize(len));
+        r#try!(self.resize(len));
         let data = self.data.to_slice_mut();
         match option {
             PaddingOption::End => {
@@ -364,7 +364,7 @@ where
             return Ok(());
         }
 
-        try!(self.resize(len));
+        r#try!(self.resize(len));
 
         if is_complex {
             let data = self.data.to_slice_mut();
@@ -485,7 +485,7 @@ where
         }
 
         for t in targets.iter_mut() {
-            try!(t.resize(data_length / num_targets));
+            r#try!(t.resize(data_length / num_targets));
         }
 
         let data = &self.data.to_slice();
@@ -528,7 +528,7 @@ where
                 }
             }
 
-            try!(self.resize(sources[0].len() * num_sources));
+            r#try!(self.resize(sources[0].len() * num_sources));
 
             let data_length = self.len();
             let is_complex = self.is_complex();

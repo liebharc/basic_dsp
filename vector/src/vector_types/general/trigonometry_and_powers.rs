@@ -1,7 +1,7 @@
 use super::super::{Domain, DspVec, MetaData, NumberSpace, ToSliceMut};
-use multicore_support::*;
-use numbers::*;
-use simd_extensions::*;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 /// Trigonometry methods.
 pub trait TrigOps {
     /// Calculates the sine of each element in radians.

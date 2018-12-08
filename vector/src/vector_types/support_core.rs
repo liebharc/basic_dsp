@@ -6,10 +6,10 @@ use super::{
 };
 use arrayvec;
 use arrayvec::{Array, ArrayVec};
-use inline_vector::InlineVector;
-use multicore_support::MultiCoreSettings;
+use crate::inline_vector::InlineVector;
+use crate::multicore_support::MultiCoreSettings;
 /// ! Support for types in the Rust core
-use numbers::*;
+use crate::numbers::*;
 use std;
 use std::ops::*;
 

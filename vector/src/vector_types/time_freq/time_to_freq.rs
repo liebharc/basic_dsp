@@ -4,8 +4,8 @@ use super::super::{
     TimeDomainOperations, ToFreqResult, ToSliceMut, TransRes, Vector,
 };
 use super::fft;
-use numbers::*;
-use window_functions::*;
+use crate::numbers::*;
+use crate::window_functions::*;
 
 /// Defines all operations which are valid on `DataVecs` containing time domain data.
 /// # Failures

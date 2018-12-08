@@ -2,11 +2,11 @@
 
 use super::Complexity;
 use crossbeam;
-use inline_vector::InlineVector;
+use crate::inline_vector::InlineVector;
 use linreg::linear_regression;
 use num_cpus;
 use num_traits::FromPrimitive;
-use numbers::*;
+use crate::numbers::*;
 use std::iter::Iterator;
 use std::mem;
 use std::ops::Range;
@@ -98,11 +98,11 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
     for _ in 0..iterations {
         sizes.push(size as f64);
         let mut data = vec![1.0; size];
-        ono_thread.push(try!(measure(1, &mut data)));
-        let two_threads_result = try!(measure(2, &mut data));
+        ono_thread.push(r#try!(measure(1, &mut data)));
+        let two_threads_result = r#try!(measure(2, &mut data));
         two_threads.push(two_threads_result);
         if number_of_cores > 2 {
-            max_threads.push(try!(measure(number_of_cores, &mut data)));
+            max_threads.push(r#try!(measure(number_of_cores, &mut data)));
         } else {
             max_threads.push(two_threads_result);
         }

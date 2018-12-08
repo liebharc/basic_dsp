@@ -1,6 +1,6 @@
 //! This mod contains a definition for window functions and provides implementations for a
 //! few standard windows. See the `WindowFunction` type for more information.
-use numbers::*;
+use crate::numbers::*;
 
 /// A window function for FFT windows. See `https://en.wikipedia.org/wiki/Window_function`
 /// for details. Window functions should document if they aren't applicable for

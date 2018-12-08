@@ -87,17 +87,17 @@ pub mod meta;
 mod multicore_support;
 mod vector_types;
 pub mod window_functions;
-pub use multicore_support::print_calibration;
-pub use multicore_support::MultiCoreSettings;
-pub use vector_types::*;
+pub use crate::multicore_support::print_calibration;
+pub use crate::multicore_support::MultiCoreSettings;
+pub use crate::vector_types::*;
 mod gpu_support;
 mod inline_vector;
-use numbers::*;
+use crate::numbers::*;
 use std::ops::Range;
 
 pub mod numbers {
     //! Traits from the `num` crate which are used inside `basic_dsp` and extensions to those traits.
-    use gpu_support::{Gpu32, Gpu64, GpuFloat, GpuRegTrait};
+    use crate::gpu_support::{Gpu32, Gpu64, GpuFloat, GpuRegTrait};
     pub use num_complex::Complex;
     use num_traits;
     pub use num_traits::Float;
@@ -110,8 +110,8 @@ pub mod numbers {
         feature = "use_avx512"
     ))]
     use simd;
-    use simd_extensions;
-    use simd_extensions::*;
+    use crate::simd_extensions;
+    use crate::simd_extensions::*;
     use std::fmt::Debug;
 
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
@@ -299,7 +299,7 @@ fn memzero<T: Copy>(data: &mut [T], range: Range<usize>) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use simd_extensions::Simd;
+    use crate::simd_extensions::Simd;
 
     #[test]
     fn to_simd_test() {

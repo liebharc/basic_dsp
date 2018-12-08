@@ -19,15 +19,15 @@ use super::{
     Buffer, BufferBorrow, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace,
     ToSliceMut, Vector, VoidResult,
 };
-use gpu_support::GpuSupport;
-use inline_vector::InlineVector;
-use multicore_support::*;
-use numbers::*;
+use crate::gpu_support::GpuSupport;
+use crate::inline_vector::InlineVector;
+use crate::multicore_support::*;
+use crate::numbers::*;
 use rustfft::FFTplanner;
-use simd_extensions::*;
+use crate::simd_extensions::*;
 use std::fmt::Debug;
 use std::ops::*;
-use {array_to_complex, array_to_complex_mut};
+use crate::{array_to_complex, array_to_complex_mut};
 
 fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
 where

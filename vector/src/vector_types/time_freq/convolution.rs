@@ -4,14 +4,14 @@ use super::super::{
     ResizeOps, TimeDomain, TimeToFrequencyDomainOperations, ToComplexVector, ToSliceMut, Vector,
     VoidResult,
 };
-use conv_types::*;
-use gpu_support::GpuSupport;
-use inline_vector::InlineVector;
-use multicore_support::*;
-use numbers::*;
+use crate::conv_types::*;
+use crate::gpu_support::GpuSupport;
+use crate::inline_vector::InlineVector;
+use crate::multicore_support::*;
+use crate::numbers::*;
 use rustfft::FFTplanner;
-use simd_extensions::*;
-use {array_to_complex, array_to_complex_mut};
+use crate::simd_extensions::*;
+use crate::{array_to_complex, array_to_complex_mut};
 
 /// Provides a convolution operations.
 pub trait Convolution<'a, S, T, C: 'a>
@@ -618,7 +618,7 @@ where
 mod tests {
     use super::super::super::*;
     use super::super::{ReverseWrappingIterator, WrappingIterator};
-    use conv_types::*;
+    use crate::conv_types::*;
     use num_complex::Complex32;
     use std::fmt::Debug;
 

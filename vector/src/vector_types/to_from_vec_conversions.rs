@@ -4,8 +4,8 @@ use super::{
     ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, GenDspVec, NumberSpace,
     RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
-use multicore_support::MultiCoreSettings;
-use numbers::*;
+use crate::multicore_support::MultiCoreSettings;
+use crate::numbers::*;
 use std::convert::From;
 
 /// Conversion from a generic data type into a dsp vector which tracks

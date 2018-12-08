@@ -3,10 +3,10 @@ use super::{
     Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, Domain, DspVec, ErrorReason, NumberSpace,
     ToSlice, ToSliceMut, TypeMetaData, VoidResult,
 };
-use multicore_support::MultiCoreSettings;
-use numbers::*;
+use crate::multicore_support::MultiCoreSettings;
+use crate::numbers::*;
 use std::ops::*;
-use {array_to_complex, array_to_complex_mut};
+use crate::{array_to_complex, array_to_complex_mut};
 
 /// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
 /// but with a different method name so that it can be used to implement an additional range
@@ -177,7 +177,7 @@ where
         }
 
         if len > self.alloc_len() {
-            try!(self.data.try_resize(len));
+            r#try!(self.data.try_resize(len));
         }
 
         self.valid_len = len;

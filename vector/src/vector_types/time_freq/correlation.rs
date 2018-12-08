@@ -5,7 +5,7 @@ use super::super::{
     ReorganizeDataOps, ScaleOps, TimeDomain, TimeToFrequencyDomainOperations, ToComplexVector,
     ToFreqResult, ToSliceMut, Vector, VoidResult,
 };
-use numbers::*;
+use crate::numbers::*;
 use std::ops::*;
 
 /// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
@@ -146,7 +146,7 @@ where
         }
 
         let points = other.points();
-        try!(self.zero_pad_b(buffer, points, PaddingOption::Surround));
+        r#try!(self.zero_pad_b(buffer, points, PaddingOption::Surround));
         let len = self.len();
         let mut temp = buffer.borrow(len);
         // The next steps: fft, mul, ifft
@@ -160,7 +160,7 @@ where
         {
             let other = (&other[..]).to_complex_freq_vec();
             let mut complex = (&mut temp[..]).to_complex_freq_vec();
-            try!(complex.mul(&other));
+            r#try!(complex.mul(&other));
             let mut buffer = NoTradeBuffer::new(&mut self[..]);
             complex.plain_ifft(&mut buffer); // the result is now back in `self`.
         }

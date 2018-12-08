@@ -5,14 +5,14 @@ use super::super::{
     TimeToFrequencyDomainOperations, ToComplexVector, ToDspVector, ToSliceMut, Vector, VoidResult,
 };
 use super::{create_shifted_copies, WrappingIterator};
-use conv_types::{RealFrequencyResponse, RealImpulseResponse};
-use inline_vector::InlineVector;
-use multicore_support::*;
-use numbers::*;
-use simd_extensions::*;
+use crate::conv_types::{RealFrequencyResponse, RealImpulseResponse};
+use crate::inline_vector::InlineVector;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 use std;
 use std::ops::{Add, Mul};
-use {array_to_complex, array_to_complex_mut, memcpy, Zero};
+use crate::{array_to_complex, array_to_complex_mut, memcpy, Zero};
 
 /// Provides interpolation operations for real and complex data vectors.
 pub trait InterpolationOps<S, T>
@@ -581,7 +581,7 @@ where
         let complex_orig_len = self.len();
         let complex_dest_len = 2 * dest_points;
         let temp_len = std::cmp::max(complex_orig_len, complex_dest_len);
-        try!(self.resize_b(buffer, temp_len)); // allocate space
+        r#try!(self.resize_b(buffer, temp_len)); // allocate space
         let mut temp = buffer.borrow(temp_len);
         {
             let complex = (&mut self[0..complex_orig_len]).to_complex_time_vec();
@@ -600,7 +600,7 @@ where
             }
 
             if dest_len > orig_len {
-                try!(complex.zero_pad_b(&mut buffer, dest_points, PaddingOption::Center));
+                r#try!(complex.zero_pad_b(&mut buffer, dest_points, PaddingOption::Center));
                 // data is in `self` now, so we have to copy it back into `temp` so that
                 // it finally ends up at the correct destination after `plain_ifft`
                 (&mut complex[0..complex_dest_len])
@@ -656,7 +656,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::super::super::*;
-    use conv_types::*;
+    use crate::conv_types::*;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
     where

@@ -4,10 +4,10 @@ use super::{
     RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
 use super::{ToComplexVector, ToDspVector, ToRealVector};
-use multicore_support::MultiCoreSettings;
+use crate::multicore_support::MultiCoreSettings;
 /// ! Support for types in Rust std
-use numbers::*;
-use vector_types::vec_impl_and_indexers::Vector;
+use crate::numbers::*;
+use crate::vector_types::vec_impl_and_indexers::Vector;
 
 /// Conversion from a generic data type into a dsp vector which tracks
 /// its meta information (domain and number space)
@@ -135,7 +135,7 @@ impl<Type: ToComplexVector<S, T> + Sized + ToSlice<T>, S: Sized + ToSlice<T>, T:
 #[cfg(test)]
 mod tests {
     use num_cpus;
-    use vector_types::*;
+    use crate::vector_types::*;
 
     #[test]
     fn single_threaded_vector() {

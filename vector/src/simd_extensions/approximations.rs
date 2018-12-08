@@ -26,7 +26,7 @@
 //
 
 use super::{Simd, SimdApproximations, SimdFrom};
-use numbers::*;
+use crate::numbers::*;
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
 use simd::x86::avx::*;
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
@@ -35,7 +35,7 @@ use simd::x86::sse2::*;
 use simd::*;
 use std::mem;
 use std::ops::*;
-use Zero;
+use crate::Zero;
 
 macro_rules! simd_approx_impl {
     ($data_type: ident,
@@ -363,7 +363,7 @@ mod tests {
     use super::super::*;
     use simd::f32x4;
     use simd::x86::sse2::f64x2;
-    use RealNumber;
+    use crate::RealNumber;
 
     fn assert_eq_tol<T>(left: T, right: T, tol: T)
     where

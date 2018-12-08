@@ -4,12 +4,12 @@
 //! frequency domain the convolution is automatically transformed into a multiplication
 //! which is the analog operation to a convolution in time domain.
 use super::FixedLenBuffer;
-use inline_vector::InlineVector;
+use crate::inline_vector::InlineVector;
 use num_complex::{Complex32, Complex64};
-use numbers::*;
+use crate::numbers::*;
 use std::marker::PhantomData;
 use std::ops::*;
-use vector_types::*;
+use crate::vector_types::*;
 
 /// A convolution function in time domain and real number space
 pub trait RealImpulseResponse<T>: Sync

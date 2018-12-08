@@ -2,7 +2,7 @@ use super::super::{
     Buffer, Domain, DspVec, ErrorReason, InsertZerosOps, InsertZerosOpsBuffered, MetaData,
     RealNumberSpace, RededicateForceOps, ToComplexResult, ToSliceMut, TransRes,
 };
-use numbers::*;
+use crate::numbers::*;
 
 /// Defines transformations from real to complex number space.
 ///

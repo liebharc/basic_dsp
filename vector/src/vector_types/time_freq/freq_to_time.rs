@@ -4,9 +4,9 @@ use super::super::{
     TimeDomainOperations, ToRealTimeResult, ToSliceMut, ToTimeResult, TransRes, Vector,
 };
 use super::fft;
-use multicore_support::*;
-use numbers::*;
-use window_functions::*;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::window_functions::*;
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
 /// # Failures
@@ -238,7 +238,7 @@ where
     where
         B: for<'a> Buffer<'a, S, T>,
     {
-        let mut result = try!(self.sifft(buffer));
+        let mut result = r#try!(self.sifft(buffer));
         result.unapply_window(window);
         Ok(result)
     }

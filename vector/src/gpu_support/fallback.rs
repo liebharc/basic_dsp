@@ -1,7 +1,7 @@
 //! This code will be used if no GPU support is selected. This way the feature flag only
 //! needs to be considered in a small section of the lib and the rest remains unaffected.
 use super::GpuSupport;
-use numbers::*;
+use crate::numbers::*;
 use std::ops::Range;
 
 pub type Gpu32 = f32;

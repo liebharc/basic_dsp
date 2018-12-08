@@ -2,7 +2,7 @@
 //! So the best option seems to be to create an abstraction so that the buffering can be adjusted
 //! to what an application needs.
 use super::ToSliceMut;
-use numbers::*;
+use crate::numbers::*;
 use std::ops::*;
 
 /// A "slice-like" type which also allows to

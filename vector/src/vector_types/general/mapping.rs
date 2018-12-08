@@ -2,10 +2,10 @@ use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, MetaData, RealNumberSpace, ScalarResult,
     ToSlice, ToSliceMut,
 };
-use inline_vector::InlineVector;
-use multicore_support::*;
-use numbers::*;
-use {array_to_complex, array_to_complex_mut};
+use crate::inline_vector::InlineVector;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::{array_to_complex, array_to_complex_mut};
 
 /// Operations which allow to iterate over the vector and to derive results
 /// or to change the vector.

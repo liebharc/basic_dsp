@@ -1,8 +1,8 @@
 use super::super::{ComplexNumberSpace, Domain, DspVec, MetaData, ToSliceMut, Vector};
-use array_to_complex_mut;
-use multicore_support::*;
-use numbers::*;
-use simd_extensions::*;
+use crate::array_to_complex_mut;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 
 /// Operations on complex types.
 ///

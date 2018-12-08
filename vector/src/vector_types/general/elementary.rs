@@ -3,11 +3,11 @@ use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace, PosEq,
     ToSliceMut, Vector, VoidResult,
 };
-use multicore_support::*;
-use numbers::*;
-use simd_extensions::*;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 use std::ops::*;
-use {array_to_complex, array_to_complex_mut};
+use crate::{array_to_complex, array_to_complex_mut};
 
 /// An operation which multiplies each vector element with a constant
 pub trait ScaleOps<T>: Sized

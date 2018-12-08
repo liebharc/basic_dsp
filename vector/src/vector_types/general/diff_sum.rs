@@ -1,6 +1,6 @@
 use super::super::{Domain, DspVec, MetaData, NumberSpace, ToSliceMut, Vector};
-use array_to_complex_mut;
-use numbers::*;
+use crate::array_to_complex_mut;
+use crate::numbers::*;
 
 /// A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum
 /// (integral  in a discrete number space).

@@ -4,7 +4,7 @@ use super::{
     ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, GenDspVec, MetaData, NumberSpace,
     RealFreqVec, RealTimeVec, ResizeOps, ToSlice, Vector,
 };
-use numbers::*;
+use crate::numbers::*;
 
 /// This trait allows to change a data type. The operations will
 /// convert a type to a different one and set `self.len()` to zero.

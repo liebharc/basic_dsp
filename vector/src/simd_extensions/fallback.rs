@@ -1,5 +1,5 @@
 use super::Simd;
-use numbers::*;
+use crate::numbers::*;
 use std::ops::*;
 
 #[allow(non_camel_case_types)]

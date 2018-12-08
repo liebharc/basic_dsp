@@ -2,7 +2,7 @@ use super::super::{
     Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, DspVec, FrequencyDomain, MetaData,
     RededicateForceOps, ToSliceMut, ToTimeResult, Vector,
 };
-use numbers::*;
+use crate::numbers::*;
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
 /// # Failures

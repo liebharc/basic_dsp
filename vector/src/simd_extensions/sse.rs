@@ -1,5 +1,5 @@
 use super::{Simd, SimdFrom};
-use numbers::*;
+use crate::numbers::*;
 use simd;
 use simd::x86::sse2::*;
 use simd::*;

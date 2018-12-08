@@ -15,7 +15,7 @@ pub use self::statistics::*;
 mod precise_stats;
 pub use self::precise_stats::*;
 
-use numbers::*;
+use crate::numbers::*;
 use std::ops::{Add, Sub};
 
 /// Sums up the given values using a more precise

@@ -1,9 +1,9 @@
 use super::super::{
     DspVec, MetaData, NumberSpace, RededicateForceOps, TimeDomain, ToFreqResult, ToSliceMut,
 };
-use array_to_complex_mut;
-use numbers::*;
-use window_functions::*;
+use crate::array_to_complex_mut;
+use crate::numbers::*;
+use crate::window_functions::*;
 
 /// Defines all operations which are valid on `DataVecs` containing time domain data.
 /// # Failures

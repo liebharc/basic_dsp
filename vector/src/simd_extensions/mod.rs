@@ -1,4 +1,4 @@
-use numbers::*;
+use crate::numbers::*;
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
 use simd;
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]

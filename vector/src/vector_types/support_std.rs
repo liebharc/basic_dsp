@@ -5,9 +5,9 @@ use super::{
     GenDspVec, MetaData, NumberSpace, RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
 use super::{Resize, ToComplexVector, ToDspVector, ToRealVector, ToSliceMut, VoidResult};
-use multicore_support::MultiCoreSettings;
-use numbers::*;
-use simd_extensions::*;
+use crate::multicore_support::MultiCoreSettings;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 use std::mem;
 use std::ops::*;
 use std::result;

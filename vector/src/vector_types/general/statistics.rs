@@ -2,11 +2,11 @@ use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, NumberSpace, RealNumberSpace, ScalarResult,
     ToSlice, Vector,
 };
-use array_to_complex;
+use crate::array_to_complex;
 use arrayvec::ArrayVec;
-use multicore_support::*;
-use numbers::*;
-use simd_extensions::*;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug)]

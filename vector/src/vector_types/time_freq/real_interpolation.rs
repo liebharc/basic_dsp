@@ -1,7 +1,7 @@
 use super::super::{
     Buffer, BufferBorrow, Domain, DspVec, MetaData, RealNumberSpace, ToSliceMut, Vector,
 };
-use numbers::*;
+use crate::numbers::*;
 
 /// Provides interpolation operations which are only applicable for real data vectors.
 /// # Failures

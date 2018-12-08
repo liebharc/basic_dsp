@@ -1,7 +1,7 @@
 use super::super::{Domain, DspVec, MetaData, RealNumberSpace, ToSliceMut, Vector};
-use multicore_support::*;
-use numbers::*;
-use simd_extensions::*;
+use crate::multicore_support::*;
+use crate::numbers::*;
+use crate::simd_extensions::*;
 
 /// Operations on real types.
 ///
