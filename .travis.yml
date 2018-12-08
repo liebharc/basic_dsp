@@ -8,8 +8,8 @@ rust:
   - stable
   - beta
   - nightly
-before_script:
-  - rustup component add clippy-preview
+#before_script:
+#  - rustup component add clippy-preview
 # Run the makefile to test all tests and doc tests for every sub module
 # and then test and bench the the top level crate.
 script:
