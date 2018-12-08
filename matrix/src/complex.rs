@@ -1,6 +1,6 @@
 use super::*;
 use std::marker;
-use TransformContent;
+use crate::TransformContent;
 
 macro_rules! add_mat_impl {
     ($($matrix:ident);*) => {
@@ -181,7 +181,7 @@ macro_rules! add_mat_impl {
                     for ((v, r), i) in self.rows_mut().iter_mut()
                                     .zip(real.rows())
                                     .zip(imag.rows()) {
- 						try!(v.set_real_imag(r, i));
+ 						r#try!(v.set_real_imag(r, i));
  					}
 
                     Ok(())
@@ -193,7 +193,7 @@ macro_rules! add_mat_impl {
                     for ((v, r), i) in self.rows_mut().iter_mut()
                                      .zip(mag.rows())
                                      .zip(phase.rows()) {
-  						try!(v.set_mag_phase(r, i));
+  						r#try!(v.set_mag_phase(r, i));
   					}
 
                     Ok(())

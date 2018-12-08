@@ -67,7 +67,7 @@ macro_rules! add_mat_impl {
                   	  V: Vector<T> {
 			      fn resize(&mut self, len: usize) -> VoidResult {
 					  for v in &mut self.rows[..] {
-						  try!(v.resize(len));
+						  r#try!(v.resize(len));
 					  }
 
 			          Ok(())
