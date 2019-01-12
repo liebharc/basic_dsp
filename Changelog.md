@@ -1,9 +1,10 @@
 # `basic_dsp`
 Changes:
 
-## Version 0.6.1
+## Version 0.7.0
 
 - Update to Rust 2018
+- Updated dependencies, e.g. `rustfft`
 
 ## Version 0.6.0
 
