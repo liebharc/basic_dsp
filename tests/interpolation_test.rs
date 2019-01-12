@@ -211,7 +211,7 @@ mod inter_test {
             assert_vector_eq_with_reason_and_tolerance(
                 &left[150..len - 150],
                 &right[150..len - 150],
-                1e-2,
+                1e-1,
                 &format!(
                     "Results should match \
                      independent if done with \

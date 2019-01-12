@@ -5,7 +5,7 @@ extern crate time;
 
 use basic_dsp::*;
 use docopt::Docopt;
-use rand::*;
+use rand::prelude::*;
 use std::collections::HashMap;
 use std::env;
 use time::PreciseTime;
@@ -44,8 +44,7 @@ fn bench_real<F: FnMut(RealTimeVec64)>(
 
 fn create_pseudo_random_data(data_set_size: usize, seed: usize) -> Vec<f64> {
     let mut vec: Vec<f64> = vec![0.0; data_set_size];
-    let seed: &[_] = &[seed, 42];
-    let mut rng: StdRng = SeedableRng::from_seed(seed); // Create repeatable data
+    let mut rng: StdRng = SeedableRng::seed_from_u64(seed as u64);
     for n in &mut vec {
         *n = rng.gen_range(INIT_VAL_RANGE.0, INIT_VAL_RANGE.1);
     }

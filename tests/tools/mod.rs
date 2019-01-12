@@ -1,7 +1,7 @@
 use basic_dsp::numbers::*;
 use basic_dsp::*;
 use num::complex::Complex32;
-use rand::*;
+use rand::prelude::*;
 use std::fmt::{Debug, Display};
 use std::ops::Range;
 use std::panic;
@@ -96,8 +96,7 @@ pub fn assert_complex_in_tolerance(left: Complex32, right: Complex32, tol: f32) 
 }
 
 pub fn create_data(seed: usize, iteration: usize, from: usize, to: usize) -> Vec<f32> {
-    let len_seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let len = if from == to {
         from
     } else {
@@ -107,8 +106,7 @@ pub fn create_data(seed: usize, iteration: usize, from: usize, to: usize) -> Vec
 }
 
 pub fn create_data64(seed: usize, iteration: usize, from: usize, to: usize) -> Vec<f64> {
-    let len_seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let len = if from == to {
         from
     } else {
@@ -118,16 +116,14 @@ pub fn create_data64(seed: usize, iteration: usize, from: usize, to: usize) -> V
 }
 
 pub fn create_data_even(seed: usize, iteration: usize, from: usize, to: usize) -> Vec<f32> {
-    let len_seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let len = rng.gen_range(from, to);
     let len = len + len % 2;
     create_data_with_len(seed, iteration, len)
 }
 
 pub fn create_data_with_len(seed: usize, iteration: usize, len: usize) -> Vec<f32> {
-    let seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let mut data = vec![0.0; len];
     for i in 0..len {
         data[i] = rng.gen_range(-10.0, 10.0);
@@ -136,8 +132,7 @@ pub fn create_data_with_len(seed: usize, iteration: usize, len: usize) -> Vec<f3
 }
 
 pub fn create_data_with_len64(seed: usize, iteration: usize, len: usize) -> Vec<f64> {
-    let seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let mut data = vec![0.0; len];
     for i in 0..len {
         data[i] = rng.gen_range(-10.0, 10.0);
@@ -153,8 +148,7 @@ pub fn create_data_even_in_range(
     range_start: f32,
     range_end: f32,
 ) -> Vec<f32> {
-    let len_seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let len = rng.gen_range(from, to);
     let len = len + len % 2;
     create_data_in_range_with_len(seed, iteration, len, range_start, range_end)
@@ -166,8 +160,7 @@ pub fn create_data_simd_len_in_range(
     from: usize,
     to: usize,
 ) -> Vec<f32> {
-    let len_seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let len = rng.gen_range(from, to);
     let len = (len / 8 + 1) + 8; // Not exact but good enough
     let len = if len > to { to } else { len };
@@ -181,8 +174,7 @@ pub fn create_data_in_range_with_len(
     range_start: f32,
     range_end: f32,
 ) -> Vec<f32> {
-    let seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let mut data = vec![0.0; len];
     for i in 0..len {
         data[i] = rng.gen_range(range_start, range_end);
@@ -191,8 +183,7 @@ pub fn create_data_in_range_with_len(
 }
 
 pub fn create_delta(seed: usize, iteration: usize) -> f32 {
-    let seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     rng.gen_range(-10.0, 10.0)
 }
 
@@ -203,8 +194,7 @@ pub fn create_random_multitones(
     to: usize,
     number_of_tones: usize,
 ) -> Vec<f32> {
-    let len_seed: &[_] = &[seed, iteration];
-    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let mut rng: StdRng = SeedableRng::seed_from_u64((seed + iteration) as u64);
     let len = 2 * rng.gen_range(from, to);
     let mut result = vec![0.0; len].to_real_time_vec();
     for _ in 0..number_of_tones {

@@ -32,7 +32,7 @@ mod conv_test {
             assert_vector_eq_with_reason_and_tolerance(
                 &ifreq_res[..],
                 &time[..],
-                0.2,
+                0.3,
                 "Results should match independent if done \
                  in time or frequency domain",
             );
