@@ -443,11 +443,11 @@ impl Chunk {
         let chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
         crossbeam::scope(|scope| {
             for chunk in chunks {
-                scope.spawn(move || {
+                scope.spawn(move |_| {
                     function(chunk, arguments);
                 });
             }
-        });
+        }).expect("Failed to spawn thread");
     }
 
     /// Executes the given function on the all elements of the array and also tells the function
@@ -473,11 +473,11 @@ impl Chunk {
             let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
-                    scope.spawn(move || {
+                    scope.spawn(move |_| {
                         function(chunk.0, chunk.1, arguments);
                     });
                 }
-            });
+            }).expect("Failed to spawn thread");
         } else {
             function(
                 array,
@@ -517,12 +517,12 @@ impl Chunk {
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
                     let stack_array = stack_array.clone();
-                    scope.spawn(move || {
+                    scope.spawn(move |_| {
                         let r = function(chunk.0, chunk.1, arguments);
                         stack_array.lock().unwrap().push(r);
                     });
                 }
-            });
+            }).expect("Failed to spawn thread");
             let mut guard = stack_array.lock().unwrap();
             mem::replace(&mut guard, InlineVector::empty())
         } else {
@@ -580,12 +580,12 @@ impl Chunk {
             let zipped2 = chunks2.zip(ranges2);
             crossbeam::scope(|scope| {
                 for chunk in zipped1.zip(zipped2) {
-                    scope.spawn(move || {
+                    scope.spawn(move |_| {
                         let (pair1, pair2) = chunk;
                         function(pair1.0, pair1.1, pair2.0, pair2.1, arguments);
                     });
                 }
-            });
+            }).expect("Failed to spawn thread");
         } else {
             let mut chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
             let mut chunks1 = chunks.next().unwrap();
@@ -639,12 +639,12 @@ impl Chunk {
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
                     let stack_array = stack_array.clone();
-                    scope.spawn(move || {
+                    scope.spawn(move |_| {
                         let r = function(a, chunk.1, chunk.0);
                         stack_array.lock().unwrap().push(r);
                     });
                 }
-            });
+            }).expect("Failed to spawn thread");
             let mut guard = stack_array.lock().unwrap();
             mem::replace(&mut guard, InlineVector::empty())
         } else {
@@ -691,12 +691,12 @@ impl Chunk {
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
                     let stack_array = stack_array.clone();
-                    scope.spawn(move || {
+                    scope.spawn(move |_| {
                         let r = function(chunk.0, chunk.1, arguments);
                         stack_array.lock().unwrap().push(r);
                     });
                 }
-            });
+            }).expect("Failed to spawn thread");
             let mut guard = stack_array.lock().unwrap();
             mem::replace(&mut guard, InlineVector::empty())
         } else {
@@ -738,11 +738,11 @@ impl Chunk {
             let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
-                    scope.spawn(move || {
+                    scope.spawn(move |_| {
                         function(original, chunk.1, chunk.0, arguments);
                     });
                 }
-            });
+            }).expect("Failed to spawn thread");
         } else {
             function(
                 original,
