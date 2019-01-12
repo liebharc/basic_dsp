@@ -121,8 +121,8 @@
 <span id="121">121</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">MetaData</span>, <span class="ident">NumberSpace</span>, <span class="ident">ToSliceMut</span>, <span class="ident">Vector</span>};
-<span class="kw">use</span> <span class="ident">array_to_complex_mut</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">array_to_complex_mut</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum</span>
 <span class="doccomment">/// (integral  in a discrete number space).</span>

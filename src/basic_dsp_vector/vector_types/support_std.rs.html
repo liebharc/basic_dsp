@@ -619,9 +619,9 @@
     <span class="ident">GenDspVec</span>, <span class="ident">MetaData</span>, <span class="ident">NumberSpace</span>, <span class="ident">RealFreqVec</span>, <span class="ident">RealTimeVec</span>, <span class="ident">ToSlice</span>, <span class="ident">TypeMetaData</span>,
 };
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Resize</span>, <span class="ident">ToComplexVector</span>, <span class="ident">ToDspVector</span>, <span class="ident">ToRealVector</span>, <span class="ident">ToSliceMut</span>, <span class="ident">VoidResult</span>};
-<span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="ident">MultiCoreSettings</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::<span class="ident">MultiCoreSettings</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">result</span>;

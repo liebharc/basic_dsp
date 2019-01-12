@@ -678,10 +678,10 @@
     <span class="ident">Stats</span>, <span class="ident">StatsVec</span>, <span class="ident">ToSlice</span>, <span class="ident">Vector</span>, <span class="ident">STATS_VEC_CAPACTIY</span>,
 };
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">kahan_sum</span>, <span class="ident">kahan_sumb</span>};
-<span class="kw">use</span> <span class="ident">array_to_complex</span>;
-<span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">array_to_complex</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">num_complex</span>::<span class="ident">Complex64</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// Offers the same functionality as the `StatisticsOps` trait but</span>
 <span class="doccomment">/// the statistics are calculated in a more precise (and slower) way.</span>

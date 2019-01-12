@@ -69,9 +69,9 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{
     <span class="ident">DspVec</span>, <span class="ident">MetaData</span>, <span class="ident">NumberSpace</span>, <span class="ident">RededicateForceOps</span>, <span class="ident">TimeDomain</span>, <span class="ident">ToFreqResult</span>, <span class="ident">ToSliceMut</span>,
 };
-<span class="kw">use</span> <span class="ident">array_to_complex_mut</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">window_functions</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">array_to_complex_mut</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">window_functions</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// Defines all operations which are valid on `DataVecs` containing time domain data.</span>
 <span class="doccomment">/// # Failures</span>

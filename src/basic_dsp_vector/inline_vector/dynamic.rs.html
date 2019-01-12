@@ -268,12 +268,12 @@
 <span id="268">268</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">arrayvec</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">FromIterator</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">slice</span>::{<span class="ident">Iter</span>, <span class="ident">IterMut</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">usize</span>;
-<span class="kw">use</span> {<span class="ident">ErrorReason</span>, <span class="ident">VoidResult</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">ErrorReason</span>, <span class="ident">VoidResult</span>};
 
 <span class="doccomment">/// A type which internally switches between stack and heap allocation.</span>
 <span class="doccomment">/// This is supposed to perform faster but the main reason is that this</span>

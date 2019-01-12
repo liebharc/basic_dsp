@@ -644,11 +644,11 @@
     <span class="ident">ComplexNumberSpace</span>, <span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>, <span class="ident">GetMetaData</span>, <span class="ident">MetaData</span>, <span class="ident">NumberSpace</span>, <span class="ident">PosEq</span>,
     <span class="ident">ToSliceMut</span>, <span class="ident">Vector</span>, <span class="ident">VoidResult</span>,
 };
-<span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> {<span class="ident">array_to_complex</span>, <span class="ident">array_to_complex_mut</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">array_to_complex</span>, <span class="ident">array_to_complex_mut</span>};
 
 <span class="doccomment">/// An operation which multiplies each vector element with a constant</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ScaleOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">Sized</span>

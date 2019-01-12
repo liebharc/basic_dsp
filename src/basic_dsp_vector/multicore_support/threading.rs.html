@@ -812,11 +812,11 @@
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Complexity</span>;
 <span class="kw">use</span> <span class="ident">crossbeam</span>;
-<span class="kw">use</span> <span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
 <span class="kw">use</span> <span class="ident">linreg</span>::<span class="ident">linear_regression</span>;
 <span class="kw">use</span> <span class="ident">num_cpus</span>;
 <span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">FromPrimitive</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">Iterator</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Range</span>;
@@ -908,11 +908,11 @@
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">iterations</span> {
         <span class="ident">sizes</span>.<span class="ident">push</span>(<span class="ident">size</span> <span class="kw">as</span> <span class="ident">f64</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>; <span class="ident">size</span>];
-        <span class="ident">ono_thread</span>.<span class="ident">push</span>(<span class="macro">try</span><span class="macro">!</span>(<span class="ident">measure</span>(<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>)));
-        <span class="kw">let</span> <span class="ident">two_threads_result</span> <span class="op">=</span> <span class="macro">try</span><span class="macro">!</span>(<span class="ident">measure</span>(<span class="number">2</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>));
+        <span class="ident">ono_thread</span>.<span class="ident">push</span>(<span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">measure</span>(<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>)));
+        <span class="kw">let</span> <span class="ident">two_threads_result</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">measure</span>(<span class="number">2</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>));
         <span class="ident">two_threads</span>.<span class="ident">push</span>(<span class="ident">two_threads_result</span>);
         <span class="kw">if</span> <span class="ident">number_of_cores</span> <span class="op">&gt;</span> <span class="number">2</span> {
-            <span class="ident">max_threads</span>.<span class="ident">push</span>(<span class="macro">try</span><span class="macro">!</span>(<span class="ident">measure</span>(<span class="ident">number_of_cores</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>)));
+            <span class="ident">max_threads</span>.<span class="ident">push</span>(<span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">measure</span>(<span class="ident">number_of_cores</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>)));
         } <span class="kw">else</span> {
             <span class="ident">max_threads</span>.<span class="ident">push</span>(<span class="ident">two_threads_result</span>);
         }
@@ -1253,11 +1253,11 @@
         <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">partition_mut</span>(<span class="ident">array</span>, <span class="ident">step_size</span>, <span class="ident">number_of_chunks</span>);
         <span class="ident">crossbeam</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
             <span class="kw">for</span> <span class="ident">chunk</span> <span class="kw">in</span> <span class="ident">chunks</span> {
-                <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                     <span class="ident">function</span>(<span class="ident">chunk</span>, <span class="ident">arguments</span>);
                 });
             }
-        });
+        }).<span class="ident">expect</span>(<span class="string">&quot;Failed to spawn thread&quot;</span>);
     }
 
     <span class="doccomment">/// Executes the given function on the all elements of the array and also tells the function</span>
@@ -1283,11 +1283,11 @@
             <span class="kw">let</span> <span class="ident">ranges</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">partition_in_ranges</span>(<span class="ident">array_length</span>, <span class="ident">step_size</span>, <span class="ident">chunks</span>.<span class="ident">len</span>());
             <span class="ident">crossbeam</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                 <span class="kw">for</span> <span class="ident">chunk</span> <span class="kw">in</span> <span class="ident">chunks</span>.<span class="ident">zip</span>(<span class="ident">ranges</span>) {
-                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                         <span class="ident">function</span>(<span class="ident">chunk</span>.<span class="number">0</span>, <span class="ident">chunk</span>.<span class="number">1</span>, <span class="ident">arguments</span>);
                     });
                 }
-            });
+            }).<span class="ident">expect</span>(<span class="string">&quot;Failed to spawn thread&quot;</span>);
         } <span class="kw">else</span> {
             <span class="ident">function</span>(
                 <span class="ident">array</span>,
@@ -1327,12 +1327,12 @@
             <span class="ident">crossbeam</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                 <span class="kw">for</span> <span class="ident">chunk</span> <span class="kw">in</span> <span class="ident">chunks</span>.<span class="ident">zip</span>(<span class="ident">ranges</span>) {
                     <span class="kw">let</span> <span class="ident">stack_array</span> <span class="op">=</span> <span class="ident">stack_array</span>.<span class="ident">clone</span>();
-                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">function</span>(<span class="ident">chunk</span>.<span class="number">0</span>, <span class="ident">chunk</span>.<span class="number">1</span>, <span class="ident">arguments</span>);
                         <span class="ident">stack_array</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">push</span>(<span class="ident">r</span>);
                     });
                 }
-            });
+            }).<span class="ident">expect</span>(<span class="string">&quot;Failed to spawn thread&quot;</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">stack_array</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
             <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">guard</span>, <span class="ident">InlineVector</span>::<span class="ident">empty</span>())
         } <span class="kw">else</span> {
@@ -1390,12 +1390,12 @@
             <span class="kw">let</span> <span class="ident">zipped2</span> <span class="op">=</span> <span class="ident">chunks2</span>.<span class="ident">zip</span>(<span class="ident">ranges2</span>);
             <span class="ident">crossbeam</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                 <span class="kw">for</span> <span class="ident">chunk</span> <span class="kw">in</span> <span class="ident">zipped1</span>.<span class="ident">zip</span>(<span class="ident">zipped2</span>) {
-                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                         <span class="kw">let</span> (<span class="ident">pair1</span>, <span class="ident">pair2</span>) <span class="op">=</span> <span class="ident">chunk</span>;
                         <span class="ident">function</span>(<span class="ident">pair1</span>.<span class="number">0</span>, <span class="ident">pair1</span>.<span class="number">1</span>, <span class="ident">pair2</span>.<span class="number">0</span>, <span class="ident">pair2</span>.<span class="number">1</span>, <span class="ident">arguments</span>);
                     });
                 }
-            });
+            }).<span class="ident">expect</span>(<span class="string">&quot;Failed to spawn thread&quot;</span>);
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">partition_mut</span>(<span class="ident">array</span>, <span class="ident">step_size</span>, <span class="ident">number_of_chunks</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chunks1</span> <span class="op">=</span> <span class="ident">chunks</span>.<span class="ident">next</span>().<span class="ident">unwrap</span>();
@@ -1449,12 +1449,12 @@
             <span class="ident">crossbeam</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                 <span class="kw">for</span> <span class="ident">chunk</span> <span class="kw">in</span> <span class="ident">chunks</span>.<span class="ident">zip</span>(<span class="ident">ranges</span>) {
                     <span class="kw">let</span> <span class="ident">stack_array</span> <span class="op">=</span> <span class="ident">stack_array</span>.<span class="ident">clone</span>();
-                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">function</span>(<span class="ident">a</span>, <span class="ident">chunk</span>.<span class="number">1</span>, <span class="ident">chunk</span>.<span class="number">0</span>);
                         <span class="ident">stack_array</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">push</span>(<span class="ident">r</span>);
                     });
                 }
-            });
+            }).<span class="ident">expect</span>(<span class="string">&quot;Failed to spawn thread&quot;</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">stack_array</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
             <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">guard</span>, <span class="ident">InlineVector</span>::<span class="ident">empty</span>())
         } <span class="kw">else</span> {
@@ -1501,12 +1501,12 @@
             <span class="ident">crossbeam</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                 <span class="kw">for</span> <span class="ident">chunk</span> <span class="kw">in</span> <span class="ident">chunks</span>.<span class="ident">zip</span>(<span class="ident">ranges</span>) {
                     <span class="kw">let</span> <span class="ident">stack_array</span> <span class="op">=</span> <span class="ident">stack_array</span>.<span class="ident">clone</span>();
-                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">function</span>(<span class="ident">chunk</span>.<span class="number">0</span>, <span class="ident">chunk</span>.<span class="number">1</span>, <span class="ident">arguments</span>);
                         <span class="ident">stack_array</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">push</span>(<span class="ident">r</span>);
                     });
                 }
-            });
+            }).<span class="ident">expect</span>(<span class="string">&quot;Failed to spawn thread&quot;</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">stack_array</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
             <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">guard</span>, <span class="ident">InlineVector</span>::<span class="ident">empty</span>())
         } <span class="kw">else</span> {
@@ -1548,11 +1548,11 @@
             <span class="kw">let</span> <span class="ident">ranges</span> <span class="op">=</span> <span class="ident">Chunk</span>::<span class="ident">partition_in_ranges</span>(<span class="ident">original_length</span>, <span class="ident">original_step</span>, <span class="ident">chunks</span>.<span class="ident">len</span>());
             <span class="ident">crossbeam</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
                 <span class="kw">for</span> <span class="ident">chunk</span> <span class="kw">in</span> <span class="ident">chunks</span>.<span class="ident">zip</span>(<span class="ident">ranges</span>) {
-                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                         <span class="ident">function</span>(<span class="ident">original</span>, <span class="ident">chunk</span>.<span class="number">1</span>, <span class="ident">chunk</span>.<span class="number">0</span>, <span class="ident">arguments</span>);
                     });
                 }
-            });
+            }).<span class="ident">expect</span>(<span class="string">&quot;Failed to spawn thread&quot;</span>);
         } <span class="kw">else</span> {
             <span class="ident">function</span>(
                 <span class="ident">original</span>,

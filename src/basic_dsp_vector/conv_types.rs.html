@@ -708,12 +708,12 @@
 <span class="doccomment">//! frequency domain the convolution is automatically transformed into a multiplication</span>
 <span class="doccomment">//! which is the analog operation to a convolution in time domain.</span>
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">FixedLenBuffer</span>;
-<span class="kw">use</span> <span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
 <span class="kw">use</span> <span class="ident">num_complex</span>::{<span class="ident">Complex32</span>, <span class="ident">Complex64</span>};
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">vector_types</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vector_types</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// A convolution function in time domain and real number space</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">Sync</span>

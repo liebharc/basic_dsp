@@ -501,7 +501,7 @@
 <span class="comment">//</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Simd</span>, <span class="ident">SimdApproximations</span>, <span class="ident">SimdFrom</span>};
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use_avx2&quot;</span>, <span class="ident">target_feature</span> <span class="op">=</span> <span class="string">&quot;avx2&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">simd</span>::<span class="ident">x86</span>::<span class="ident">avx</span>::<span class="kw-2">*</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use_sse2&quot;</span>, <span class="ident">target_feature</span> <span class="op">=</span> <span class="string">&quot;sse2&quot;</span>))]</span>
@@ -510,7 +510,7 @@
 <span class="kw">use</span> <span class="ident">simd</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">Zero</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Zero</span>;
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">simd_approx_impl</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>,
@@ -838,7 +838,7 @@
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="ident">simd</span>::<span class="ident">f32x4</span>;
     <span class="kw">use</span> <span class="ident">simd</span>::<span class="ident">x86</span>::<span class="ident">sse2</span>::<span class="ident">f64x2</span>;
-    <span class="kw">use</span> <span class="ident">RealNumber</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">RealNumber</span>;
 
     <span class="kw">fn</span> <span class="ident">assert_eq_tol</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">left</span>: <span class="ident">T</span>, <span class="ident">right</span>: <span class="ident">T</span>, <span class="ident">tol</span>: <span class="ident">T</span>)
     <span class="kw">where</span>

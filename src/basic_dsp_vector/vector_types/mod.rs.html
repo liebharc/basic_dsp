@@ -696,16 +696,16 @@
 <span id="696">696</span>
 <span id="697">697</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">multicore_support</span>::{<span class="ident">Chunk</span>, <span class="ident">Complexity</span>, <span class="ident">MultiCoreSettings</span>};
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::{<span class="ident">Chunk</span>, <span class="ident">Complexity</span>, <span class="ident">MultiCoreSettings</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">result</span>;
-<span class="kw">use</span> {<span class="ident">array_to_complex</span>, <span class="ident">array_to_complex_mut</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">array_to_complex</span>, <span class="ident">array_to_complex_mut</span>};
 
 <span class="kw">mod</span> <span class="ident">requirements</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">requirements</span>::<span class="kw-2">*</span>;

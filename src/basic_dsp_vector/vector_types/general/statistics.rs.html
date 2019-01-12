@@ -674,11 +674,11 @@
     <span class="ident">ComplexNumberSpace</span>, <span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>, <span class="ident">NumberSpace</span>, <span class="ident">RealNumberSpace</span>, <span class="ident">ScalarResult</span>,
     <span class="ident">ToSlice</span>, <span class="ident">Vector</span>,
 };
-<span class="kw">use</span> <span class="ident">array_to_complex</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">array_to_complex</span>;
 <span class="kw">use</span> <span class="ident">arrayvec</span>::<span class="ident">ArrayVec</span>;
-<span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
 
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>

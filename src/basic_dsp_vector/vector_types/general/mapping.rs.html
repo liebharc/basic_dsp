@@ -269,10 +269,10 @@
     <span class="ident">ComplexNumberSpace</span>, <span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>, <span class="ident">MetaData</span>, <span class="ident">RealNumberSpace</span>, <span class="ident">ScalarResult</span>,
     <span class="ident">ToSlice</span>, <span class="ident">ToSliceMut</span>,
 };
-<span class="kw">use</span> <span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
-<span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> {<span class="ident">array_to_complex</span>, <span class="ident">array_to_complex_mut</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">array_to_complex</span>, <span class="ident">array_to_complex_mut</span>};
 
 <span class="doccomment">/// Operations which allow to iterate over the vector and to derive results</span>
 <span class="doccomment">/// or to change the vector.</span>
