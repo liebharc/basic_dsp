@@ -27,26 +27,26 @@ crate-type = ["dylib", "rlib"]
 optional = false
 default-features = false
 path = "vector"
-version = "0.6.1"
+version = "0.7.0"
 
 [dependencies.basic_dsp_matrix]
 optional = true
 default-features = false
 path = "matrix"
-version = "0.6.1"
+version = "0.7.0"
 
 [dependencies.basic_dsp_interop]
 optional = true
 default-features = false
 path = "interop"
-version = "0.6.1"
+version = "0.7.0"
 
 [dev-dependencies]
 hamcrest = "^0.1.0"
 rand = "^0.3.12"
-hound = "^2.0.0"
-docopt = "^0.6.86"
-num = "^0.1.35"
+hound = "^3.4.0"
+docopt = "^1.0.2"
+num = "^0.2"
 time = "^0.1"
 
 [features]
