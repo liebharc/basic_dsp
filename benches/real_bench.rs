@@ -8,7 +8,7 @@ pub mod tools;
 #[cfg(test)]
 mod real {
     use basic_dsp::*;
-    use test::Bencher;
+    use crate::test::Bencher;
     use crate::tools::*;
 
     #[inline(never)]

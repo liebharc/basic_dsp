@@ -11,7 +11,7 @@ mod complex {
     use basic_dsp::conv_types::*;
     use basic_dsp::*;
     use num::complex::Complex32;
-    use test::Bencher;
+    use crate::test::Bencher;
     use crate::tools::*;
 
     #[bench]

@@ -9,7 +9,7 @@ pub mod tools;
 mod time_freq {
     use basic_dsp::window_functions::TriangularWindow;
     use basic_dsp::*;
-    use test::Bencher;
+    use crate::test::Bencher;
     use crate::tools::*;
 
     #[bench]

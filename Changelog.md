@@ -1,6 +1,10 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.7.1
+
+- Removed `simd` from default compilation options due to https://github.com/rust-lang/rust/issues/57940 . Compile with `--features use_sse2,use_avx2` to get the previous behavior. 
+
 ## Version 0.7.0
 
 - Update to Rust 2018
