@@ -10,7 +10,8 @@ rust:
   - nightly
 matrix:
   allow_failures:
-    - rust: beta, nightly  
+    - rust: beta  
+    - rust: nightly
 #before_script:
 #  - rustup component add clippy-preview
 # Run the makefile to test all tests and doc tests for every sub module
