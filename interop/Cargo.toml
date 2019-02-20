@@ -1,6 +1,6 @@
 [package]
 name = "basic_dsp_interop"
-version = "0.7.1"
+version = "0.8.0"
 authors = ["Christian Liebhardt"]
 license = "MIT/Apache-2.0"
 homepage = "https://github.com/liebharc/basic_dsp"
@@ -28,7 +28,7 @@ num-complex = "^0.2"
 optional = false
 default-features = false
 path = "../vector"
-version = "^0.7.0"
+version = "^0.8.0"
 
 [features]
 use_avx512 = ["basic_dsp_vector/use_avx512"]

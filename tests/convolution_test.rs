@@ -30,8 +30,8 @@ mod conv_test {
             freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio);
             let ifreq_res = freq.ifft(&mut buffer);
             assert_vector_eq_with_reason_and_tolerance(
-                &ifreq_res[..],
-                &time[..],
+                ifreq_res.data(..),
+                time.data(..),
                 0.3,
                 "Results should match independent if done \
                  in time or frequency domain",
@@ -61,8 +61,8 @@ mod conv_test {
             freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio);
             let ifreq_res = freq.ifft(&mut buffer);
             assert_vector_eq_with_reason_and_tolerance(
-                &ifreq_res[..],
-                &time[..],
+                ifreq_res.data(..),
+                time.data(..),
                 0.3,
                 "Results should match independent if done \
                  in time or frequency domain",
@@ -101,8 +101,8 @@ mod conv_test {
                 b.len(),
             );
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &time[..],
+                left.data(..),
+                time.data(..),
                 0.1,
                 "Results should match independent if done \
                  in optimized or non optimized code branch",
@@ -128,8 +128,8 @@ mod conv_test {
             freq1.mul(&freq2).unwrap();
             let right = freq1.ifft(&mut buffer);
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &conv_swap(&right[..])[0..left.len()],
+                left.data(..),
+                &conv_swap(right.data(..))[0..left.len()],
                 0.2,
                 "Results should match independent if done \
                  in time or frequency domain",
@@ -154,8 +154,8 @@ mod conv_test {
         freq1.mul(&freq2).unwrap();
         let right = freq1.ifft(&mut buffer);
         assert_vector_eq_with_reason_and_tolerance(
-            &left[..],
-            &conv_swap(&right[..])[0..left.len()],
+            left.data(..),
+            &conv_swap(right.data(..))[0..left.len()],
             0.2,
             "Results should match independent if done \
              in time or frequency domain",
@@ -179,8 +179,8 @@ mod conv_test {
             time2.set_delta(delta);
             time1.convolve_signal(&mut buffer, &time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &time1[..],
+                left.data(..),
+                time1.data(..),
                 0.2,
                 "Results should match independent if done \
                  with a smaller vector or with a zero \
@@ -206,8 +206,8 @@ mod conv_test {
             time2.set_delta(delta);
             time1.convolve_signal(&mut buffer, &time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &time1[..],
+                left.data(..),
+                time1.data(..),
                 0.2,
                 "Results should match independent if done \
                  with a smaller vector or with a zero \

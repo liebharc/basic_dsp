@@ -1,7 +1,7 @@
 //! Fundamental math operations
 use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace, PosEq,
-    ToSliceMut, Vector, VoidResult,
+    ToSliceMut, Vector, VoidResult, FloatIndex
 };
 use crate::multicore_support::*;
 use crate::numbers::*;
@@ -382,7 +382,7 @@ macro_rules! assert_meta_data {
 
 macro_rules! impl_binary_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + FloatIndex<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -392,7 +392,7 @@ macro_rules! impl_binary_vector_operation {
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
                 let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-                let other = &$arg_name[..];
+                let other = $arg_name.data(..);
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     partition.center(other), Reg::LEN,
@@ -419,7 +419,7 @@ macro_rules! impl_binary_vector_operation {
 
 macro_rules! impl_binary_complex_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + FloatIndex<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -429,7 +429,7 @@ macro_rules! impl_binary_complex_vector_operation {
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
                 let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-                let other = &$arg_name[..];
+                let other = $arg_name.data(..);
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     partition.center(other), Reg::LEN,
@@ -456,7 +456,7 @@ macro_rules! impl_binary_complex_vector_operation {
 
 macro_rules! impl_binary_smaller_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + FloatIndex<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -465,7 +465,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
-                let other = &$arg_name[..];
+                let other = $arg_name.data(..);
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, Reg::LEN,
@@ -486,7 +486,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
 macro_rules! impl_binary_smaller_complex_vector_ops {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + FloatIndex<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -495,7 +495,7 @@ macro_rules! impl_binary_smaller_complex_vector_ops {
 
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
-                let other = &$arg_name[..];
+                let other = $arg_name.data(..);
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, Reg::LEN,
@@ -543,7 +543,7 @@ where
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
-    O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+    O: Vector<T> + FloatIndex<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
@@ -594,7 +594,7 @@ where
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
-    O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+    O: Vector<T> + FloatIndex<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {

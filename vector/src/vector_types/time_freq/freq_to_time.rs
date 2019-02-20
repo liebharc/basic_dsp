@@ -1,7 +1,7 @@
 use super::super::{
     Buffer, ComplexNumberSpace, DataDomain, DspVec, ErrorReason, FrequencyDomain,
     FrequencyDomainOperations, InsertZerosOpsBuffered, MetaData, RededicateForceOps, ScaleOps,
-    TimeDomainOperations, ToRealTimeResult, ToSliceMut, ToTimeResult, TransRes, Vector,
+    TimeDomainOperations, ToRealTimeResult, ToSliceMut, ToTimeResult, TransRes, Vector, FloatIndex
 };
 use super::fft;
 use crate::multicore_support::*;
@@ -200,7 +200,7 @@ where
             ));
         }
 
-        if self.points() > 0 && self[1].abs() > T::from(1e-10).unwrap() {
+        if self.points() > 0 && self.data(1).abs() > T::from(1e-10).unwrap() {
             self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();

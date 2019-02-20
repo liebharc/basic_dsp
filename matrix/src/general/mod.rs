@@ -426,8 +426,8 @@ mod tests {
         let mut mat1 = vec![vec![0.0, 1.0], vec![2.0, 3.0]].to_real_time_mat();
         let mat2 = vec![vec![3.0, 7.0], vec![-1.0, 4.0]].to_real_time_mat();
         mat1.add(&mat2).unwrap();
-        assert_eq!(&mat1.rows[0][..], &[3.0, 8.0]);
-        assert_eq!(&mat1.rows[1][..], &[1.0, 7.0]);
+        assert_eq!(mat1.rows[0].data(..), &[3.0, 8.0]);
+        assert_eq!(mat1.rows[1].data(..), &[1.0, 7.0]);
     }
 
     #[test]
@@ -435,7 +435,7 @@ mod tests {
         let mut mat = vec![vec![0.0, 1.0], vec![2.0, 3.0]].to_real_time_mat();
         let vec = vec![3.0, 7.0].to_real_time_vec();
         mat.add(&vec).unwrap();
-        assert_eq!(&mat.rows[0][..], &[3.0, 8.0]);
-        assert_eq!(&mat.rows[1][..], &[5.0, 10.0]);
+        assert_eq!(mat.rows[0].data(..), &[3.0, 8.0]);
+        assert_eq!(mat.rows[1].data(..), &[5.0, 10.0]);
     }
 }

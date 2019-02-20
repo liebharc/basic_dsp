@@ -1,7 +1,7 @@
 use super::super::{
     Buffer, ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace,
     PosEq, RealNumberSpace, RededicateForceOps, Resize, ToRealResult, ToSlice, ToSliceMut, Vector,
-    VoidResult,
+    VoidResult, FloatIndex, FloatIndexMut
 };
 use crate::array_to_complex;
 use crate::multicore_support::*;
@@ -494,14 +494,14 @@ where
     ) where
         A: Sync + Copy + Send,
         F: Fn(Complex<T>, A) -> T + 'static + Sync,
-        V: Vector<T> + Index<Range<usize>, Output = [T]> + IndexMut<Range<usize>>,
+        V: Vector<T> + FloatIndex<Range<usize>, Output = [T]> + FloatIndexMut<Range<usize>>,
     {
         let len = self.len();
         destination
             .resize(len / 2)
             .expect("Target should be real and thus all values for len / 2 should be valid");
         destination.set_delta(self.delta);
-        let array = &mut destination[0..len / 2];
+        let array = destination.data_mut(0..len / 2);
         let source = &self.data.to_slice();
         Chunk::from_src_to_dest(
             complexity,
@@ -535,14 +535,14 @@ where
     ) where
         F: Fn(Complex<T>) -> T + 'static + Sync,
         FSimd: Fn(Reg) -> Reg + 'static + Sync,
-        V: Vector<T> + Index<Range<usize>, Output = [T]> + IndexMut<Range<usize>>,
+        V: Vector<T> + FloatIndex<Range<usize>, Output = [T]> + FloatIndexMut<Range<usize>>,
     {
         let data_length = self.len();
         destination
             .resize(data_length / 2)
             .expect("Target should be real and thus all values for len / 2 should be valid");;
         destination.set_delta(self.delta);
-        let temp = &mut destination[0..data_length / 2];
+        let temp = destination.data_mut(0..data_length / 2);
         let array = &self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(array);
         Chunk::from_src_to_dest(
@@ -597,8 +597,8 @@ where
     DspVec<S, T, N, D>: ToRealResult,
     O: Vector<T>
         + GetMetaData<T, NR, DO>
-        + Index<Range<usize>, Output = [T]>
-        + IndexMut<Range<usize>>,
+        + FloatIndex<Range<usize>, Output = [T]>
+        + FloatIndexMut<Range<usize>>,
     S: ToSlice<T>,
     T: RealNumber,
     N: ComplexNumberSpace,
@@ -678,8 +678,8 @@ where
             .expect("Target should be real and thus all values for len / 2 should be valid");
         imag.resize(data_length / 2)
             .expect("Target should be real and thus all values for len / 2 should be valid");
-        let real = &mut real[0..data_length / 2];
-        let imag = &mut imag[0..data_length / 2];
+        let real = real.data_mut(0..data_length / 2);
+        let imag = imag.data_mut(0..data_length / 2);
         let data = self.data.to_slice();
         for (i, n) in (&data[0..data_length]).iter().enumerate() {
             if i % 2 == 0 {
@@ -698,8 +698,8 @@ where
         phase
             .resize(data_length / 2)
             .expect("Target should be real and thus all values for len / 2 should be valid");
-        let mag = &mut mag[0..data_length / 2];
-        let phase = &mut phase[0..data_length / 2];
+        let mag = mag.data_mut(0..data_length / 2);
+        let phase = phase.data_mut(0..data_length / 2);
         let data = self.data.to_slice();
         let mut i = 0;
         while i < data_length {
@@ -715,7 +715,7 @@ where
 impl<S, T, N, NR, D, O, DO> ComplexToRealSetterOps<O, T, NR, DO> for DspVec<S, T, N, D>
 where
     DspVec<S, T, N, D>: ToRealResult,
-    O: Index<Range<usize>, Output = [T]> + Vector<T> + GetMetaData<T, NR, DO>,
+    O: FloatIndex<Range<usize>, Output = [T]> + Vector<T> + GetMetaData<T, NR, DO>,
     S: ToSliceMut<T> + Resize,
     T: RealNumber,
     N: ComplexNumberSpace,
@@ -732,8 +732,8 @@ where
             self.data.resize(data_length);
             self.valid_len = data_length;
             let data = self.data.to_slice_mut();
-            let real = &real[0..real.len()];
-            let imag = &imag[0..imag.len()];
+            let real = real.data(0..real.len());
+            let imag = imag.data(0..imag.len());
             for (i, n) in (&mut data[0..data_length]).iter_mut().enumerate() {
                 if i % 2 == 0 {
                     *n = real[i / 2];
@@ -755,8 +755,8 @@ where
             self.data.resize(data_length);
             self.valid_len = data_length;
             let data = self.data.to_slice_mut();
-            let mag = &mag[0..mag.len()];
-            let phase = &phase[0..phase.len()];
+            let mag = mag.data(0..mag.len());
+            let phase = phase.data(0..phase.len());
             let mut i = 0;
             while i < data_length {
                 let c = Complex::<T>::from_polar(&mag[i / 2], &phase[i / 2]);

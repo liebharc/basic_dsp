@@ -565,7 +565,7 @@ mod tests {
     fn swap_halves_real_even_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0].to_real_time_vec();
         v.swap_halves();
-        assert_eq!(&v[..], &[3.0, 4.0, 1.0, 2.0]);
+        assert_eq!(v.data(..), &[3.0, 4.0, 1.0, 2.0]);
     }
 
     #[test]
@@ -574,7 +574,7 @@ mod tests {
             vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0].to_real_time_vec();
         v.swap_halves();
         assert_eq!(
-            &v[..],
+            v.data(..),
             &[7.0, 8.0, 9.0, 10.0, 11.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
         );
     }
@@ -583,14 +583,14 @@ mod tests {
     fn swap_halves_complex_even_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0].to_complex_time_vec();
         v.swap_halves();
-        assert_eq!(&v[..], &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
+        assert_eq!(v.data(..), &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
     }
 
     #[test]
     fn swap_halves_complex_odd_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         v.swap_halves();
-        assert_eq!(&v[..], &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        assert_eq!(v.data(..), &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
     }
 
     #[test]
@@ -601,7 +601,7 @@ mod tests {
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             0.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -612,7 +612,7 @@ mod tests {
             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0,
             0.0, 0.0, 0.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -623,7 +623,7 @@ mod tests {
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.0,
             8.0, 9.0, 10.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -636,7 +636,7 @@ mod tests {
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.0,
             8.0, 9.0, 10.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -650,7 +650,7 @@ mod tests {
             0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 0.0,
             0.0, 0.0, 0.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -662,7 +662,7 @@ mod tests {
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             0.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -675,7 +675,7 @@ mod tests {
             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0,
             0.0, 0.0, 0.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -691,7 +691,7 @@ mod tests {
             0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 0.0,
             0.0, 0.0, 0.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -717,7 +717,7 @@ mod tests {
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             0.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -727,7 +727,7 @@ mod tests {
         let expected = [
             0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0, 0.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
@@ -737,21 +737,21 @@ mod tests {
         let expected = [
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.0, 8.0, 9.0, 10.0,
         ];
-        assert_eq!(&v[..], &expected);
+        assert_eq!(v.data(..), &expected);
     }
 
     #[test]
     fn zero_interleave_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0].to_real_time_vec();
         v.zero_interleave(2).unwrap();
-        assert_eq!(&v[..], &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]);
+        assert_eq!(v.data(..), &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]);
     }
 
     #[test]
     fn zero_interleave_even_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0].to_real_time_vec();
         v.zero_interleave(2).unwrap();
-        assert_eq!(&v[..], &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0]);
+        assert_eq!(v.data(..), &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0]);
     }
 
     #[test]
@@ -759,14 +759,14 @@ mod tests {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0].to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         v.zero_interleave_b(&mut buffer, 2);
-        assert_eq!(&v[..], &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]);
+        assert_eq!(v.data(..), &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]);
     }
 
     #[test]
     fn zero_interleave_complex_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0].to_complex_time_vec();
         v.zero_interleave(2).unwrap();
-        assert_eq!(&v[..], &[1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0]);
+        assert_eq!(v.data(..), &[1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0]);
     }
 
     #[test]
@@ -774,6 +774,6 @@ mod tests {
         let mut v = vec![1.0, 2.0, 3.0, 4.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         v.zero_interleave_b(&mut buffer, 2);
-        assert_eq!(&v[..], &[1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0]);
+        assert_eq!(v.data(..), &[1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0]);
     }
 }

@@ -2,7 +2,7 @@ use super::super::{
     Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, Domain, DspVec, ErrorReason,
     FrequencyDomain, FromVector, InsertZerosOps, MetaData, NumberSpace, PaddingOption, PosEq,
     ResizeOps, TimeDomain, TimeToFrequencyDomainOperations, ToComplexVector, ToSliceMut, Vector,
-    VoidResult,
+    VoidResult, FloatIndexMut
 };
 use crate::conv_types::*;
 use crate::gpu_support::GpuSupport;
@@ -161,7 +161,7 @@ where
             let mut j = -(T::from(len).unwrap());
             while i < imp_resp.len() {
                 let value = function.calc(j * ratio_inv);
-                imp_resp[i] = value;
+                *imp_resp.data_mut(i) = value;
                 i += 2;
                 j = j + T::one();
             }
@@ -230,9 +230,9 @@ where
             let mut j = -T::from(len).unwrap();
             while i < imp_resp.len() {
                 let value = function.calc(j * ratio_inv);
-                imp_resp[i] = value.re;
+                *imp_resp.data_mut(i) = value.re;
                 i += 2;
-                imp_resp[i] = value.im;
+                *imp_resp.data_mut(i) = value.im;
                 i += 1;
                 j = j + T::one();
             }
@@ -640,7 +640,7 @@ mod tests {
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
         vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0);
         let expected = [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.0, 0.0];
-        assert_eq_tol(&vector[..], &expected, 1e-4);
+        assert_eq_tol(vector.data(..), &expected, 1e-4);
     }
 
     #[test]
@@ -649,7 +649,7 @@ mod tests {
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
         vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0);
         let expected = [0.0, 0.0, 0.5, 0.5, 1.5, 1.5, 2.0, 2.0, 1.5, 1.5, 0.5, 0.5];
-        assert_eq_tol(&vector[..], &expected, 1e-4);
+        assert_eq_tol(vector.data(..), &expected, 1e-4);
     }
 
     #[test]
@@ -670,7 +670,7 @@ mod tests {
             0.4840621929215732,
             0.2171850639713355,
         ];
-        assert_eq_tol(&vector[..], &expected, 1e-4);
+        assert_eq_tol(vector.data(..), &expected, 1e-4);
     }
 
     #[test]
@@ -678,7 +678,7 @@ mod tests {
         let res = {
             let len = 11;
             let mut time = vec![0.0; 2 * len].to_complex_time_vec();
-            time[len] = 1.0;
+            *time.data_mut(len) = 1.0;
             let sinc: SincFunction<f32> = SincFunction::new();
             let mut buffer = SingleBuffer::new();
             time.convolve(
@@ -703,14 +703,14 @@ mod tests {
             0.000000027827534,
             0.12732396,
         ];
-        assert_eq_tol(&res[..], &expected, 1e-4);
+        assert_eq_tol(res.data(..), &expected, 1e-4);
     }
 
     #[test]
     fn compare_conv_freq_mul() {
         let len = 11;
         let mut time = vec![0.0; 2 * len].to_complex_time_vec();
-        time[len] = 1.0;
+        *time.data_mut(len) = 1.0;
         let mut buffer = SingleBuffer::new();
         let mut freq = time.clone().fft(&mut buffer);
         let sinc: SincFunction<f32> = SincFunction::new();
@@ -721,7 +721,7 @@ mod tests {
         let time = time.magnitude();
         assert_eq!(ifft.is_complex(), time.is_complex());
         assert_eq!(ifft.domain(), time.domain());
-        assert_eq_tol(&ifft[..], &time[..], 0.2);
+        assert_eq_tol(ifft.data(..), time.data(..), 0.2);
     }
 
     #[test]
@@ -743,7 +743,7 @@ mod tests {
     fn convolve_complex_vectors32() {
         const LEN: usize = 11;
         let mut time = vec![Complex32::new(0.0, 0.0); LEN].to_complex_time_vec();
-        time[LEN] = 1.0;
+        *time.data_mut(LEN) = 1.0;
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut real = [0.0; LEN];
         {
@@ -776,7 +776,7 @@ mod tests {
             0.000000027827534,
             0.12732396,
         ];
-        assert_eq_tol(&result[..], &expected, 1e-4);
+        assert_eq_tol(result.data(..), &expected, 1e-4);
     }
 
     #[test]
@@ -817,7 +817,7 @@ mod tests {
         let mut mul = a.ifft(&mut buffer);
         mul.reverse();
         mul.swap_halves();
-        assert_eq_tol(&mul[..], &conv[..], 1e-4);
+        assert_eq_tol(mul.data(..), conv.data(..), 1e-4);
     }
 
     #[test]
@@ -830,7 +830,7 @@ mod tests {
         a.convolve_signal(&mut buffer, &b).unwrap();
         let a = a.magnitude();
         let exp = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
-        assert_eq_tol(&a[..], &exp, 1e-4);
+        assert_eq_tol(a.data(..), &exp, 1e-4);
     }
 
     #[test]
@@ -843,7 +843,7 @@ mod tests {
         a.convolve_signal(&mut buffer, &b).unwrap();
         let a = a.magnitude();
         let exp = [9.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        assert_eq_tol(&a[..], &exp, 1e-4);
+        assert_eq_tol(a.data(..), &exp, 1e-4);
     }
 
     #[test]
@@ -863,7 +863,7 @@ mod tests {
         mul.reverse();
         mul.swap_halves();
         let conv = conv.magnitude();
-        assert_eq_tol(&mul[..], &conv[..], 1e-4);
+        assert_eq_tol(mul.data(..), conv.data(..), 1e-4);
     }
 
     #[test]
@@ -883,7 +883,7 @@ mod tests {
         mul.reverse();
         mul.swap_halves();
         let conv = conv.magnitude();
-        assert_eq_tol(&mul[..], &conv[..], 1e-4);
+        assert_eq_tol(mul.data(..), conv.data(..), 1e-4);
     }
 
     #[test]
@@ -899,7 +899,7 @@ mod tests {
         conv.convolve_signal(&mut buffer, &b).unwrap();
         let mut overlap_discard = a;
         overlap_discard.overlap_discard(&mut buffer, &b, 0).unwrap();
-        assert_eq_tol(&overlap_discard[..], &conv[..], 1e-4);
+        assert_eq_tol(overlap_discard.data(..), conv.data(..), 1e-4);
     }
 
     /// This test triggered an index out of range error in the past
@@ -910,6 +910,6 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         let sinc = SincFunction::new();
         vec.convolve(&mut buffer, &sinc as &RealImpulseResponse<f32>, 1.0, 12);
-        assert_eq_tol(&data[..], &vec[..], 1e-4);
+        assert_eq_tol(&data[..], vec.data(..), 1e-4);
     }
 }

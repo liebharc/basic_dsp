@@ -1,12 +1,37 @@
 //! This module defines the basic vector trait and indexers.
 use super::{
     Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, Domain, DspVec, ErrorReason, NumberSpace,
-    ToSlice, ToSliceMut, TypeMetaData, VoidResult,
+    ToSlice, ToSliceMut, TypeMetaData, VoidResult
 };
 use crate::multicore_support::MultiCoreSettings;
 use crate::numbers::*;
 use std::ops::*;
 use crate::{array_to_complex, array_to_complex_mut};
+
+/// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
+/// but with a different method name so that it can be used to implement an additional range
+/// accessor for float data.
+pub trait FloatIndex<Idx>
+where
+    Idx: Sized,
+{
+    type Output: ?Sized;
+    /// The method for float indexing. If the vector is real valued then this function just returns the values
+    // in the vector. If the vector is compled valued then will returned real and imaginary values interleaved (all
+    // values at even indexes are the real parts, while all values at odd indexes are imag parts).
+    fn data(&self, index: Idx) -> &Self::Output;
+}
+
+/// Like [`std::ops::IndexMut`](https://doc.rust-lang.org/std/ops/trait.IndexMut.html)
+/// but with a different method name so that it can be used to implement a additional range
+/// accessor for float data.
+pub trait FloatIndexMut<Idx>: FloatIndex<Idx>
+where
+    Idx: Sized,
+{
+    /// The method for real indexing
+    fn data_mut(&mut self, index: Idx) -> &mut Self::Output;
+}
 
 /// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
 /// but with a different method name so that it can be used to implement an additional range
@@ -19,7 +44,7 @@ where
 {
     type Output: ?Sized;
     /// The method for complex indexing
-    fn complex(&self, index: Idx) -> &Self::Output;
+    fn cdata(&self, index: Idx) -> &Self::Output;
 }
 
 /// Like [`std::ops::IndexMut`](https://doc.rust-lang.org/std/ops/trait.IndexMut.html)
@@ -32,7 +57,7 @@ where
     Idx: Sized,
 {
     /// The method for complex indexing
-    fn complex_mut(&mut self, index: Idx) -> &mut Self::Output;
+    fn cdata_mut(&mut self, index: Idx) -> &mut Self::Output;
 }
 
 /// A trait which provides information about number space and domain.
@@ -206,7 +231,7 @@ where
             Err(_) => {
                 let orig_len = self.len();
                 let mut temp = buffer.borrow(len);
-                temp[0..orig_len].clone_from_slice(&self[..]);
+                temp[0..orig_len].clone_from_slice(self.data(..));
                 temp.trade(&mut self.data);
                 self.valid_len = len;
                 Ok(())
@@ -272,7 +297,7 @@ where
     }
 }
 
-impl<S, T, N, D> Index<usize> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndex<usize> for DspVec<S, T, N, D>
 where
     S: ToSlice<T>,
     T: RealNumber,
@@ -281,7 +306,7 @@ where
 {
     type Output = T;
 
-    fn index(&self, index: usize) -> &T {
+    fn data(&self, index: usize) -> &T {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = &slice[0..len];
@@ -289,14 +314,14 @@ where
     }
 }
 
-impl<S, T, N, D> IndexMut<usize> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndexMut<usize> for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
 {
-    fn index_mut(&mut self, index: usize) -> &mut T {
+    fn data_mut(&mut self, index: usize) -> &mut T {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = &mut slice[0..len];
@@ -304,7 +329,7 @@ where
     }
 }
 
-impl<S, T, N, D> Index<RangeFull> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndex<RangeFull> for DspVec<S, T, N, D>
 where
     S: ToSlice<T>,
     T: RealNumber,
@@ -313,28 +338,28 @@ where
 {
     type Output = [T];
 
-    fn index(&self, _index: RangeFull) -> &[T] {
+    fn data(&self, _index: RangeFull) -> &[T] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         &slice[0..len]
     }
 }
 
-impl<S, T, N, D> IndexMut<RangeFull> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndexMut<RangeFull> for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
 {
-    fn index_mut(&mut self, _index: RangeFull) -> &mut [T] {
+    fn data_mut(&mut self, _index: RangeFull) -> &mut [T] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         &mut slice[0..len]
     }
 }
 
-impl<S, T, N, D> Index<RangeFrom<usize>> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndex<RangeFrom<usize>> for DspVec<S, T, N, D>
 where
     S: ToSlice<T>,
     T: RealNumber,
@@ -343,7 +368,7 @@ where
 {
     type Output = [T];
 
-    fn index(&self, index: RangeFrom<usize>) -> &[T] {
+    fn data(&self, index: RangeFrom<usize>) -> &[T] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = &slice[0..len];
@@ -351,14 +376,14 @@ where
     }
 }
 
-impl<S, T, N, D> IndexMut<RangeFrom<usize>> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndexMut<RangeFrom<usize>> for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
 {
-    fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [T] {
+    fn data_mut(&mut self, index: RangeFrom<usize>) -> &mut [T] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = &mut slice[0..len];
@@ -366,7 +391,7 @@ where
     }
 }
 
-impl<S, T, N, D> Index<RangeTo<usize>> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndex<RangeTo<usize>> for DspVec<S, T, N, D>
 where
     S: ToSlice<T>,
     T: RealNumber,
@@ -375,7 +400,7 @@ where
 {
     type Output = [T];
 
-    fn index(&self, index: RangeTo<usize>) -> &[T] {
+    fn data(&self, index: RangeTo<usize>) -> &[T] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = &slice[0..len];
@@ -383,14 +408,14 @@ where
     }
 }
 
-impl<S, T, N, D> IndexMut<RangeTo<usize>> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndexMut<RangeTo<usize>> for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
 {
-    fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [T] {
+    fn data_mut(&mut self, index: RangeTo<usize>) -> &mut [T] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = &mut slice[0..len];
@@ -398,7 +423,7 @@ where
     }
 }
 
-impl<S, T, N, D> Index<Range<usize>> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndex<Range<usize>> for DspVec<S, T, N, D>
 where
     S: ToSlice<T>,
     T: RealNumber,
@@ -407,7 +432,7 @@ where
 {
     type Output = [T];
 
-    fn index(&self, index: Range<usize>) -> &[T] {
+    fn data(&self, index: Range<usize>) -> &[T] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = &slice[0..len];
@@ -415,14 +440,14 @@ where
     }
 }
 
-impl<S, T, N, D> IndexMut<Range<usize>> for DspVec<S, T, N, D>
+impl<S, T, N, D> FloatIndexMut<Range<usize>> for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
 {
-    fn index_mut(&mut self, index: Range<usize>) -> &mut [T] {
+    fn data_mut(&mut self, index: Range<usize>) -> &mut [T] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = &mut slice[0..len];
@@ -439,7 +464,7 @@ where
 {
     type Output = Complex<T>;
 
-    fn complex(&self, index: usize) -> &Complex<T> {
+    fn cdata(&self, index: usize) -> &Complex<T> {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = array_to_complex(&slice[0..len]);
@@ -454,7 +479,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn complex_mut(&mut self, index: usize) -> &mut Complex<T> {
+    fn cdata_mut(&mut self, index: usize) -> &mut Complex<T> {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
@@ -471,7 +496,7 @@ where
 {
     type Output = [Complex<T>];
 
-    fn complex(&self, _index: RangeFull) -> &[Complex<T>] {
+    fn cdata(&self, _index: RangeFull) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         array_to_complex(&slice[0..len])
@@ -485,7 +510,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn complex_mut(&mut self, _index: RangeFull) -> &mut [Complex<T>] {
+    fn cdata_mut(&mut self, _index: RangeFull) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         array_to_complex_mut(&mut slice[0..len])
@@ -501,7 +526,7 @@ where
 {
     type Output = [Complex<T>];
 
-    fn complex(&self, index: RangeFrom<usize>) -> &[Complex<T>] {
+    fn cdata(&self, index: RangeFrom<usize>) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = array_to_complex(&slice[0..len]);
@@ -516,7 +541,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn complex_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>] {
+    fn cdata_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
@@ -533,7 +558,7 @@ where
 {
     type Output = [Complex<T>];
 
-    fn complex(&self, index: RangeTo<usize>) -> &[Complex<T>] {
+    fn cdata(&self, index: RangeTo<usize>) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = array_to_complex(&slice[0..len]);
@@ -548,7 +573,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn complex_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>] {
+    fn cdata_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
@@ -565,7 +590,7 @@ where
 {
     type Output = [Complex<T>];
 
-    fn complex(&self, index: Range<usize>) -> &[Complex<T>] {
+    fn cdata(&self, index: Range<usize>) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = array_to_complex(&slice[0..len]);
@@ -580,7 +605,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn complex_mut(&mut self, index: Range<usize>) -> &mut [Complex<T>] {
+    fn cdata_mut(&mut self, index: Range<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
@@ -626,13 +651,13 @@ mod tests {
     fn index_of_vec() {
         let vec = vec![1.0, 2.0, 3.0];
         let dsp = vec.to_real_time_vec();
-        assert_eq!(dsp[..], [1.0, 2.0, 3.0]);
+        assert_eq!(dsp.data(..), [1.0, 2.0, 3.0]);
     }
 
     #[test]
     fn index_of_slice() {
         let slice = [1.0, 5.0, 4.0];
         let dsp = slice.to_real_time_vec();
-        assert_eq!(dsp[..], [1.0, 5.0, 4.0]);
+        assert_eq!(dsp.data(..), [1.0, 5.0, 4.0]);
     }
 }

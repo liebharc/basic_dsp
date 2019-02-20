@@ -66,7 +66,7 @@ fn main() {
 
     let mut writer = hound::WavWriter::create(dest, spec).expect("Failed to open output waveform");
     let mut sample_no = 0;
-    for sample in &complex[..] {
+    for sample in complex.data(..) {
         let amplitude = i16::MAX as f32;
         let sample = (sample * amplitude) as i16;
         writer

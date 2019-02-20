@@ -205,7 +205,7 @@ mod tests {
             3.0000, 3.3203, 3.6042, 3.8359, 4.0,
         ];
         assert_eq_tol(
-            &time[4..expected.len() - 4],
+            time.data(4..expected.len() - 4),
             &expected[4..expected.len() - 4],
             6e-2,
         );
@@ -220,7 +220,7 @@ mod tests {
             -3.0, -2.666, -2.333, -2.0, -1.666, -1.333, -1.0, -0.666, -0.333, 0.0, 0.333, 0.666,
             1.0, 1.333, 1.666, 2.0, 2.333, 2.666, 3.0,
         ];
-        assert_eq_tol(&time[..], &expected, 5e-3);
+        assert_eq_tol(time.data(..), &expected, 5e-3);
     }
 
     #[test]
@@ -233,6 +233,6 @@ mod tests {
             -0.7500, -0.5000, -0.2500, 0.0, 0.2500, 0.5000, 0.7500, 1.0000, 1.5000, 2.0000, 2.5000,
             3.0000, 3.2500, 3.5000, 3.7500, 4.0,
         ];
-        assert_eq_tol(&time[..], &expected, 0.1);
+        assert_eq_tol(time.data(..), &expected, 0.1);
     }
 }

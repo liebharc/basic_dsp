@@ -458,7 +458,7 @@ macro_rules! convolve_signal {
 
         for n in 0..col_len {
             let row = &mut $self_.rows_mut()[n];
-            (&mut row[..]).clone_from_slice(&target[n * row_len..(n + 1) * row_len]);
+            row.data_mut(..).clone_from_slice(&target[n * row_len..(n + 1) * row_len]);
         }
 
         Ok(())
@@ -552,7 +552,7 @@ mod tests {
         let res = {
             let len = 11;
             let mut time = vec![0.0; 2 * len].to_complex_time_vec();
-            time[len] = 1.0;
+            *time.data_mut(len) = 1.0;
             let time2 = time.clone();
             let mut mat = [time, time2].to_mat();
             let sinc: SincFunction<f32> = SincFunction::new();
@@ -580,8 +580,8 @@ mod tests {
             0.12732396,
         ];
         let (res, _) = res.get();
-        assert_eq_tol(&res[0][..], &expected, 1e-4);
-        assert_eq_tol(&res[1][..], &expected, 1e-4);
+        assert_eq_tol(res[0].data(..), &expected, 1e-4);
+        assert_eq_tol(res[1].data(..), &expected, 1e-4);
     }
 
     #[test]
@@ -589,7 +589,7 @@ mod tests {
         let mut mat = {
             let len = 11;
             let mut time = vec![0.0; len].to_real_time_vec();
-            time[len / 2] = 1.0;
+            *time.data_mut(len / 2) = 1.0;
             let time2 = time.clone();
             vec![time, time2].to_mat()
         };
@@ -597,7 +597,7 @@ mod tests {
         let len = 3;
         let empty = vec![0.0; len].to_real_time_vec();
         let mut delay = vec![0.0; len].to_real_time_vec();
-        delay[0] = 1.0;
+        *delay.data_mut(0) = 1.0;
         let conv1 = vec![&delay, &empty];
         let conv2 = vec![&empty, &delay];
         let conv = vec![&conv1, &conv2];
@@ -608,14 +608,14 @@ mod tests {
         let expected = {
             let len = 11;
             let mut time = vec![0.0; len].to_real_time_vec();
-            time[len / 2 - 1] = 1.0;
+            *time.data_mut(len / 2 - 1) = 1.0;
             let time2 = time.clone();
             vec![time, time2]
         };
 
         let (res, _) = mat.get();
-        assert_eq_tol(&res[0][..], &expected[0][..], 1e-4);
-        assert_eq_tol(&res[1][..], &expected[1][..], 1e-4);
+        assert_eq_tol(res[0].data(..), expected[0].data(..), 1e-4);
+        assert_eq_tol(res[1].data(..), expected[1].data(..), 1e-4);
     }
 
     #[test]
@@ -623,16 +623,16 @@ mod tests {
         let mut mat = {
             let len = 11;
             let mut time = vec![0.0; len].to_real_time_vec();
-            time[len / 2] = 0.5;
+            *time.data_mut(len / 2 ) = 0.5;
             let mut time2 = vec![0.0; len].to_real_time_vec();
-            time2[len / 2] = 2.0;
+            *time2.data_mut(len / 2 ) = 2.0;
             [time, time2].to_mat()
         };
 
         let len = 3;
         let empty = vec![0.0; len].to_real_time_vec();
         let mut delay = vec![0.0; len].to_real_time_vec();
-        delay[0] = 1.0;
+        *delay.data_mut(0) = 1.0;
 
         // This impulse response will swap both channels
         // and then delay them
@@ -644,14 +644,14 @@ mod tests {
         let expected = {
             let len = 11;
             let mut time = vec![0.0; len].to_real_time_vec();
-            time[len / 2 - 1] = 2.0;
+            *time.data_mut(len / 2 - 1) = 2.0;
             let mut time2 = vec![0.0; len].to_real_time_vec();
-            time2[len / 2 - 1] = 0.5;
+            *time2.data_mut(len / 2 - 1) = 0.5;
             vec![time, time2]
         };
 
         let (res, _) = mat.get();
-        assert_eq_tol(&res[0][..], &expected[0][..], 1e-4);
-        assert_eq_tol(&res[1][..], &expected[1][..], 1e-4);
+        assert_eq_tol(res[0].data(..), expected[0].data(..), 1e-4);
+        assert_eq_tol(res[1].data(..), expected[1].data(..), 1e-4);
     }
 }

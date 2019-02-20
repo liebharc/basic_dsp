@@ -32,8 +32,8 @@ mod inter_test {
                 .interpolatei(&mut buffer, &fun as &RealFrequencyResponse<f32>, factor)
                 .unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &right[..],
+                left.data(..),
+                right.data(..),
                 0.1,
                 &format!(
                     "Results should match \
@@ -71,8 +71,8 @@ mod inter_test {
                 .interpolatei(&mut buffer, &fun as &RealFrequencyResponse<f32>, factor)
                 .unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &right[..],
+                left.data(..),
+                right.data(..),
                 0.1,
                 &format!(
                     "Results should match \
@@ -114,8 +114,8 @@ mod inter_test {
                 12,
             );
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &right[..],
+                left.data(..),
+                right.data(..),
                 1e-2,
                 &format!(
                     "Results should match \
@@ -158,8 +158,8 @@ mod inter_test {
                 )
                 .unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &right[..],
+                left.data(..),
+                right.data(..),
                 0.1,
                 &format!(
                     "Results should match \
@@ -209,8 +209,8 @@ mod inter_test {
             // likely react different to the ringing. Since we don't care too much about that
             // for this test we ignore the beginning and end in the test.
             assert_vector_eq_with_reason_and_tolerance(
-                &left[150..len - 150],
-                &right[150..len - 150],
+                left.data(150..len - 150),
+                right.data(150..len - 150),
                 1e-1,
                 &format!(
                     "Results should match \
@@ -253,8 +253,8 @@ mod inter_test {
                 12,
             );
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &right[..],
+                left.data(..),
+                right.data(..),
                 0.1,
                 &format!(
                     "Results should match \
@@ -295,8 +295,8 @@ mod inter_test {
             );
             let right = right.to_real();
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &right[..],
+                left.data(..),
+                right.data(..),
                 0.1,
                 &format!(
                     "Results should match \
@@ -327,8 +327,8 @@ mod inter_test {
                 .unwrap();
             let right = right.to_real();
             assert_vector_eq_with_reason_and_tolerance(
-                &left[..],
-                &right[..],
+                left.data(..),
+                right.data(..),
                 0.1,
                 "Results should match independent if done \
                  in real or complex number space",
@@ -362,8 +362,8 @@ mod inter_test {
                 13,
             );
             assert_vector_eq_with_reason_and_tolerance(
-                &time[..],
-                &upsample[..],
+                time.data(..),
+                upsample.data(..),
                 0.2,
                 &format!(
                     "Downsampling should be the \
@@ -389,8 +389,8 @@ mod inter_test {
             upsample.interpft(&mut buffer, factor * points);
             upsample.interpft(&mut buffer, points);
             assert_vector_eq_with_reason_and_tolerance(
-                &time[..],
-                &upsample[..],
+                time.data(..),
+                upsample.data(..),
                 0.2,
                 &format!(
                     "Downsampling should be the \

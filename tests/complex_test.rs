@@ -48,7 +48,7 @@ mod complex_test {
             let mut vector = a.to_complex_time_vec_par();
             vector.set_delta(delta);
             vector.offset(scalar);
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), true);
             assert_eq!(vector.delta(), delta);
         });
@@ -75,7 +75,7 @@ mod complex_test {
             let mut vector = a.to_complex_time_vec_par();
             vector.set_delta(delta);
             vector.scale(scalar);
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), true);
             assert_eq!(vector.delta(), delta);
         });
@@ -100,7 +100,7 @@ mod complex_test {
             let mut vector = a.to_complex_time_vec_par();
             vector.set_delta(delta);
             let vector = vector.magnitude();
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -125,7 +125,7 @@ mod complex_test {
             let mut vector = a.to_complex_time_vec_par();
             vector.set_delta(delta);
             let vector = vector.magnitude_squared();
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -154,7 +154,7 @@ mod complex_test {
             let mut vector2 = b.to_complex_time_vec_par();
             vector2.set_delta(delta);
             vector1.mul(&vector2).unwrap();
-            assert_vector_eq(&expected, &vector1[..]);
+            assert_vector_eq(&expected, vector1.data(..));
             assert_eq!(vector1.is_complex(), true);
             assert_eq!(vector1.delta(), delta);
         });
@@ -182,7 +182,7 @@ mod complex_test {
         let mut vector2 = b.to_complex_time_vec_par();
         vector2.set_delta(delta);
         vector1.mul_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &vector1[..]);
+        assert_vector_eq(&expected, vector1.data(..));
         assert_eq!(vector1.is_complex(), true);
         assert_eq!(vector1.delta(), delta);
     }
@@ -209,7 +209,7 @@ mod complex_test {
         let mut vector2 = b.to_complex_time_vec_par();
         vector2.set_delta(delta);
         vector1.div_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &vector1[..]);
+        assert_vector_eq(&expected, vector1.data(..));
         assert_eq!(vector1.is_complex(), true);
         assert_eq!(vector1.delta(), delta);
     }
@@ -280,7 +280,7 @@ mod complex_test {
             let mut vector2 = b.to_complex_time_vec_par();
             vector2.set_delta(delta);
             vector1.div(&vector2).unwrap();
-            assert_vector_eq(&expected, &vector1[..]);
+            assert_vector_eq(&expected, vector1.data(..));
             assert_eq!(vector1.is_complex(), true);
             assert_eq!(vector1.delta(), delta);
         });
@@ -306,9 +306,9 @@ mod complex_test {
             assert_eq!(real_vector.len(), real.len());
             complex.get_imag(&mut imag_vector);
             let real_result = complex.to_real();
-            assert_vector_eq_with_reason(&real, &real_vector[..], "Failure in get_real");
-            assert_vector_eq_with_reason(&real, &real_result[..], "Failure in get_imag");
-            assert_vector_eq_with_reason(&imag, &imag_vector[..], "Failure in to_real");
+            assert_vector_eq_with_reason(&real, real_vector.data(..), "Failure in get_real");
+            assert_vector_eq_with_reason(&real, real_result.data(..), "Failure in get_imag");
+            assert_vector_eq_with_reason(&imag, imag_vector.data(..), "Failure in to_real");
             assert_eq!(real_vector.is_complex(), false);
             assert_eq!(real_vector.delta(), delta);
             assert_eq!(imag_vector.is_complex(), false);
@@ -340,9 +340,9 @@ mod complex_test {
             assert_eq!(abs_vector.len(), abs.len());
             complex.get_phase(&mut phase_vector);
             let phase_result = complex.phase();
-            assert_vector_eq_with_reason(&phase, &phase_vector[..], "Failure in get_phase");
-            assert_vector_eq_with_reason(&abs, &abs_vector[..], "Failure in get_magnitude");
-            assert_vector_eq_with_reason(&phase, &phase_result[..], "Failure in phase()");
+            assert_vector_eq_with_reason(&phase, phase_vector.data(..), "Failure in get_phase");
+            assert_vector_eq_with_reason(&abs, abs_vector.data(..), "Failure in get_magnitude");
+            assert_vector_eq_with_reason(&phase, phase_result.data(..), "Failure in phase()");
             assert_eq!(abs_vector.is_complex(), false);
             assert_eq!(abs_vector.delta(), delta);
             assert_eq!(phase_vector.is_complex(), false);
@@ -372,7 +372,7 @@ mod complex_test {
             vector.set_delta(delta);
             let expected = complex_vector_diff(&a);
             vector.diff_with_start();
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), true);
             assert_eq!(vector.delta(), delta);
         });
@@ -398,7 +398,7 @@ mod complex_test {
             vector.set_delta(delta);
             let expected = complex_vector_cum_sum(&a);
             vector.cum_sum();
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), true);
             assert_eq!(vector.delta(), delta);
         });
@@ -431,7 +431,7 @@ mod complex_test {
             vector.set_delta(delta);
             let expected = complex_exponential(&a, args[0], args[1], delta);
             vector.multiply_complex_exponential(args[0], args[1]);
-            assert_vector_eq_with_reason_and_tolerance(&expected, &vector[..], 1e-2, "");
+            assert_vector_eq_with_reason_and_tolerance(&expected, vector.data(..), 1e-2, "");
             assert_eq!(vector.is_complex(), true);
             assert_eq!(vector.delta(), delta);
         });
@@ -552,7 +552,7 @@ mod complex_test {
         let mut merge = empty.to_complex_time_vec_par();
         let src: Vec<_> = split.iter().map(|x| x.as_ref()).collect();
         merge.merge(&src[..]).unwrap();
-        assert_vector_eq(&a, &merge[..]);
+        assert_vector_eq(&a, merge.data(..));
     }
 
     #[test]
@@ -565,8 +565,8 @@ mod complex_test {
             &mut empty.clone().to_complex_time_vec_par(),
         ];
         vector.split_into(&mut split).unwrap();
-        assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0][..]);
-        assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1][..]);
+        assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], split[0].data(..));
+        assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], split[1].data(..));
     }
 
     #[test]
@@ -581,7 +581,7 @@ mod complex_test {
             vector.get_real_imag(&mut real, &mut imag);
             let mut vector2 = vec![0.0; 0].to_complex_time_vec_par();
             vector2.set_real_imag(&real, &imag).unwrap();
-            assert_vector_eq(&a, &vector2[..]);
+            assert_vector_eq(&a, vector2.data(..));
         });
     }
 
@@ -600,12 +600,12 @@ mod complex_test {
             vector.get_magnitude(&mut mag2);
             vector.get_phase(&mut phase2);
 
-            assert_vector_eq_with_reason(&mag[..], &mag2[..], "Magnitude differs");
-            assert_vector_eq_with_reason(&phase[..], &phase2[..], "Phase differs");
+            assert_vector_eq_with_reason(mag.data(..), mag2.data(..), "Magnitude differs");
+            assert_vector_eq_with_reason(phase.data(..), phase2.data(..), "Phase differs");
 
             let mut vector2 = vec![0.0; 0].to_complex_time_vec_par();
             vector2.set_mag_phase(&mag, &phase).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&a, &vector2[..], 1e-4, "Merge differs");
+            assert_vector_eq_with_reason_and_tolerance(&a, vector2.data(..), 1e-4, "Merge differs");
         });
     }
 }

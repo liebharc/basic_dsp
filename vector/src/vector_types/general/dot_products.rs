@@ -1,6 +1,6 @@
 use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace, PosEq,
-    RealNumberSpace, ScalarResult, ToSlice, Vector,
+    RealNumberSpace, ScalarResult, ToSlice, Vector, FloatIndex
 };
 use super::kahan_sum;
 use crate::array_to_complex;
@@ -71,7 +71,7 @@ where
         factor: &O,
     ) -> ScalarResult<T>
     where
-        O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+        O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -82,7 +82,7 @@ where
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let other = &factor[..];
+        let other = factor.data(..);
         let chunks = Chunk::get_zipped(
             Complexity::Small,
             &self.multicore_settings,
@@ -118,7 +118,7 @@ where
         factor: &O,
     ) -> ScalarResult<Complex<T>>
     where
-        O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+        O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -133,7 +133,7 @@ where
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let other = &factor[..];
+        let other = factor.data(..);
         let chunks = Chunk::get_zipped(
             Complexity::Small,
             &self.multicore_settings,
@@ -170,7 +170,7 @@ where
         factor: &O,
     ) -> ScalarResult<T>
     where
-        O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+        O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -181,7 +181,7 @@ where
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let other = &factor[..];
+        let other = factor.data(..);
         let chunks = Chunk::get_zipped(
             Complexity::Small,
             &self.multicore_settings,
@@ -216,7 +216,7 @@ where
         factor: &O,
     ) -> ScalarResult<Complex<T>>
     where
-        O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+        O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -231,7 +231,7 @@ where
         let data_length = self.len();
         let array = self.data.to_slice();
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let other = &factor[..];
+        let other = factor.data(..);
         let chunks = Chunk::get_zipped(
             Complexity::Small,
             &self.multicore_settings,
@@ -269,7 +269,7 @@ where
     T: RealNumber,
     N: RealNumberSpace,
     D: Domain,
-    O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
@@ -286,7 +286,7 @@ where
     T: RealNumber,
     N: ComplexNumberSpace,
     D: Domain,
-    O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
@@ -303,7 +303,7 @@ where
     T: RealNumber,
     N: RealNumberSpace,
     D: Domain,
-    O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
@@ -320,7 +320,7 @@ where
     T: RealNumber,
     N: ComplexNumberSpace,
     D: Domain,
-    O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {

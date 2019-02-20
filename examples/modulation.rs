@@ -65,13 +65,14 @@ fn fill_vectors_with_prbs(
 ) {
     assert!(channel1.points() == channel2.points());
     for i in 0..channel1.points() {
-        channel2[i] = prbs.next();
-        channel1[i] = prbs.next();
+        *channel2.data_mut(i) = prbs.next();
+        *channel1.data_mut(i) = prbs.next();
     }
 }
 
 fn complex_vector_to_file(vector: &ComplexTimeVec64, f: &mut File) -> io::Result<()> {
     let mut i = 0;
+    let vector = vector.data(..);
     while i < vector.len() {
         r#try! { writeln!(f, "{}, {}", vector[i], vector[i + 1]) };
         i += 2;
@@ -81,6 +82,7 @@ fn complex_vector_to_file(vector: &ComplexTimeVec64, f: &mut File) -> io::Result
 
 fn real_vector_to_file(vector: &RealTimeVec64, f: &mut File) -> io::Result<()> {
     let mut i = 0;
+    let vector = vector.data(..);
     while i < vector.len() {
         r#try! { writeln!(f, "{}", vector[i]) };
         i += 2;

@@ -101,12 +101,12 @@ pub extern "C" fn new_with_detailed_performance_options32(is_complex: i32,
 
 #[no_mangle]
 pub extern "C" fn get_value32(vector: &VecBuf, index: usize) -> f32 {
-    vector.vec[index]
+    *vector.vec.data(index)
 }
 
 #[no_mangle]
 pub extern "C" fn set_value32(vector: &mut VecBuf, index: usize, value: f32) {
-    vector.vec[index] = value;
+    *vector.vec.data_mut(index) = value;
 }
 
 #[no_mangle]
@@ -150,7 +150,7 @@ pub extern "C" fn get_delta32(vector: &VecBuf) -> f32 {
 
 #[no_mangle]
 pub extern "C" fn complex_data32(vector: &VecBuf) -> &[Complex32] {
-    vector.vec.complex(..)
+    vector.vec.cdata(..)
 }
 
 #[no_mangle]
@@ -770,7 +770,7 @@ pub extern "C" fn overwrite_data32(mut vector: Box<VecBuf>,
                                    -> VectorInteropResult<VecBuf> {
     let data = unsafe { slice::from_raw_parts(data, len) };
     if len < vector.vec.len() {
-        vector.vec[0..len].clone_from_slice(&data);
+        vector.vec.data_mut(0..len).clone_from_slice(&data);
         VectorInteropResult {
             result_code: 0,
             vector: vector,

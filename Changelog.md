@@ -1,6 +1,11 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.8.0
+
+- Renamed `complex(..)` function on vectors to `cdata(..)`
+- Redefined index functions for better usability
+
 ## Version 0.7.2
 
 - Fixed https://github.com/liebharc/basic_dsp/issues/40 . Thanks to Carlos Tuñón.

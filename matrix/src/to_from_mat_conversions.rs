@@ -490,12 +490,12 @@ mod tests {
     fn to_gen_dsp_mat_test() {
         let mat: MatrixMxN<_, _, _> =
             vec![vec![0.0, 1.0], vec![2.0, 3.0]].to_gen_dsp_mat(false, DataDomain::Time);
-        assert_eq!(&mat.rows[0][..], &[0.0, 1.0]);
-        assert_eq!(&mat.rows[1][..], &[2.0, 3.0]);
+        assert_eq!(mat.rows[0].data(..), &[0.0, 1.0]);
+        assert_eq!(mat.rows[1].data(..), &[2.0, 3.0]);
 
         let mat: Matrix2xN<_, _, _> =
             [vec![0.0, 1.0], vec![2.0, 3.0]].to_gen_dsp_mat(false, DataDomain::Time);
-        assert_eq!(&mat.rows[0][..], &[0.0, 1.0]);
-        assert_eq!(&mat.rows[1][..], &[2.0, 3.0]);
+        assert_eq!(mat.rows[0].data(..), &[0.0, 1.0]);
+        assert_eq!(mat.rows[1].data(..), &[2.0, 3.0]);
     }
 }

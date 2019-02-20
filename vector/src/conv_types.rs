@@ -231,11 +231,11 @@ macro_rules! add_real_linear_table_impl {
                         let vector = InlineVector::of_size($data_type::zero(), 2 * len);
                         let mut vector = vector.to_real_time_vec();
                         vector.resize(len).expect("shrinking should always succeed");
-                        &mut vector[0.. len].copy_from_slice(&self.table[..]);
+                        vector.data_mut(0.. len).copy_from_slice(&self.table[..]);
                         vector.set_delta(self.delta);
                         let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2 * vector.len()));
                         let complex = vector.to_complex_b(&mut buffer);
-                        let complex = complex.complex(..);
+                        let complex = complex.cdata(..);
                         let is_symmetric = self.is_symmetric;
                         let mut table = InlineVector::with_capacity(complex.len());
                         for n in complex {
@@ -269,7 +269,7 @@ macro_rules! add_complex_linear_table_impl {
                         vector.set_delta(self.delta);
                         let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), complex.len()));
                         let real = vector.to_real_b(&mut buffer);
-                        let real = &real[..];
+                        let real = real.data(..);
                         let is_symmetric = self.is_symmetric;
                         let mut table = InlineVector::with_capacity(real.len());
                         for n in real {
@@ -303,7 +303,7 @@ macro_rules! add_complex_time_linear_table_impl {
                     let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), vector.len()));
                     let freq = vector.fft(&mut buffer);
                     let delta = freq.delta();
-                    let freq = freq.complex(..);
+                    let freq = freq.cdata(..);
                     let is_symmetric = self.is_symmetric;
                     let mut table = InlineVector::with_capacity(freq.len());
                     for n in freq {
@@ -330,14 +330,14 @@ macro_rules! add_real_time_linear_table_impl {
                     let vector = InlineVector::of_size($data_type::zero(), 2 * len);
                     let mut vector = vector.to_real_time_vec();
                     vector.resize(len).expect("shrinking should always succeed");
-                    &mut vector[0.. len].copy_from_slice(&self.table[..]);
+                    vector.data_mut(0.. len).copy_from_slice(&self.table[..]);
                     vector.set_delta(self.delta);
                     let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2 * len));
                     let freq = vector.fft(&mut buffer);
                     let freq = freq.magnitude();
                     let is_symmetric = self.is_symmetric;
                     let delta = freq.delta();
-                    let freq = &freq[..];
+                    let freq = freq.data(..);
                     let mut table = InlineVector::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
@@ -370,7 +370,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
                     let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), vector.len()));
                     let time = vector.ifft(&mut buffer);
                     let delta = time.delta();
-                    let time = time.complex(..);
+                    let time = time.cdata(..);
                     let is_symmetric = self.is_symmetric;
                     let mut table = InlineVector::with_capacity(time.len());
                     for n in time {

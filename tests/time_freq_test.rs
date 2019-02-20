@@ -24,7 +24,7 @@ mod time_freq_test {
             let result = freq.plain_ifft(&mut buffer);
             assert_vector_eq_with_reason_and_tolerance(
                 &a,
-                &result[..],
+                result.data(..),
                 1e-4,
                 "IFFT must invert FFT",
             );
@@ -39,7 +39,7 @@ mod time_freq_test {
         complex.apply_window(&HammingWindow::default());
         let real = complex.to_real();
         vector.apply_window(&HammingWindow::default());
-        assert_eq!(&real[..], &vector[..]);
+        assert_eq!(real.data(..), vector.data(..));
     }
 
     #[test]
@@ -116,7 +116,7 @@ mod time_freq_test {
             0.9348164516683282,
             0.9306639008658044,
         ];
-        assert_vector_eq(&expected, &result[..]);
+        assert_vector_eq(&expected, result.data(..));
     }
 
     #[test]
@@ -193,7 +193,7 @@ mod time_freq_test {
             0.07453849632122858,
             0.07422306880326296,
         ];
-        assert_vector_eq(&expected, &result[..]);
+        assert_vector_eq(&expected, result.data(..));
     }
 
     #[test]
@@ -203,7 +203,7 @@ mod time_freq_test {
         let complex = vector.clone().to_complex().unwrap();
         let fft = complex.fft(&mut buffer);
         let ifft = fft.ifft(&mut buffer).to_real();
-        assert_vector_eq(&vector[..], &ifft[..]);
+        assert_vector_eq(vector.data(..), ifft.data(..));
     }
 
     #[test]
@@ -215,7 +215,7 @@ mod time_freq_test {
         let ifft = fft
             .windowed_ifft(&mut buffer, &HammingWindow::default())
             .to_real();
-        assert_vector_eq(&vector[..], &ifft[..]);
+        assert_vector_eq(vector.data(..), ifft.data(..));
     }
 
     fn new_sinusoid_vector() -> RealTimeVec64 {
@@ -242,7 +242,7 @@ mod time_freq_test {
             let result = freq.ifft(&mut buffer);
             assert_vector_eq_with_reason_and_tolerance(
                 &a,
-                &result[..],
+                result.data(..),
                 1e-4,
                 "IFFT must invert FFT",
             );

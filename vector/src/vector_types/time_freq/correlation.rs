@@ -3,7 +3,7 @@ use super::super::{
     FrequencyDomain, FrequencyDomainOperations, FrequencyToTimeDomainOperations, GetMetaData,
     InsertZerosOpsBuffered, MetaData, NoTradeBuffer, NumberSpace, PaddingOption, PosEq,
     ReorganizeDataOps, ScaleOps, TimeDomain, TimeToFrequencyDomainOperations, ToComplexVector,
-    ToFreqResult, ToSliceMut, Vector, VoidResult,
+    ToFreqResult, ToSliceMut, Vector, VoidResult, FloatIndex, FloatIndexMut
 };
 use crate::numbers::*;
 use std::ops::*;
@@ -125,7 +125,7 @@ where
     N: ComplexNumberSpace,
     D: TimeDomain,
     DF: FrequencyDomain,
-    O: Vector<T> + GetMetaData<T, NO, DF> + Index<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DF> + FloatIndex<RangeFull, Output = [T]>,
     NO: PosEq<N> + NumberSpace,
 {
     fn correlate<B>(&mut self, buffer: &mut B, other: &O) -> VoidResult
@@ -154,15 +154,15 @@ where
         // However to keep the impl definition simpler and to avoid unnecessary copies
         // we have to to be creative with where we store our signal and what's the buffer.
         {
-            let complex = (&mut self[..]).to_complex_time_vec();
+            let complex = (self.data_mut(..)).to_complex_time_vec();
             let mut buffer = NoTradeBuffer::new(&mut temp[..]);
             complex.plain_fft(&mut buffer); // after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.
         }
         {
-            let other = (&other[..]).to_complex_freq_vec();
+            let other = (other.data(..)).to_complex_freq_vec();
             let mut complex = (&mut temp[..]).to_complex_freq_vec();
             r#try!(complex.mul(&other));
-            let mut buffer = NoTradeBuffer::new(&mut self[..]);
+            let mut buffer = NoTradeBuffer::new(self.data_mut(..));
             complex.plain_ifft(&mut buffer); // the result is now back in `self`.
         }
         let p = self.points();
@@ -197,7 +197,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         let b = b.prepare_argument_padded(&mut buffer);
         a.correlate(&mut buffer, &b).unwrap();
-        let res = &a[..];
+        let res = a.data(..);
         let tol = 0.1;
         for i in 0..c.len() {
             if (res[i] - c[i]).abs() > tol {
@@ -214,7 +214,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         let b = b.prepare_argument_padded(&mut buffer);
         a.correlate(&mut buffer, &b).unwrap();
-        let res = &a[..];
+        let res = a.data(..);
         let tol = 0.1;
         for i in 0..c.len() {
             if (res[i] - c[i]).abs() > tol {

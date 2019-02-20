@@ -38,7 +38,7 @@ fn print_diff<F1: FnMut(&mut RealTimeVec64), F2: FnMut(&mut RealTimeVec64)>(
             .expect("Vectors should have the same length");
     }
     print!("{}, ", name);
-    for n in &should[..] {
+    for n in should.data(..) {
         print!("{}, ", *n);
     }
     println!("");

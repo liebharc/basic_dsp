@@ -36,7 +36,7 @@ mod real_test {
             let mut vector = a.to_real_time_vec_par();
             vector.set_delta(delta);
             vector.offset(scalar[0]);
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -61,7 +61,7 @@ mod real_test {
             let mut vector = a.to_real_time_vec_par();
             vector.set_delta(delta);
             vector.scale(scalar[0]);
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -85,7 +85,7 @@ mod real_test {
             let mut vector = a.to_real_time_vec_par();
             vector.set_delta(delta);
             vector.abs();
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -112,7 +112,7 @@ mod real_test {
             let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             vector1.add(&vector2).unwrap();
-            assert_vector_eq(&expected, &vector1[..]);
+            assert_vector_eq(&expected, vector1.data(..));
             assert_eq!(vector1.is_complex(), false);
             assert_eq!(vector1.delta(), delta);
         });
@@ -138,7 +138,7 @@ mod real_test {
         let mut vector2 = b.to_real_time_vec_par();
         vector2.set_delta(delta);
         vector1.add_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &vector1[..]);
+        assert_vector_eq(&expected, vector1.data(..));
         assert_eq!(vector1.is_complex(), false);
         assert_eq!(vector1.delta(), delta);
     }
@@ -164,7 +164,7 @@ mod real_test {
             let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             vector1.sub(&vector2).unwrap();
-            assert_vector_eq(&expected, &vector1[..]);
+            assert_vector_eq(&expected, vector1.data(..));
             assert_eq!(vector1.is_complex(), false);
             assert_eq!(vector1.delta(), delta);
         });
@@ -190,7 +190,7 @@ mod real_test {
         let mut vector2 = b.to_real_time_vec_par();
         vector2.set_delta(delta);
         vector1.sub_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &vector1[..]);
+        assert_vector_eq(&expected, vector1.data(..));
         assert_eq!(vector1.is_complex(), false);
         assert_eq!(vector1.delta(), delta);
     }
@@ -216,7 +216,7 @@ mod real_test {
             let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             vector1.mul(&vector2).unwrap();
-            assert_vector_eq(&expected, &vector1[..]);
+            assert_vector_eq(&expected, vector1.data(..));
             assert_eq!(vector1.is_complex(), false);
             assert_eq!(vector1.delta(), delta);
         });
@@ -242,7 +242,7 @@ mod real_test {
         let mut vector2 = b.to_real_time_vec_par();
         vector2.set_delta(delta);
         vector1.mul_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &vector1[..]);
+        assert_vector_eq(&expected, vector1.data(..));
         assert_eq!(vector1.is_complex(), false);
         assert_eq!(vector1.delta(), delta);
     }
@@ -267,7 +267,7 @@ mod real_test {
         let mut vector2 = b.to_real_time_vec_par();
         vector2.set_delta(delta);
         vector1.div_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &vector1[..]);
+        assert_vector_eq(&expected, vector1.data(..));
         assert_eq!(vector1.is_complex(), false);
         assert_eq!(vector1.delta(), delta);
     }
@@ -328,7 +328,7 @@ mod real_test {
             let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             vector1.div(&vector2).unwrap();
-            assert_vector_eq(&expected, &vector1[..]);
+            assert_vector_eq(&expected, vector1.data(..));
             assert_eq!(vector1.is_complex(), false);
             assert_eq!(vector1.delta(), delta);
         });
@@ -344,7 +344,7 @@ mod real_test {
             vector.set_delta(delta);
             vector.square();
             vector.sqrt();
-            assert_vector_eq(&a, &vector[..]);
+            assert_vector_eq(&a, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -359,7 +359,7 @@ mod real_test {
             vector.set_delta(delta);
             vector.exp();
             vector.ln();
-            assert_vector_eq(&a, &vector[..]);
+            assert_vector_eq(&a, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -376,7 +376,7 @@ mod real_test {
             vector.set_delta(delta);
             vector.expf(base);
             vector.log(base);
-            assert_vector_eq(&a, &vector[..]);
+            assert_vector_eq(&a, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -401,7 +401,7 @@ mod real_test {
             let expected = real_vector_diff(&a);
             vector.set_delta(delta);
             vector.diff_with_start();
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -426,7 +426,7 @@ mod real_test {
             let expected = real_vector_cum_sum(&a);
             vector.set_delta(delta);
             vector.cum_sum();
-            assert_vector_eq(&expected, &vector[..]);
+            assert_vector_eq(&expected, vector.data(..));
             assert_eq!(vector.is_complex(), false);
             assert_eq!(vector.delta(), delta);
         });
@@ -441,7 +441,7 @@ mod real_test {
         vector.set_delta(delta);
         vector.wrap(8.0);
         vector.unwrap(8.0);
-        assert_vector_eq(&linear_seq, &vector[..]);
+        assert_vector_eq(&linear_seq, vector.data(..));
         assert_eq!(vector.is_complex(), false);
         assert_eq!(vector.delta(), delta);
     }
@@ -455,7 +455,7 @@ mod real_test {
         vector.set_delta(delta);
         vector.wrap(8.0);
         vector.unwrap(8.0);
-        assert_vector_eq(&linear_seq, &vector[..]);
+        assert_vector_eq(&linear_seq, vector.data(..));
         assert_eq!(vector.is_complex(), false);
         assert_eq!(vector.delta(), delta);
     }
@@ -575,7 +575,7 @@ mod real_test {
         let mut merge = empty.to_real_time_vec_par();
         let src: Vec<_> = split.iter().map(|x| x.as_ref()).collect();
         merge.merge(&src[..]).unwrap();
-        assert_vector_eq(&a, &merge[..]);
+        assert_vector_eq(&a, merge.data(..));
     }
 
     #[test]
@@ -589,16 +589,16 @@ mod real_test {
         let mut real_mirror = sym_fft.clone();
         real_mirror.mirror(&mut buffer);
         assert_vector_eq_with_reason_and_tolerance(
-            &complex_freq[..],
-            &real_mirror[..],
+            complex_freq.data(..),
+            real_mirror.data(..),
             1e-3,
             "Different FFT paths must equal",
         );
         let mut real_ifft: RealTimeVec32 = sym_fft.plain_sifft(&mut buffer).unwrap();
         real_ifft.scale(1.0 / 1001.0);
         assert_vector_eq_with_reason_and_tolerance(
-            &time[..],
-            &real_ifft[..],
+            time.data(..),
+            real_ifft.data(..),
             1e-3,
             "Ifft must give back the original result",
         );
