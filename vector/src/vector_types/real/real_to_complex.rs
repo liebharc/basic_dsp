@@ -19,9 +19,10 @@ where
     ///
     /// ```
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// let vector = vec!(1.0, 2.0).to_real_time_vec();
     /// let result = vector.to_complex().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);
+    /// assert_eq!([Complex::new(1.0, 0.0), Complex::new(2.0, 0.0)], result[..]);
     /// ```
     fn to_complex(self) -> TransRes<Self::ComplexResult>;
 }
@@ -43,10 +44,11 @@ where
     ///
     /// ```
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// let vector = vec!(1.0, 2.0).to_real_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.to_complex_b(&mut buffer);
-    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);
+    /// assert_eq!([Complex::new(1.0, 0.0), Complex::new(2.0, 0.0)], result[..]);
     /// ```
     fn to_complex_b<B>(self, buffer: &mut B) -> Self::ComplexResult
     where

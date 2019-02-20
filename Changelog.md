@@ -4,7 +4,7 @@ Changes:
 ## Version 0.8.0
 
 - Renamed `complex(..)` function on vectors to `cdata(..)`
-- Redefined index functions for better usability
+- Redefined index functions for better usability. If the old functionality is required then replace calls to indexers with call to `.data(..)` and `.data_mut(..)`, e.g. (`&vec[5..10]` becomes `vec.data(5..10)` and `&mut vec[5..10]` becomes `vec.data_mut(5..10)`)
 
 ## Version 0.7.2
 

@@ -33,9 +33,9 @@ use std::ops::*;
 /// let mut buffer = SingleBuffer::new();
 /// let argument = argument.prepare_argument_padded(&mut buffer);
 /// vector.correlate(&mut buffer, &argument).expect("Ignoring error handling in examples");
-/// let expected = &[2.0, 0.0, 8.0, 0.0, 20.0, 0.0, 24.0, 0.0, 18.0, 0.0];
+/// let expected = &[Complex::new(2.0, 0.0), Complex::new(8.0, 0.0), Complex::new(20.0, 0.0), Complex::new(24.0, 0.0), Complex::new(18.0, 0.0)];
 /// for i in 0..vector.len() {
-///     assert!(f32::abs(vector[i] - expected[i]) < 1e-4);
+///     assert!((vector[i] - expected[i]).norm() < 1e-4);
 /// }
 /// ```
 /// # Failures

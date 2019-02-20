@@ -7,6 +7,8 @@ use crate::multicore_support::MultiCoreSettings;
 use crate::numbers::*;
 use std::ops::*;
 use crate::{array_to_complex, array_to_complex_mut};
+use super::meta::Real as RealSpace;
+use super::meta::Complex as ComplexSpace;
 
 /// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
 /// but with a different method name so that it can be used to implement an additional range
@@ -610,6 +612,246 @@ where
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
         &mut slice[index]
+    }
+}
+
+impl<S, T, D> Index<usize> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = T;
+
+    fn index(&self, index: usize) -> &T {
+        self.data(index)
+    }
+}
+
+impl<S, T, D> IndexMut<usize> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: usize) -> &mut T {
+        self.data_mut(index)
+    }
+}
+
+impl<S, T, D> Index<RangeFull> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = [T];
+
+    fn index(&self, index: RangeFull) -> &[T] {
+        self.data(index)
+    }
+}
+
+impl<S, T, D> IndexMut<RangeFull> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: RangeFull) -> &mut [T] {
+        self.data_mut(index)
+    }
+}
+
+impl<S, T, D> Index<RangeFrom<usize>> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = [T];
+
+    fn index(&self, index: RangeFrom<usize>) -> &[T] {
+        self.data(index)
+    }
+}
+
+impl<S, T, D> IndexMut<RangeFrom<usize>> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [T] {
+        self.data_mut(index)
+    }
+}
+
+impl<S, T, D> Index<RangeTo<usize>> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = [T];
+
+    fn index(&self, index: RangeTo<usize>) -> &[T] {
+        self.data(index)
+    }
+}
+
+impl<S, T, D> IndexMut<RangeTo<usize>> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [T] {
+        self.data_mut(index)
+    }
+}
+
+impl<S, T, D> Index<Range<usize>> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = [T];
+
+    fn index(&self, index: Range<usize>) -> &[T] {
+        self.data(index)
+    }
+}
+
+impl<S, T, D> IndexMut<Range<usize>> for DspVec<S, T, RealSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: Range<usize>) -> &mut [T] {
+        self.data_mut(index)
+    }
+}
+
+impl<S, T, D> Index<usize> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = Complex<T>;
+
+    fn index(&self, index: usize) -> &Complex<T> {
+        self.cdata(index)
+    }
+}
+
+impl<S, T, D> IndexMut<usize> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: usize) -> &mut Complex<T> {
+        self.cdata_mut(index)
+    }
+}
+
+impl<S, T, D> Index<RangeFull> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = [Complex<T>];
+
+    fn index(&self, index: RangeFull) -> &[Complex<T>] {
+        self.cdata(index)
+    }
+}
+
+impl<S, T, D> IndexMut<RangeFull> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: RangeFull) -> &mut [Complex<T>] {
+        self.cdata_mut(index)
+    }
+}
+
+impl<S, T, D> Index<RangeFrom<usize>> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = [Complex<T>];
+
+    fn index(&self, index: RangeFrom<usize>) -> &[Complex<T>] {
+        self.cdata(index)
+    }
+}
+
+impl<S, T, D> IndexMut<RangeFrom<usize>> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>] {
+        self.cdata_mut(index)
+    }
+}
+
+impl<S, T, D> Index<RangeTo<usize>> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = [Complex<T>];
+
+    fn index(&self, index: RangeTo<usize>) -> &[Complex<T>] {
+        self.cdata(index)
+    }
+}
+
+impl<S, T, D> IndexMut<RangeTo<usize>> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>] {
+        self.cdata_mut(index)
+    }
+}
+
+impl<S, T, D> Index<Range<usize>> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = [Complex<T>];
+
+    fn index(&self, index: Range<usize>) -> &[Complex<T>] {
+        self.cdata(index)
+    }
+}
+
+impl<S, T, D> IndexMut<Range<usize>> for DspVec<S, T, ComplexSpace, D>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    fn index_mut(&mut self, index: Range<usize>) -> &mut [Complex<T>] {
+        self.cdata_mut(index)
     }
 }
 

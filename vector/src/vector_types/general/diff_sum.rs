@@ -20,7 +20,7 @@ pub trait DiffSumOps {
     /// assert_eq!([1.0, -1.0, 4.0], vector[..]);
     /// let mut vector = vec!(Complex::new(2.0, 2.0), Complex::new(3.0, 3.0), Complex::new(5.0, 5.0)).to_complex_time_vec();
     /// vector.diff();
-    /// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);
+    /// assert_eq!([Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)], vector[..]);
     /// ```
     fn diff(&mut self);
 
@@ -37,7 +37,7 @@ pub trait DiffSumOps {
     /// assert_eq!([2.0, 1.0, -1.0, 4.0], vector[..]);
     /// let mut vector = vec!(Complex::new(2.0, 2.0), Complex::new(3.0, 3.0), Complex::new(5.0, 5.0)).to_complex_time_vec();
     /// vector.diff_with_start();
-    /// assert_eq!([2.0, 2.0, 1.0, 1.0, 2.0, 2.0], vector[..]);
+    /// assert_eq!([Complex::new(2.0, 2.0), Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)], vector[..]);
     /// ```
     fn diff_with_start(&mut self);
 

@@ -27,7 +27,7 @@ where
     /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0), Complex::new(5.0, 6.0)).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
     /// vector.mirror(&mut buffer);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], &vector[..]);
+    /// assert_eq!([Complex::new(1.0, 2.0), Complex::new(3.0, 4.0), Complex::new(5.0, 6.0), Complex::new(5.0, -6.0), Complex::new(3.0, -4.0)], &vector[..]);
     /// ```
     fn mirror<B>(&mut self, buffer: &mut B)
     where

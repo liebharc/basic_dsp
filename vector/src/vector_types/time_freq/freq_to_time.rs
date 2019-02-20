@@ -32,10 +32,10 @@ where
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.plain_ifft(&mut buffer);
     /// let actual = &result[..];
-    /// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
+    /// let expected = &[Complex::new(1.0, 0.0), Complex::new(-0.5, 0.8660254), Complex::new(-0.5, -0.8660254)];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
-    ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
+    ///        assert!((actual[i] - expected[i]).norm() < 1e-4);
     /// }
     /// ```
     fn plain_ifft<B>(self, buffer: &mut B) -> Self::TimeResult
@@ -54,10 +54,10 @@ where
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.ifft(&mut buffer);
     /// let actual = &result[..];
-    /// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
+    /// let expected = &[Complex::new(1.0, 0.0), Complex::new(-0.5, 0.8660254), Complex::new(-0.5, -0.8660254)];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
-    ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
+    ///        assert!((actual[i] - expected[i]).norm() < 1e-4);
     /// }
     /// ```
     fn ifft<B>(self, buffer: &mut B) -> Self::TimeResult

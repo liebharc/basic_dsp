@@ -80,7 +80,7 @@ where
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// let mut vector = vec!(Complex::new(1.0, 2.0)).to_complex_time_vec();
     /// vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
+    /// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0)], vector[..]);
     /// ```
     fn zero_pad(&mut self, points: usize, option: PaddingOption) -> VoidResult;
 
@@ -101,7 +101,7 @@ where
     /// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);
     /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// vector.zero_interleave(2).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
+    /// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0), Complex::new(3.0, 4.0), Complex::new(0.0, 0.0)], vector[..]);
     /// ```
     fn zero_interleave(&mut self, factor: u32) -> VoidResult;
 }
@@ -135,7 +135,7 @@ where
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// let mut vector = vec!(Complex::new(1.0, 2.0)).to_complex_time_vec();
     /// vector.zero_pad_b(&mut buffer, 2, PaddingOption::End).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
+    /// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0)], vector[..]);
     /// ```
     fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
     where
@@ -159,7 +159,7 @@ where
     /// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);
     /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// vector.zero_interleave_b(&mut buffer, 2);
-    /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
+    /// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0), Complex::new(3.0, 4.0), Complex::new(0.0, 0.0)], vector[..]);
     /// ```
     fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32)
     where

@@ -36,10 +36,10 @@ where
     /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// vector.multiply_complex_exponential(2.0, 3.0);
     /// let actual = &vector[..];
-    /// let expected = &[-1.2722325, -1.838865, 4.6866837, -1.7421241];
+    /// let expected = &[Complex::new(-1.2722325, -1.838865), Complex::new(4.6866837, -1.7421241)];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
-    ///        assert!(f64::abs(actual[i] - expected[i]) < 1e-4);
+    ///        assert!((actual[i] - expected[i]).norm() < 1e-4);
     /// }
     /// # }
     /// ```
@@ -56,7 +56,7 @@ where
     /// # fn main() {
     /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// vector.conj();
-    /// assert_eq!([1.0, -2.0, 3.0, -4.0], vector[..]);
+    /// assert_eq!([Complex::new(1.0, -2.0), Complex::new(3.0, -4.0)], vector[..]);
     /// # }
     /// ```
     fn conj(&mut self);

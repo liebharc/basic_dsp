@@ -30,10 +30,10 @@ where
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.plain_fft(&mut buffer);
     /// let actual = &result[..];
-    /// let expected = &[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];
+    /// let expected = &[Complex::new(0.0, 0.0), Complex::new(3.0, 0.0), Complex::new(0.0, 0.0)];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
-    ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
+    ///        assert!((actual[i] - expected[i]).norm() < 1e-4);
     /// }
     /// ```
     fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult
@@ -52,10 +52,10 @@ where
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.fft(&mut buffer);
     /// let actual = &result[..];
-    /// let expected = &[0.0, 0.0, 0.0, 0.0, 3.0, 0.0];
+    /// let expected = &[Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(3.0, 0.0)];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
-    ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
+    ///        assert!((actual[i] - expected[i]).norm() < 1e-4);
     /// }
     /// ```
     fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
