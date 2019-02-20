@@ -33,6 +33,7 @@ build:
 	$(MAKE) run-all TASK="build"
       
 build_all: build
+ifeq ($(RUST_NIGHTLY), nightly)
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features --features std
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
@@ -41,6 +42,12 @@ build_all: build
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features --features std,use_avx2
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features
+else
+	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml
+	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features --features std
+	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
+	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features
+endif
 	
 clippy:
 ifeq ($(RUST_NIGHTLY), nightly)
@@ -52,13 +59,18 @@ else
 endif	
     
 test_all: test
+ifeq ($(RUST_NIGHTLY), nightly)
 	$(CARGO_CMD) clean
 	$(CARGO_CMD) test --manifest-path vector/Cargo.toml --no-default-features --lib
 	$(CARGO_CMD) test --no-default-features --features std,use_sse2
 	$(CARGO_CMD) test --no-default-features --features std,use_avx2
+else
+	$(CARGO_CMD) clean
+	$(CARGO_CMD) test --manifest-path vector/Cargo.toml --no-default-features --lib
+endif
 
 run-all:
-	$(CARGO_CMD) $(TASK) --no-default-features --features std,use_sse2,matrix
-	$(CARGO_CMD) $(TASK) --manifest-path vector/Cargo.toml  --no-default-features --features std,use_sse2
+	$(CARGO_CMD) $(TASK) --no-default-features --features std,matrix
+	$(CARGO_CMD) $(TASK) --manifest-path vector/Cargo.toml  --no-default-features --features std
 	$(CARGO_CMD) $(TASK) --manifest-path matrix/Cargo.toml
 	$(CARGO_CMD) $(TASK) --manifest-path interop/Cargo.toml
