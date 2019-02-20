@@ -1,6 +1,11 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.7.2
+
+- Fixed https://github.com/liebharc/basic_dsp/issues/40 . Thanks to Carlos Tuñón.
+- Replaced `simd` with `packed_simd`
+
 ## Version 0.7.1
 
 - Removed `simd` from default compilation options due to https://github.com/rust-lang/rust/issues/57940 . Compile with `--features use_sse2,use_avx2` to get the previous behavior. 
