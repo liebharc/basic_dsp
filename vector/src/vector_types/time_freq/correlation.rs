@@ -8,6 +8,29 @@ use super::super::{
 use crate::numbers::*;
 use std::ops::*;
 
+/// This trait allows to transform an argument so that it can be used for cross correlation. Refer to the description of
+/// `CrossCorrelationOps` for more details.
+pub trait CrossCorrelationArgumentOps<S, T>: ToFreqResult
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+{
+    /// Prepares an argument to be used for convolution. Preparing an argument includes two steps:
+    ///
+    /// 1. Calculate the plain FFT
+    /// 2. Calculate the complex conjugate
+    fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult
+    where
+        B: for<'a> Buffer<'a, S, T>;
+
+    /// Prepares an argument to be used for convolution. The argument is zero padded to
+    /// length of `2 * self.points() - 1`
+    /// and then the same operations are performed as described for `prepare_argument`.
+    fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult
+    where
+        B: for<'a> Buffer<'a, S, T>;
+}
+
 /// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
 ///
 /// The correlation is calculated in two steps. This is done to give you more control
@@ -44,28 +67,6 @@ use std::ops::*;
 /// 1. `VectorMustBeComplex`: if `self` is in real number space.
 /// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are not
 ///    in the same number space and same domain.
-pub trait CrossCorrelationArgumentOps<S, T>: ToFreqResult
-where
-    S: ToSliceMut<T>,
-    T: RealNumber,
-{
-    /// Prepares an argument to be used for convolution. Preparing an argument includes two steps:
-    ///
-    /// 1. Calculate the plain FFT
-    /// 2. Calculate the complex conjugate
-    fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult
-    where
-        B: for<'a> Buffer<'a, S, T>;
-
-    /// Prepares an argument to be used for convolution. The argument is zero padded to
-    /// length of `2 * self.points() - 1`
-    /// and then the same operations are performed as described for `prepare_argument`.
-    fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult
-    where
-        B: for<'a> Buffer<'a, S, T>;
-}
-
-/// A trait to calculate the cross correlation.
 pub trait CrossCorrelationOps<A, S, T, N, D>
 where
     S: ToSliceMut<T>,
