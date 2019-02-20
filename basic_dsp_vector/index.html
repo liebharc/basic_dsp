@@ -1,15 +1,15 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `basic_dsp_vector` crate."><meta name="keywords" content="rust, rustlang, rust-lang, basic_dsp_vector"><title>basic_dsp_vector - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate basic_dsp_vector</p><a id='all-types' href='all.html'><p>See all basic_dsp_vector's items</p></a><div class="sidebar-elems"><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'basic_dsp_vector', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/basic_dsp_vector/lib.rs.html#1-313' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>basic_dsp_vector</a></span></h1><div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `basic_dsp_vector` crate."><meta name="keywords" content="rust, rustlang, rust-lang, basic_dsp_vector"><title>basic_dsp_vector - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../basic_dsp_vector/index.html'><img src='../rust-logo.png' alt='logo' width='100'></a><p class='location'>Crate basic_dsp_vector</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all basic_dsp_vector's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'basic_dsp_vector', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/basic_dsp_vector/lib.rs.html#1-307' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>basic_dsp_vector</a></span></h1><div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
 <p>Digital signal processing based on real or complex vectors in time or frequency domain.
 Vectors are expected to typically have a size which is at least in the order
 of magnitude of a couple of thousand elements. This crate tries to balance between a clear
 API and performance in terms of processing speed.</p>
 <p>Take this example:</p>
 
-<pre class="rust rust-example-rendered">
+<div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector1</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">2.0</span>).<span class="ident">to_real_time_vec</span>();
 <span class="kw">let</span> <span class="ident">vector2</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">10.0</span>, <span class="number">11.0</span>).<span class="ident">to_real_time_vec</span>();
 <span class="ident">vector1</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">vector2</span>).<span class="ident">expect</span>(<span class="string">&quot;Ignoring error handling in examples&quot;</span>);
-</pre>
+</pre></div>
 <p>If <code>vector2</code> would be a complex or frequency vector then this won't compile. The type mismatch
 indicates that a conversation is missing and that this might be a programming mistake. This lib uses
 the Rust type system to catch such errors.</p>
@@ -20,10 +20,10 @@ to calculate the right buffer sizes for all operations. As an attempt to provide
 buffer types exist which don't preallocate, but store temporary memory segments so that they can be reused in the
 next iteration. Here is an example:</p>
 
-<pre class="rust rust-example-rendered">
+<div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="op">-</span><span class="number">0.5</span>, <span class="number">0.8660254</span>, <span class="op">-</span><span class="number">0.5</span>, <span class="op">-</span><span class="number">0.8660254</span>).<span class="ident">to_complex_time_vec</span>();
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
-<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">fft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>);</pre>
+<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">fft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>);</pre></div>
 <p>The vector types don't distinguish between the shapes 1xN or Nx1. This is a difference to other
 conventions such as in MATLAB or GNU Octave.
 The reason for this decision is that most operations are only defined if the shape of the
@@ -39,1097 +39,180 @@ Whenever you have a complex vector in time domain, it's binary operations will w
 complex vectors in time domain, but not with real valued vectors or frequency domain vectors.
 And the type <code>GenDspVec</code> serves as wild card at compile time since it defers all checks to run time.</p>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="conv_types/index.html"
-                                  title='mod basic_dsp_vector::conv_types'>conv_types</a></td>
-                           <td class='docblock-short'>
-                                <p>Types around a convolution, see also https://en.wikipedia.org/wiki/Convolution.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="meta/index.html"
-                                  title='mod basic_dsp_vector::meta'>meta</a></td>
-                           <td class='docblock-short'>
-                                
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="numbers/index.html"
-                                  title='mod basic_dsp_vector::numbers'>numbers</a></td>
-                           <td class='docblock-short'>
-                                <p>Traits from the <code>num</code> crate which are used inside <code>basic_dsp</code> and extensions to those traits.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="window_functions/index.html"
-                                  title='mod basic_dsp_vector::window_functions'>window_functions</a></td>
-                           <td class='docblock-short'>
-                                <p>This mod contains a definition for window functions and provides implementations for a
+<table><tr class='module-item'><td><a class="mod" href="conv_types/index.html" title='basic_dsp_vector::conv_types mod'>conv_types</a></td><td class='docblock-short'><p>Types around a convolution, see also https://en.wikipedia.org/wiki/Convolution.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="meta/index.html" title='basic_dsp_vector::meta mod'>meta</a></td><td class='docblock-short'></td></tr><tr class='module-item'><td><a class="mod" href="numbers/index.html" title='basic_dsp_vector::numbers mod'>numbers</a></td><td class='docblock-short'><p>Traits from the <code>num</code> crate which are used inside <code>basic_dsp</code> and extensions to those traits.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="window_functions/index.html" title='basic_dsp_vector::window_functions mod'>window_functions</a></td><td class='docblock-short'><p>This mod contains a definition for window functions and provides implementations for a
 few standard windows. See the <code>WindowFunction</code> type for more information.</p>
-
-                           </td>
-                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.DspVec.html"
-                                  title='struct basic_dsp_vector::DspVec'>DspVec</a></td>
-                           <td class='docblock-short'>
-                                <p>A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing
+</td></tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table><tr class='module-item'><td><a class="struct" href="struct.DspVec.html" title='basic_dsp_vector::DspVec struct'>DspVec</a></td><td class='docblock-short'><p>A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing
 (DSP) operations.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.FixedLenBuffer.html"
-                                  title='struct basic_dsp_vector::FixedLenBuffer'>FixedLenBuffer</a></td>
-                           <td class='docblock-short'>
-                                <p>A buffer which gets initalized with a data storage type and then always keeps that.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.FixedLenBufferBurrow.html"
-                                  title='struct basic_dsp_vector::FixedLenBufferBurrow'>FixedLenBufferBurrow</a></td>
-                           <td class='docblock-short'>
-                                <p>Buffer borrow type for <code>SingleBuffer</code>.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.MultiCoreSettings.html"
-                                  title='struct basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a></td>
-                           <td class='docblock-short'>
-                                <p>Holds parameters which specify how multiple cores are used
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.FixedLenBuffer.html" title='basic_dsp_vector::FixedLenBuffer struct'>FixedLenBuffer</a></td><td class='docblock-short'><p>A buffer which gets initalized with a data storage type and then always keeps that.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.FixedLenBufferBurrow.html" title='basic_dsp_vector::FixedLenBufferBurrow struct'>FixedLenBufferBurrow</a></td><td class='docblock-short'><p>Buffer borrow type for <code>SingleBuffer</code>.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.MultiCoreSettings.html" title='basic_dsp_vector::MultiCoreSettings struct'>MultiCoreSettings</a></td><td class='docblock-short'><p>Holds parameters which specify how multiple cores are used
 to execute an operation.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.NoBuffer.html"
-                                  title='struct basic_dsp_vector::NoBuffer'>NoBuffer</a></td>
-                           <td class='docblock-short'>
-                                <p>This type can be used everytime the API asks for a buffer to disable any buffering.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.NoBufferBurrow.html"
-                                  title='struct basic_dsp_vector::NoBufferBurrow'>NoBufferBurrow</a></td>
-                           <td class='docblock-short'>
-                                <p>Buffer borrow type for <code>NoBuffer</code>.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.NoTradeBufferBurrow.html"
-                                  title='struct basic_dsp_vector::NoTradeBufferBurrow'>NoTradeBufferBurrow</a></td>
-                           <td class='docblock-short'>
-                                <p>Buffer borrow type for <code>NoTradeBufferBurrow</code>.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.SingleBuffer.html"
-                                  title='struct basic_dsp_vector::SingleBuffer'>SingleBuffer</a></td>
-                           <td class='docblock-short'>
-                                <p>A buffer which stores a single vector and never shrinks.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.SingleBufferBurrow.html"
-                                  title='struct basic_dsp_vector::SingleBufferBurrow'>SingleBufferBurrow</a></td>
-                           <td class='docblock-short'>
-                                <p>Buffer borrow type for <code>SingleBuffer</code>.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.Statistics.html"
-                                  title='struct basic_dsp_vector::Statistics'>Statistics</a></td>
-                           <td class='docblock-short'>
-                                <p>Statistics about numeric data</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.TypeMetaData.html"
-                                  title='struct basic_dsp_vector::TypeMetaData'>TypeMetaData</a></td>
-                           <td class='docblock-short'>
-                                <p>Holds meta data about a type.</p>
-
-                           </td>
-                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="enum" href="enum.DataDomain.html"
-                                  title='enum basic_dsp_vector::DataDomain'>DataDomain</a></td>
-                           <td class='docblock-short'>
-                                <p>The domain of a data vector</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="enum" href="enum.ErrorReason.html"
-                                  title='enum basic_dsp_vector::ErrorReason'>ErrorReason</a></td>
-                           <td class='docblock-short'>
-                                <p>Enumeration of all error reasons</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="enum" href="enum.PaddingOption.html"
-                                  title='enum basic_dsp_vector::PaddingOption'>PaddingOption</a></td>
-                           <td class='docblock-short'>
-                                <p>An option which defines how a vector should be padded</p>
-
-                           </td>
-                       </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="constant" href="constant.STATS_VEC_CAPACTIY.html"
-                                  title='constant basic_dsp_vector::STATS_VEC_CAPACTIY'>STATS_VEC_CAPACTIY</a></td>
-                           <td class='docblock-short'>
-                                <p>The maximum <code>len</code> for any of the <code>*split</code> methods.</p>
-
-                           </td>
-                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ApproximatedOps.html"
-                                  title='trait basic_dsp_vector::ApproximatedOps'>ApproximatedOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Recommended to be only used with the CPU feature flags <code>sse</code> or <code>avx</code>.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.Buffer.html"
-                                  title='trait basic_dsp_vector::Buffer'>Buffer</a></td>
-                           <td class='docblock-short'>
-                                <p>A buffer which can be used by other types. Types will call buffers to create new arrays.
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.NoBuffer.html" title='basic_dsp_vector::NoBuffer struct'>NoBuffer</a></td><td class='docblock-short'><p>This type can be used everytime the API asks for a buffer to disable any buffering.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.NoBufferBurrow.html" title='basic_dsp_vector::NoBufferBurrow struct'>NoBufferBurrow</a></td><td class='docblock-short'><p>Buffer borrow type for <code>NoBuffer</code>.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.NoTradeBufferBurrow.html" title='basic_dsp_vector::NoTradeBufferBurrow struct'>NoTradeBufferBurrow</a></td><td class='docblock-short'><p>Buffer borrow type for <code>NoTradeBufferBurrow</code>.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.SingleBuffer.html" title='basic_dsp_vector::SingleBuffer struct'>SingleBuffer</a></td><td class='docblock-short'><p>A buffer which stores a single vector and never shrinks.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.SingleBufferBurrow.html" title='basic_dsp_vector::SingleBufferBurrow struct'>SingleBufferBurrow</a></td><td class='docblock-short'><p>Buffer borrow type for <code>SingleBuffer</code>.</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.Statistics.html" title='basic_dsp_vector::Statistics struct'>Statistics</a></td><td class='docblock-short'><p>Statistics about numeric data</p>
+</td></tr><tr class='module-item'><td><a class="struct" href="struct.TypeMetaData.html" title='basic_dsp_vector::TypeMetaData struct'>TypeMetaData</a></td><td class='docblock-short'><p>Holds meta data about a type.</p>
+</td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table><tr class='module-item'><td><a class="enum" href="enum.DataDomain.html" title='basic_dsp_vector::DataDomain enum'>DataDomain</a></td><td class='docblock-short'><p>The domain of a data vector</p>
+</td></tr><tr class='module-item'><td><a class="enum" href="enum.ErrorReason.html" title='basic_dsp_vector::ErrorReason enum'>ErrorReason</a></td><td class='docblock-short'><p>Enumeration of all error reasons</p>
+</td></tr><tr class='module-item'><td><a class="enum" href="enum.PaddingOption.html" title='basic_dsp_vector::PaddingOption enum'>PaddingOption</a></td><td class='docblock-short'><p>An option which defines how a vector should be padded</p>
+</td></tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table><tr class='module-item'><td><a class="constant" href="constant.STATS_VEC_CAPACTIY.html" title='basic_dsp_vector::STATS_VEC_CAPACTIY constant'>STATS_VEC_CAPACTIY</a></td><td class='docblock-short'><p>The maximum <code>len</code> for any of the <code>*split</code> methods.</p>
+</td></tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table><tr class='module-item'><td><a class="trait" href="trait.ApproximatedOps.html" title='basic_dsp_vector::ApproximatedOps trait'>ApproximatedOps</a></td><td class='docblock-short'><p>Recommended to be only used with the CPU feature flags <code>sse</code> or <code>avx</code>.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.Buffer.html" title='basic_dsp_vector::Buffer trait'>Buffer</a></td><td class='docblock-short'><p>A buffer which can be used by other types. Types will call buffers to create new arrays.
 A buffer may can implement any buffering strategy.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.BufferBorrow.html"
-                                  title='trait basic_dsp_vector::BufferBorrow'>BufferBorrow</a></td>
-                           <td class='docblock-short'>
-                                <p>A &quot;slice-like&quot; type which also allows to</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ComplexIndex.html"
-                                  title='trait basic_dsp_vector::ComplexIndex'>ComplexIndex</a></td>
-                           <td class='docblock-short'>
-                                <p>Like <a href="https://doc.rust-lang.org/std/ops/trait.Index.html"><code>std::ops::Index</code></a>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.BufferBorrow.html" title='basic_dsp_vector::BufferBorrow trait'>BufferBorrow</a></td><td class='docblock-short'><p>A &quot;slice-like&quot; type which also allows to</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ComplexIndex.html" title='basic_dsp_vector::ComplexIndex trait'>ComplexIndex</a></td><td class='docblock-short'><p>Like <a href="https://doc.rust-lang.org/std/ops/trait.Index.html"><code>std::ops::Index</code></a>
 but with a different method name so that it can be used to implement an additional range
 accessor for complex data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ComplexIndexMut.html"
-                                  title='trait basic_dsp_vector::ComplexIndexMut'>ComplexIndexMut</a></td>
-                           <td class='docblock-short'>
-                                <p>Like <a href="https://doc.rust-lang.org/std/ops/trait.IndexMut.html"><code>std::ops::IndexMut</code></a>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ComplexIndexMut.html" title='basic_dsp_vector::ComplexIndexMut trait'>ComplexIndexMut</a></td><td class='docblock-short'><p>Like <a href="https://doc.rust-lang.org/std/ops/trait.IndexMut.html"><code>std::ops::IndexMut</code></a>
 but with a different method name so that it can be used to implement a additional range
 accessor for complex data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ComplexNumberSpace.html"
-                                  title='trait basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a></td>
-                           <td class='docblock-short'>
-                                <p>Trait for types containing complex data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ComplexOps.html"
-                                  title='trait basic_dsp_vector::ComplexOps'>ComplexOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Operations on complex types.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ComplexToRealGetterOps.html"
-                                  title='trait basic_dsp_vector::ComplexToRealGetterOps'>ComplexToRealGetterOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines getters to get real data from complex types.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ComplexToRealSetterOps.html"
-                                  title='trait basic_dsp_vector::ComplexToRealSetterOps'>ComplexToRealSetterOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines setters to create complex data from real data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ComplexToRealTransformsOps.html"
-                                  title='trait basic_dsp_vector::ComplexToRealTransformsOps'>ComplexToRealTransformsOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines transformations from complex to real number space.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ComplexToRealTransformsOpsBuffered.html"
-                                  title='trait basic_dsp_vector::ComplexToRealTransformsOpsBuffered'>ComplexToRealTransformsOpsBuffered</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines transformations from complex to real number space.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.Convolution.html"
-                                  title='trait basic_dsp_vector::Convolution'>Convolution</a></td>
-                           <td class='docblock-short'>
-                                <p>Provides a convolution operations.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ConvolutionOps.html"
-                                  title='trait basic_dsp_vector::ConvolutionOps'>ConvolutionOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Provides a convolution operation for types which at some point are slice based.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.CrossCorrelationArgumentOps.html"
-                                  title='trait basic_dsp_vector::CrossCorrelationArgumentOps'>CrossCorrelationArgumentOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.CrossCorrelationOps.html"
-                                  title='trait basic_dsp_vector::CrossCorrelationOps'>CrossCorrelationOps</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait to calculate the cross correlation.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.DiffSumOps.html"
-                                  title='trait basic_dsp_vector::DiffSumOps'>DiffSumOps</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ComplexNumberSpace.html" title='basic_dsp_vector::ComplexNumberSpace trait'>ComplexNumberSpace</a></td><td class='docblock-short'><p>Trait for types containing complex data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ComplexOps.html" title='basic_dsp_vector::ComplexOps trait'>ComplexOps</a></td><td class='docblock-short'><p>Operations on complex types.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ComplexToRealGetterOps.html" title='basic_dsp_vector::ComplexToRealGetterOps trait'>ComplexToRealGetterOps</a></td><td class='docblock-short'><p>Defines getters to get real data from complex types.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ComplexToRealSetterOps.html" title='basic_dsp_vector::ComplexToRealSetterOps trait'>ComplexToRealSetterOps</a></td><td class='docblock-short'><p>Defines setters to create complex data from real data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ComplexToRealTransformsOps.html" title='basic_dsp_vector::ComplexToRealTransformsOps trait'>ComplexToRealTransformsOps</a></td><td class='docblock-short'><p>Defines transformations from complex to real number space.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ComplexToRealTransformsOpsBuffered.html" title='basic_dsp_vector::ComplexToRealTransformsOpsBuffered trait'>ComplexToRealTransformsOpsBuffered</a></td><td class='docblock-short'><p>Defines transformations from complex to real number space.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.Convolution.html" title='basic_dsp_vector::Convolution trait'>Convolution</a></td><td class='docblock-short'><p>Provides a convolution operations.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ConvolutionOps.html" title='basic_dsp_vector::ConvolutionOps trait'>ConvolutionOps</a></td><td class='docblock-short'><p>Provides a convolution operation for types which at some point are slice based.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.CrossCorrelationArgumentOps.html" title='basic_dsp_vector::CrossCorrelationArgumentOps trait'>CrossCorrelationArgumentOps</a></td><td class='docblock-short'><p>Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.CrossCorrelationOps.html" title='basic_dsp_vector::CrossCorrelationOps trait'>CrossCorrelationOps</a></td><td class='docblock-short'><p>A trait to calculate the cross correlation.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.DiffSumOps.html" title='basic_dsp_vector::DiffSumOps trait'>DiffSumOps</a></td><td class='docblock-short'><p>A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum
 (integral  in a discrete number space).</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.Domain.html"
-                                  title='trait basic_dsp_vector::Domain'>Domain</a></td>
-                           <td class='docblock-short'>
-                                <p>Domain (time or frequency) information.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.DotProductOps.html"
-                                  title='trait basic_dsp_vector::DotProductOps'>DotProductOps</a></td>
-                           <td class='docblock-short'>
-                                <p>An operation which multiplies each vector element with a constant</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ElementaryOps.html"
-                                  title='trait basic_dsp_vector::ElementaryOps'>ElementaryOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Elementary algebra on types: addition, subtraction, multiplication and division</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ElementaryWrapAroundOps.html"
-                                  title='trait basic_dsp_vector::ElementaryWrapAroundOps'>ElementaryWrapAroundOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Elementary algebra on types where the argument might contain less data points than <code>self</code>.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.FrequencyDomain.html"
-                                  title='trait basic_dsp_vector::FrequencyDomain'>FrequencyDomain</a></td>
-                           <td class='docblock-short'>
-                                <p>Trait for types containing frequency domain data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.FrequencyDomainOperations.html"
-                                  title='trait basic_dsp_vector::FrequencyDomainOperations'>FrequencyDomainOperations</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines all operations which are valid on <code>DataVecs</code> containing frequency domain data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.FrequencyMultiplication.html"
-                                  title='trait basic_dsp_vector::FrequencyMultiplication'>FrequencyMultiplication</a></td>
-                           <td class='docblock-short'>
-                                <p>Provides a frequency response multiplication operations.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.FrequencyToTimeDomainOperations.html"
-                                  title='trait basic_dsp_vector::FrequencyToTimeDomainOperations'>FrequencyToTimeDomainOperations</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines all operations which are valid on <code>DataVecs</code> containing frequency domain data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.FromVector.html"
-                                  title='trait basic_dsp_vector::FromVector'>FromVector</a></td>
-                           <td class='docblock-short'>
-                                <p>Retrieves the underlying storage from a vector.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.GetMetaData.html"
-                                  title='trait basic_dsp_vector::GetMetaData'>GetMetaData</a></td>
-                           <td class='docblock-short'>
-                                <p>Gets the meta data of a type. This can be used to create a new type with the same
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.Domain.html" title='basic_dsp_vector::Domain trait'>Domain</a></td><td class='docblock-short'><p>Domain (time or frequency) information.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.DotProductOps.html" title='basic_dsp_vector::DotProductOps trait'>DotProductOps</a></td><td class='docblock-short'><p>An operation which multiplies each vector element with a constant</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ElementaryOps.html" title='basic_dsp_vector::ElementaryOps trait'>ElementaryOps</a></td><td class='docblock-short'><p>Elementary algebra on types: addition, subtraction, multiplication and division</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ElementaryWrapAroundOps.html" title='basic_dsp_vector::ElementaryWrapAroundOps trait'>ElementaryWrapAroundOps</a></td><td class='docblock-short'><p>Elementary algebra on types where the argument might contain less data points than <code>self</code>.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.FrequencyDomain.html" title='basic_dsp_vector::FrequencyDomain trait'>FrequencyDomain</a></td><td class='docblock-short'><p>Trait for types containing frequency domain data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.FrequencyDomainOperations.html" title='basic_dsp_vector::FrequencyDomainOperations trait'>FrequencyDomainOperations</a></td><td class='docblock-short'><p>Defines all operations which are valid on <code>DataVecs</code> containing frequency domain data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.FrequencyMultiplication.html" title='basic_dsp_vector::FrequencyMultiplication trait'>FrequencyMultiplication</a></td><td class='docblock-short'><p>Provides a frequency response multiplication operations.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.FrequencyToTimeDomainOperations.html" title='basic_dsp_vector::FrequencyToTimeDomainOperations trait'>FrequencyToTimeDomainOperations</a></td><td class='docblock-short'><p>Defines all operations which are valid on <code>DataVecs</code> containing frequency domain data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.FromVector.html" title='basic_dsp_vector::FromVector trait'>FromVector</a></td><td class='docblock-short'><p>Retrieves the underlying storage from a vector.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.GetMetaData.html" title='basic_dsp_vector::GetMetaData trait'>GetMetaData</a></td><td class='docblock-short'><p>Gets the meta data of a type. This can be used to create a new type with the same
 meta data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.InsertZerosOps.html"
-                                  title='trait basic_dsp_vector::InsertZerosOps'>InsertZerosOps</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait to insert zeros into the data at some specified positions.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.InsertZerosOpsBuffered.html"
-                                  title='trait basic_dsp_vector::InsertZerosOpsBuffered'>InsertZerosOpsBuffered</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait to insert zeros into the data at some specified positions. A buffer is used
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.InsertZerosOps.html" title='basic_dsp_vector::InsertZerosOps trait'>InsertZerosOps</a></td><td class='docblock-short'><p>A trait to insert zeros into the data at some specified positions.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.InsertZerosOpsBuffered.html" title='basic_dsp_vector::InsertZerosOpsBuffered trait'>InsertZerosOpsBuffered</a></td><td class='docblock-short'><p>A trait to insert zeros into the data at some specified positions. A buffer is used
 for types which can't be resized and/or to speed up the calculation.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.InterleaveToVector.html"
-                                  title='trait basic_dsp_vector::InterleaveToVector'>InterleaveToVector</a></td>
-                           <td class='docblock-short'>
-                                <p>Conversion from two instances of a generic data type into a dsp vector with complex data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.InterpolationOps.html"
-                                  title='trait basic_dsp_vector::InterpolationOps'>InterpolationOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Provides interpolation operations for real and complex data vectors.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.MapAggregateOps.html"
-                                  title='trait basic_dsp_vector::MapAggregateOps'>MapAggregateOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Operations which allow to iterate over the vector and to derive results.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.MapInplaceOps.html"
-                                  title='trait basic_dsp_vector::MapInplaceOps'>MapInplaceOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Operations which allow to iterate over the vector and to derive results
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.InterleaveToVector.html" title='basic_dsp_vector::InterleaveToVector trait'>InterleaveToVector</a></td><td class='docblock-short'><p>Conversion from two instances of a generic data type into a dsp vector with complex data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.InterpolationOps.html" title='basic_dsp_vector::InterpolationOps trait'>InterpolationOps</a></td><td class='docblock-short'><p>Provides interpolation operations for real and complex data vectors.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.MapAggregateOps.html" title='basic_dsp_vector::MapAggregateOps trait'>MapAggregateOps</a></td><td class='docblock-short'><p>Operations which allow to iterate over the vector and to derive results.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.MapInplaceOps.html" title='basic_dsp_vector::MapInplaceOps trait'>MapInplaceOps</a></td><td class='docblock-short'><p>Operations which allow to iterate over the vector and to derive results
 or to change the vector.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.MergeOps.html"
-                                  title='trait basic_dsp_vector::MergeOps'>MergeOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Merges several pieces of equal size into one data chunk.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.MetaData.html"
-                                  title='trait basic_dsp_vector::MetaData'>MetaData</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait which provides information about number space and domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ModuloOps.html"
-                                  title='trait basic_dsp_vector::ModuloOps'>ModuloOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Operations on real types.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.NumberSpace.html"
-                                  title='trait basic_dsp_vector::NumberSpace'>NumberSpace</a></td>
-                           <td class='docblock-short'>
-                                <p>Number space (real or complex) information.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.OffsetOps.html"
-                                  title='trait basic_dsp_vector::OffsetOps'>OffsetOps</a></td>
-                           <td class='docblock-short'>
-                                <p>An operation which adds a constant to each vector element</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.PosEq.html"
-                                  title='trait basic_dsp_vector::PosEq'>PosEq</a></td>
-                           <td class='docblock-short'>
-                                <p>Expresses at compile time that two classes could potentially represent the same number space or domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.PowerOps.html"
-                                  title='trait basic_dsp_vector::PowerOps'>PowerOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Roots, powers, exponentials and logarithms.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.PreciseDotProductOps.html"
-                                  title='trait basic_dsp_vector::PreciseDotProductOps'>PreciseDotProductOps</a></td>
-                           <td class='docblock-short'>
-                                <p>An operation which multiplies each vector element with a constant</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.PreciseStatisticsOps.html"
-                                  title='trait basic_dsp_vector::PreciseStatisticsOps'>PreciseStatisticsOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Offers the same functionality as the <code>StatisticsOps</code> trait but
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.MergeOps.html" title='basic_dsp_vector::MergeOps trait'>MergeOps</a></td><td class='docblock-short'><p>Merges several pieces of equal size into one data chunk.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.MetaData.html" title='basic_dsp_vector::MetaData trait'>MetaData</a></td><td class='docblock-short'><p>A trait which provides information about number space and domain.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ModuloOps.html" title='basic_dsp_vector::ModuloOps trait'>ModuloOps</a></td><td class='docblock-short'><p>Operations on real types.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.NumberSpace.html" title='basic_dsp_vector::NumberSpace trait'>NumberSpace</a></td><td class='docblock-short'><p>Number space (real or complex) information.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.OffsetOps.html" title='basic_dsp_vector::OffsetOps trait'>OffsetOps</a></td><td class='docblock-short'><p>An operation which adds a constant to each vector element</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.PosEq.html" title='basic_dsp_vector::PosEq trait'>PosEq</a></td><td class='docblock-short'><p>Expresses at compile time that two classes could potentially represent the same number space or domain.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.PowerOps.html" title='basic_dsp_vector::PowerOps trait'>PowerOps</a></td><td class='docblock-short'><p>Roots, powers, exponentials and logarithms.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.PreciseDotProductOps.html" title='basic_dsp_vector::PreciseDotProductOps trait'>PreciseDotProductOps</a></td><td class='docblock-short'><p>An operation which multiplies each vector element with a constant</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.PreciseStatisticsOps.html" title='basic_dsp_vector::PreciseStatisticsOps trait'>PreciseStatisticsOps</a></td><td class='docblock-short'><p>Offers the same functionality as the <code>StatisticsOps</code> trait but
 the statistics are calculated in a more precise (and slower) way.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.PreciseStatisticsSplitOps.html"
-                                  title='trait basic_dsp_vector::PreciseStatisticsSplitOps'>PreciseStatisticsSplitOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Offers the same functionality as the <code>StatisticsOps</code> trait but
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.PreciseStatisticsSplitOps.html" title='basic_dsp_vector::PreciseStatisticsSplitOps trait'>PreciseStatisticsSplitOps</a></td><td class='docblock-short'><p>Offers the same functionality as the <code>StatisticsOps</code> trait but
 the statistics are calculated in a more precise (and slower) way.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.PreciseStats.html"
-                                  title='trait basic_dsp_vector::PreciseStats'>PreciseStats</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait for statistics which allows to add new values in a way so that the numerical
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.PreciseStats.html" title='basic_dsp_vector::PreciseStats trait'>PreciseStats</a></td><td class='docblock-short'><p>A trait for statistics which allows to add new values in a way so that the numerical
 uncertainty has less impact on the final results.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.PreciseSumOps.html"
-                                  title='trait basic_dsp_vector::PreciseSumOps'>PreciseSumOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Offers the same functionality as the <code>SumOps</code> trait but
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.PreciseSumOps.html" title='basic_dsp_vector::PreciseSumOps trait'>PreciseSumOps</a></td><td class='docblock-short'><p>Offers the same functionality as the <code>SumOps</code> trait but
 the sums are calculated in a more precise (and slower) way.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.RealInterpolationOps.html"
-                                  title='trait basic_dsp_vector::RealInterpolationOps'>RealInterpolationOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Provides interpolation operations which are only applicable for real data vectors.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.RealNumberSpace.html"
-                                  title='trait basic_dsp_vector::RealNumberSpace'>RealNumberSpace</a></td>
-                           <td class='docblock-short'>
-                                <p>Trait for types containing real data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.RealOps.html"
-                                  title='trait basic_dsp_vector::RealOps'>RealOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Operations on real types.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.RealToComplexTransformsOps.html"
-                                  title='trait basic_dsp_vector::RealToComplexTransformsOps'>RealToComplexTransformsOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines transformations from real to complex number space.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.RealToComplexTransformsOpsBuffered.html"
-                                  title='trait basic_dsp_vector::RealToComplexTransformsOpsBuffered'>RealToComplexTransformsOpsBuffered</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines transformations from real to complex number space.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.RededicateForceOps.html"
-                                  title='trait basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a></td>
-                           <td class='docblock-short'>
-                                <p>This trait allows to change a data type and performs the Conversion
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.RealInterpolationOps.html" title='basic_dsp_vector::RealInterpolationOps trait'>RealInterpolationOps</a></td><td class='docblock-short'><p>Provides interpolation operations which are only applicable for real data vectors.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.RealNumberSpace.html" title='basic_dsp_vector::RealNumberSpace trait'>RealNumberSpace</a></td><td class='docblock-short'><p>Trait for types containing real data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.RealOps.html" title='basic_dsp_vector::RealOps trait'>RealOps</a></td><td class='docblock-short'><p>Operations on real types.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.RealToComplexTransformsOps.html" title='basic_dsp_vector::RealToComplexTransformsOps trait'>RealToComplexTransformsOps</a></td><td class='docblock-short'><p>Defines transformations from real to complex number space.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.RealToComplexTransformsOpsBuffered.html" title='basic_dsp_vector::RealToComplexTransformsOpsBuffered trait'>RealToComplexTransformsOpsBuffered</a></td><td class='docblock-short'><p>Defines transformations from real to complex number space.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.RededicateForceOps.html" title='basic_dsp_vector::RededicateForceOps trait'>RededicateForceOps</a></td><td class='docblock-short'><p>This trait allows to change a data type and performs the Conversion
 without any checks. <code>RededicateOps</code> provides the same functionality
 but performs runtime checks to avoid that data is interpreted the wrong
 way.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.RededicateOps.html"
-                                  title='trait basic_dsp_vector::RededicateOps'>RededicateOps</a></td>
-                           <td class='docblock-short'>
-                                <p>This trait allows to change a data type. The operations will
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.RededicateOps.html" title='basic_dsp_vector::RededicateOps trait'>RededicateOps</a></td><td class='docblock-short'><p>This trait allows to change a data type. The operations will
 convert a type to a different one and set <code>self.len()</code> to zero.
 However <code>self.allocated_len()</code> will remain unchanged. The use case for this
 is to allow to reuse the memory of a vector for different operations.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.RededicateToOps.html"
-                                  title='trait basic_dsp_vector::RededicateToOps'>RededicateToOps</a></td>
-                           <td class='docblock-short'>
-                                <p>This trait allows to change a data type. The operations will
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.RededicateToOps.html" title='basic_dsp_vector::RededicateToOps trait'>RededicateToOps</a></td><td class='docblock-short'><p>This trait allows to change a data type. The operations will
 convert a type to a different one and set <code>self.len()</code> to zero.
 However <code>self.allocated_len()</code> will remain unchanged. The use case for this
 is to allow to reuse the memory of a vector for different operations.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ReorganizeDataOps.html"
-                                  title='trait basic_dsp_vector::ReorganizeDataOps'>ReorganizeDataOps</a></td>
-                           <td class='docblock-short'>
-                                <p>This trait allows to reorganize the data by changing positions of the individual elements.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.Resize.html"
-                                  title='trait basic_dsp_vector::Resize'>Resize</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait for storage types which are known to have the capability to increase their capacity.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ResizeBufferedOps.html"
-                                  title='trait basic_dsp_vector::ResizeBufferedOps'>ResizeBufferedOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Operations to resize a data type.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ResizeOps.html"
-                                  title='trait basic_dsp_vector::ResizeOps'>ResizeOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Operations to resize a data type.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ScaleOps.html"
-                                  title='trait basic_dsp_vector::ScaleOps'>ScaleOps</a></td>
-                           <td class='docblock-short'>
-                                <p>An operation which multiplies each vector element with a constant</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.SplitOps.html"
-                                  title='trait basic_dsp_vector::SplitOps'>SplitOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Splits the data into several smaller pieces of equal size.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.StatisticsOps.html"
-                                  title='trait basic_dsp_vector::StatisticsOps'>StatisticsOps</a></td>
-                           <td class='docblock-short'>
-                                <p>This trait offers operations to calculate statistics about the data in a type.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.StatisticsSplitOps.html"
-                                  title='trait basic_dsp_vector::StatisticsSplitOps'>StatisticsSplitOps</a></td>
-                           <td class='docblock-short'>
-                                <p>This trait offers operations to calculate statistics about the data in a type.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.Stats.html"
-                                  title='trait basic_dsp_vector::Stats'>Stats</a></td>
-                           <td class='docblock-short'>
-                                <p>Operations on statistics.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.SumOps.html"
-                                  title='trait basic_dsp_vector::SumOps'>SumOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Offers operations to calculate the sum or the sum of squares.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.SymmetricFrequencyToTimeDomainOperations.html"
-                                  title='trait basic_dsp_vector::SymmetricFrequencyToTimeDomainOperations'>SymmetricFrequencyToTimeDomainOperations</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines all operations which are valid on <code>DataVecs</code> containing frequency domain data and
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ReorganizeDataOps.html" title='basic_dsp_vector::ReorganizeDataOps trait'>ReorganizeDataOps</a></td><td class='docblock-short'><p>This trait allows to reorganize the data by changing positions of the individual elements.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.Resize.html" title='basic_dsp_vector::Resize trait'>Resize</a></td><td class='docblock-short'><p>A trait for storage types which are known to have the capability to increase their capacity.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ResizeBufferedOps.html" title='basic_dsp_vector::ResizeBufferedOps trait'>ResizeBufferedOps</a></td><td class='docblock-short'><p>Operations to resize a data type.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ResizeOps.html" title='basic_dsp_vector::ResizeOps trait'>ResizeOps</a></td><td class='docblock-short'><p>Operations to resize a data type.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ScaleOps.html" title='basic_dsp_vector::ScaleOps trait'>ScaleOps</a></td><td class='docblock-short'><p>An operation which multiplies each vector element with a constant</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.SplitOps.html" title='basic_dsp_vector::SplitOps trait'>SplitOps</a></td><td class='docblock-short'><p>Splits the data into several smaller pieces of equal size.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.StatisticsOps.html" title='basic_dsp_vector::StatisticsOps trait'>StatisticsOps</a></td><td class='docblock-short'><p>This trait offers operations to calculate statistics about the data in a type.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.StatisticsSplitOps.html" title='basic_dsp_vector::StatisticsSplitOps trait'>StatisticsSplitOps</a></td><td class='docblock-short'><p>This trait offers operations to calculate statistics about the data in a type.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.Stats.html" title='basic_dsp_vector::Stats trait'>Stats</a></td><td class='docblock-short'><p>Operations on statistics.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.SumOps.html" title='basic_dsp_vector::SumOps trait'>SumOps</a></td><td class='docblock-short'><p>Offers operations to calculate the sum or the sum of squares.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.SymmetricFrequencyToTimeDomainOperations.html" title='basic_dsp_vector::SymmetricFrequencyToTimeDomainOperations trait'>SymmetricFrequencyToTimeDomainOperations</a></td><td class='docblock-short'><p>Defines all operations which are valid on <code>DataVecs</code> containing frequency domain data and
 the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where
 the 0 Hz element itself is real.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.SymmetricTimeToFrequencyDomainOperations.html"
-                                  title='trait basic_dsp_vector::SymmetricTimeToFrequencyDomainOperations'>SymmetricTimeToFrequencyDomainOperations</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines all operations which are valid on <code>DataVecs</code> containing real time domain data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.TimeDomain.html"
-                                  title='trait basic_dsp_vector::TimeDomain'>TimeDomain</a></td>
-                           <td class='docblock-short'>
-                                <p>Trait for types containing time domain data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.TimeDomainOperations.html"
-                                  title='trait basic_dsp_vector::TimeDomainOperations'>TimeDomainOperations</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines all operations which are valid on <code>DataVecs</code> containing time domain data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.TimeToFrequencyDomainOperations.html"
-                                  title='trait basic_dsp_vector::TimeToFrequencyDomainOperations'>TimeToFrequencyDomainOperations</a></td>
-                           <td class='docblock-short'>
-                                <p>Defines all operations which are valid on <code>DataVecs</code> containing time domain data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToComplexResult.html"
-                                  title='trait basic_dsp_vector::ToComplexResult'>ToComplexResult</a></td>
-                           <td class='docblock-short'>
-                                <p>Specifies what the the result is if a type is transformed to complex numbers.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToComplexVector.html"
-                                  title='trait basic_dsp_vector::ToComplexVector'>ToComplexVector</a></td>
-                           <td class='docblock-short'>
-                                <p>Conversion from a generic data type into a dsp vector with complex data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToComplexVectorPar.html"
-                                  title='trait basic_dsp_vector::ToComplexVectorPar'>ToComplexVectorPar</a></td>
-                           <td class='docblock-short'>
-                                <p>Conversion from a generic data type into a dsp vector with complex data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToDspVector.html"
-                                  title='trait basic_dsp_vector::ToDspVector'>ToDspVector</a></td>
-                           <td class='docblock-short'>
-                                <p>Conversion from a generic data type into a dsp vector which tracks
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.SymmetricTimeToFrequencyDomainOperations.html" title='basic_dsp_vector::SymmetricTimeToFrequencyDomainOperations trait'>SymmetricTimeToFrequencyDomainOperations</a></td><td class='docblock-short'><p>Defines all operations which are valid on <code>DataVecs</code> containing real time domain data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.TimeDomain.html" title='basic_dsp_vector::TimeDomain trait'>TimeDomain</a></td><td class='docblock-short'><p>Trait for types containing time domain data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.TimeDomainOperations.html" title='basic_dsp_vector::TimeDomainOperations trait'>TimeDomainOperations</a></td><td class='docblock-short'><p>Defines all operations which are valid on <code>DataVecs</code> containing time domain data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.TimeToFrequencyDomainOperations.html" title='basic_dsp_vector::TimeToFrequencyDomainOperations trait'>TimeToFrequencyDomainOperations</a></td><td class='docblock-short'><p>Defines all operations which are valid on <code>DataVecs</code> containing time domain data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToComplexResult.html" title='basic_dsp_vector::ToComplexResult trait'>ToComplexResult</a></td><td class='docblock-short'><p>Specifies what the the result is if a type is transformed to complex numbers.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToComplexVector.html" title='basic_dsp_vector::ToComplexVector trait'>ToComplexVector</a></td><td class='docblock-short'><p>Conversion from a generic data type into a dsp vector with complex data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToComplexVectorPar.html" title='basic_dsp_vector::ToComplexVectorPar trait'>ToComplexVectorPar</a></td><td class='docblock-short'><p>Conversion from a generic data type into a dsp vector with complex data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToDspVector.html" title='basic_dsp_vector::ToDspVector trait'>ToDspVector</a></td><td class='docblock-short'><p>Conversion from a generic data type into a dsp vector which tracks
 its meta information (domain and number space)
 only at runtime. See <code>ToRealVector</code> and
 <code>ToComplexVector</code> for alternatives which track most of the meta data
 with the type system and therefore avoid runtime errors.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToDspVectorPar.html"
-                                  title='trait basic_dsp_vector::ToDspVectorPar'>ToDspVectorPar</a></td>
-                           <td class='docblock-short'>
-                                <p>Conversion from a generic data type into a dsp vector which tracks
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToDspVectorPar.html" title='basic_dsp_vector::ToDspVectorPar trait'>ToDspVectorPar</a></td><td class='docblock-short'><p>Conversion from a generic data type into a dsp vector which tracks
 its meta information (domain and number space)
 only at runtime. See <code>ToRealVector</code> and
 <code>ToComplexVector</code> for alternatives which track most of the meta data
 with the type system and therefore avoid runtime errors.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToFreqResult.html"
-                                  title='trait basic_dsp_vector::ToFreqResult'>ToFreqResult</a></td>
-                           <td class='docblock-short'>
-                                <p>Specifies what the the result is if a type is transformed to frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToRealResult.html"
-                                  title='trait basic_dsp_vector::ToRealResult'>ToRealResult</a></td>
-                           <td class='docblock-short'>
-                                <p>Specifies what the the result is if a type is transformed to real numbers.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToRealTimeResult.html"
-                                  title='trait basic_dsp_vector::ToRealTimeResult'>ToRealTimeResult</a></td>
-                           <td class='docblock-short'>
-                                <p>Specifies what the the result is if a type is transformed to real numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToRealVector.html"
-                                  title='trait basic_dsp_vector::ToRealVector'>ToRealVector</a></td>
-                           <td class='docblock-short'>
-                                <p>Conversion from a generic data type into a dsp vector with real data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToRealVectorPar.html"
-                                  title='trait basic_dsp_vector::ToRealVectorPar'>ToRealVectorPar</a></td>
-                           <td class='docblock-short'>
-                                <p>Conversion from a generic data type into a dsp vector with real data.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToSlice.html"
-                                  title='trait basic_dsp_vector::ToSlice'>ToSlice</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait to convert a type into a slice.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToSliceMut.html"
-                                  title='trait basic_dsp_vector::ToSliceMut'>ToSliceMut</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait to convert a type into a mutable slice.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.ToTimeResult.html"
-                                  title='trait basic_dsp_vector::ToTimeResult'>ToTimeResult</a></td>
-                           <td class='docblock-short'>
-                                <p>Specifies what the the result is if a type is transformed to time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.TrigOps.html"
-                                  title='trait basic_dsp_vector::TrigOps'>TrigOps</a></td>
-                           <td class='docblock-short'>
-                                <p>Trigonometry methods.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.Vector.html"
-                                  title='trait basic_dsp_vector::Vector'>Vector</a></td>
-                           <td class='docblock-short'>
-                                <p>A trait for vector types.</p>
-
-                           </td>
-                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="fn" href="fn.print_calibration.html"
-                                  title='fn basic_dsp_vector::print_calibration'>print_calibration</a></td>
-                           <td class='docblock-short'>
-                                <p>Prints debug information about the calibration. The calibration determines when the library
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToFreqResult.html" title='basic_dsp_vector::ToFreqResult trait'>ToFreqResult</a></td><td class='docblock-short'><p>Specifies what the the result is if a type is transformed to frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToRealResult.html" title='basic_dsp_vector::ToRealResult trait'>ToRealResult</a></td><td class='docblock-short'><p>Specifies what the the result is if a type is transformed to real numbers.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToRealTimeResult.html" title='basic_dsp_vector::ToRealTimeResult trait'>ToRealTimeResult</a></td><td class='docblock-short'><p>Specifies what the the result is if a type is transformed to real numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToRealVector.html" title='basic_dsp_vector::ToRealVector trait'>ToRealVector</a></td><td class='docblock-short'><p>Conversion from a generic data type into a dsp vector with real data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToRealVectorPar.html" title='basic_dsp_vector::ToRealVectorPar trait'>ToRealVectorPar</a></td><td class='docblock-short'><p>Conversion from a generic data type into a dsp vector with real data.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToSlice.html" title='basic_dsp_vector::ToSlice trait'>ToSlice</a></td><td class='docblock-short'><p>A trait to convert a type into a slice.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToSliceMut.html" title='basic_dsp_vector::ToSliceMut trait'>ToSliceMut</a></td><td class='docblock-short'><p>A trait to convert a type into a mutable slice.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ToTimeResult.html" title='basic_dsp_vector::ToTimeResult trait'>ToTimeResult</a></td><td class='docblock-short'><p>Specifies what the the result is if a type is transformed to time domain.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.TrigOps.html" title='basic_dsp_vector::TrigOps trait'>TrigOps</a></td><td class='docblock-short'><p>Trigonometry methods.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.Vector.html" title='basic_dsp_vector::Vector trait'>Vector</a></td><td class='docblock-short'><p>A trait for vector types.</p>
+</td></tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table><tr class='module-item'><td><a class="fn" href="fn.print_calibration.html" title='basic_dsp_vector::print_calibration fn'>print_calibration</a></td><td class='docblock-short'><p>Prints debug information about the calibration. The calibration determines when the library
 will start to spawn threads. If a calibration hasn't been performed yet
 than calling this function will trigger the calibration.</p>
-
-                           </td>
-                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexFreqVec.html"
-                                  title='type basic_dsp_vector::ComplexFreqVec'>ComplexFreqVec</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexFreqVec32.html"
-                                  title='type basic_dsp_vector::ComplexFreqVec32'>ComplexFreqVec32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexFreqVec64.html"
-                                  title='type basic_dsp_vector::ComplexFreqVec64'>ComplexFreqVec64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexFreqVecSlice32.html"
-                                  title='type basic_dsp_vector::ComplexFreqVecSlice32'>ComplexFreqVecSlice32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexFreqVecSlice64.html"
-                                  title='type basic_dsp_vector::ComplexFreqVecSlice64'>ComplexFreqVecSlice64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexTimeVec.html"
-                                  title='type basic_dsp_vector::ComplexTimeVec'>ComplexTimeVec</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexTimeVec32.html"
-                                  title='type basic_dsp_vector::ComplexTimeVec32'>ComplexTimeVec32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexTimeVec64.html"
-                                  title='type basic_dsp_vector::ComplexTimeVec64'>ComplexTimeVec64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexTimeVecSlice32.html"
-                                  title='type basic_dsp_vector::ComplexTimeVecSlice32'>ComplexTimeVecSlice32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ComplexTimeVecSlice64.html"
-                                  title='type basic_dsp_vector::ComplexTimeVecSlice64'>ComplexTimeVecSlice64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with complex numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.GenDspVec.html"
-                                  title='type basic_dsp_vector::GenDspVec'>GenDspVec</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with no information about number space or domain at compile time.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.GenDspVec32.html"
-                                  title='type basic_dsp_vector::GenDspVec32'>GenDspVec32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with no information about number space or domain at compile time.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.GenDspVec64.html"
-                                  title='type basic_dsp_vector::GenDspVec64'>GenDspVec64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with no information about number space or domain at compile time.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.GenDspVecSlice32.html"
-                                  title='type basic_dsp_vector::GenDspVecSlice32'>GenDspVecSlice32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with no information about number space or domain at compile time.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.GenDspVecSlice64.html"
-                                  title='type basic_dsp_vector::GenDspVecSlice64'>GenDspVecSlice64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with no information about number space or domain at compile time.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealFreqVec.html"
-                                  title='type basic_dsp_vector::RealFreqVec'>RealFreqVec</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealFreqVec32.html"
-                                  title='type basic_dsp_vector::RealFreqVec32'>RealFreqVec32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealFreqVec64.html"
-                                  title='type basic_dsp_vector::RealFreqVec64'>RealFreqVec64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealFreqVecSlice32.html"
-                                  title='type basic_dsp_vector::RealFreqVecSlice32'>RealFreqVecSlice32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealFreqVecSlice64.html"
-                                  title='type basic_dsp_vector::RealFreqVecSlice64'>RealFreqVecSlice64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in frequency domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealTimeVec.html"
-                                  title='type basic_dsp_vector::RealTimeVec'>RealTimeVec</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealTimeVec32.html"
-                                  title='type basic_dsp_vector::RealTimeVec32'>RealTimeVec32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealTimeVec64.html"
-                                  title='type basic_dsp_vector::RealTimeVec64'>RealTimeVec64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealTimeVecSlice32.html"
-                                  title='type basic_dsp_vector::RealTimeVecSlice32'>RealTimeVecSlice32</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.RealTimeVecSlice64.html"
-                                  title='type basic_dsp_vector::RealTimeVecSlice64'>RealTimeVecSlice64</a></td>
-                           <td class='docblock-short'>
-                                <p>A vector with real numbers in time domain.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.ScalarResult.html"
-                                  title='type basic_dsp_vector::ScalarResult'>ScalarResult</a></td>
-                           <td class='docblock-short'>
-                                <p>Scalar result or a reason in case of an error.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.StatsVec.html"
-                                  title='type basic_dsp_vector::StatsVec'>StatsVec</a></td>
-                           <td class='docblock-short'>
-                                <p>Alias for a vector of any statistical information.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.TransRes.html"
-                                  title='type basic_dsp_vector::TransRes'>TransRes</a></td>
-                           <td class='docblock-short'>
-                                <p>Result for operations which transform a type (most commonly the type is a vector).
+</td></tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table><tr class='module-item'><td><a class="type" href="type.ComplexFreqVec.html" title='basic_dsp_vector::ComplexFreqVec type'>ComplexFreqVec</a></td><td class='docblock-short'><p>A vector with complex numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexFreqVec32.html" title='basic_dsp_vector::ComplexFreqVec32 type'>ComplexFreqVec32</a></td><td class='docblock-short'><p>A vector with complex numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexFreqVec64.html" title='basic_dsp_vector::ComplexFreqVec64 type'>ComplexFreqVec64</a></td><td class='docblock-short'><p>A vector with complex numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexFreqVecSlice32.html" title='basic_dsp_vector::ComplexFreqVecSlice32 type'>ComplexFreqVecSlice32</a></td><td class='docblock-short'><p>A vector with complex numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexFreqVecSlice64.html" title='basic_dsp_vector::ComplexFreqVecSlice64 type'>ComplexFreqVecSlice64</a></td><td class='docblock-short'><p>A vector with complex numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexTimeVec.html" title='basic_dsp_vector::ComplexTimeVec type'>ComplexTimeVec</a></td><td class='docblock-short'><p>A vector with complex numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexTimeVec32.html" title='basic_dsp_vector::ComplexTimeVec32 type'>ComplexTimeVec32</a></td><td class='docblock-short'><p>A vector with complex numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexTimeVec64.html" title='basic_dsp_vector::ComplexTimeVec64 type'>ComplexTimeVec64</a></td><td class='docblock-short'><p>A vector with complex numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexTimeVecSlice32.html" title='basic_dsp_vector::ComplexTimeVecSlice32 type'>ComplexTimeVecSlice32</a></td><td class='docblock-short'><p>A vector with complex numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ComplexTimeVecSlice64.html" title='basic_dsp_vector::ComplexTimeVecSlice64 type'>ComplexTimeVecSlice64</a></td><td class='docblock-short'><p>A vector with complex numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.GenDspVec.html" title='basic_dsp_vector::GenDspVec type'>GenDspVec</a></td><td class='docblock-short'><p>A vector with no information about number space or domain at compile time.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.GenDspVec32.html" title='basic_dsp_vector::GenDspVec32 type'>GenDspVec32</a></td><td class='docblock-short'><p>A vector with no information about number space or domain at compile time.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.GenDspVec64.html" title='basic_dsp_vector::GenDspVec64 type'>GenDspVec64</a></td><td class='docblock-short'><p>A vector with no information about number space or domain at compile time.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.GenDspVecSlice32.html" title='basic_dsp_vector::GenDspVecSlice32 type'>GenDspVecSlice32</a></td><td class='docblock-short'><p>A vector with no information about number space or domain at compile time.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.GenDspVecSlice64.html" title='basic_dsp_vector::GenDspVecSlice64 type'>GenDspVecSlice64</a></td><td class='docblock-short'><p>A vector with no information about number space or domain at compile time.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealFreqVec.html" title='basic_dsp_vector::RealFreqVec type'>RealFreqVec</a></td><td class='docblock-short'><p>A vector with real numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealFreqVec32.html" title='basic_dsp_vector::RealFreqVec32 type'>RealFreqVec32</a></td><td class='docblock-short'><p>A vector with real numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealFreqVec64.html" title='basic_dsp_vector::RealFreqVec64 type'>RealFreqVec64</a></td><td class='docblock-short'><p>A vector with real numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealFreqVecSlice32.html" title='basic_dsp_vector::RealFreqVecSlice32 type'>RealFreqVecSlice32</a></td><td class='docblock-short'><p>A vector with real numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealFreqVecSlice64.html" title='basic_dsp_vector::RealFreqVecSlice64 type'>RealFreqVecSlice64</a></td><td class='docblock-short'><p>A vector with real numbers in frequency domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealTimeVec.html" title='basic_dsp_vector::RealTimeVec type'>RealTimeVec</a></td><td class='docblock-short'><p>A vector with real numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealTimeVec32.html" title='basic_dsp_vector::RealTimeVec32 type'>RealTimeVec32</a></td><td class='docblock-short'><p>A vector with real numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealTimeVec64.html" title='basic_dsp_vector::RealTimeVec64 type'>RealTimeVec64</a></td><td class='docblock-short'><p>A vector with real numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealTimeVecSlice32.html" title='basic_dsp_vector::RealTimeVecSlice32 type'>RealTimeVecSlice32</a></td><td class='docblock-short'><p>A vector with real numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.RealTimeVecSlice64.html" title='basic_dsp_vector::RealTimeVecSlice64 type'>RealTimeVecSlice64</a></td><td class='docblock-short'><p>A vector with real numbers in time domain.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.ScalarResult.html" title='basic_dsp_vector::ScalarResult type'>ScalarResult</a></td><td class='docblock-short'><p>Scalar result or a reason in case of an error.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.StatsVec.html" title='basic_dsp_vector::StatsVec type'>StatsVec</a></td><td class='docblock-short'><p>Alias for a vector of any statistical information.</p>
+</td></tr><tr class='module-item'><td><a class="type" href="type.TransRes.html" title='basic_dsp_vector::TransRes type'>TransRes</a></td><td class='docblock-short'><p>Result for operations which transform a type (most commonly the type is a vector).
 On success the transformed type is returned.
 On failure it contains an error reason and the original type with with invalid data
 which still can be used in order to avoid memory allocation.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="type" href="type.VoidResult.html"
-                                  title='type basic_dsp_vector::VoidResult'>VoidResult</a></td>
-                           <td class='docblock-short'>
-                                <p>Void/nothing in case of success or a reason in case of an error.</p>
-
-                           </td>
-                       </tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../";window.currentCrate = "basic_dsp_vector";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
+</td></tr><tr class='module-item'><td><a class="type" href="type.VoidResult.html" title='basic_dsp_vector::VoidResult type'>VoidResult</a></td><td class='docblock-short'><p>Void/nothing in case of success or a reason in case of an error.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../";window.currentCrate = "basic_dsp_vector";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
