@@ -27,8 +27,9 @@ use std::ops::*;
 /// ```no_run
 /// use std::f32;
 /// use basic_dsp_vector::*;
-/// let mut vector = vec!(1.0, 1.0, 2.0, 2.0, 3.0, 3.0).to_complex_time_vec();
-/// let argument = vec!(3.0, 3.0, 2.0, 2.0, 1.0, 1.0).to_complex_time_vec();
+/// # use num_complex::Complex;
+/// let mut vector = vec!(Complex::new(1.0, 1.0), Complex::new(2.0, 2.0), Complex::new(3.0, 3.0)).to_complex_time_vec();
+/// let argument = vec!(Complex::new(3.0, 3.0), Complex::new(2.0, 2.0), Complex::new(1.0, 1.0)).to_complex_time_vec();
 /// let mut buffer = SingleBuffer::new();
 /// let argument = argument.prepare_argument_padded(&mut buffer);
 /// vector.correlate(&mut buffer, &argument).expect("Ignoring error handling in examples");

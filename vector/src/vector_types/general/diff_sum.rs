@@ -14,10 +14,11 @@ pub trait DiffSumOps {
     ///
     /// ```
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// let mut vector = vec!(2.0, 3.0, 2.0, 6.0).to_real_time_vec();
     /// vector.diff();
     /// assert_eq!([1.0, -1.0, 4.0], vector[..]);
-    /// let mut vector = vec!(2.0, 2.0, 3.0, 3.0, 5.0, 5.0).to_complex_time_vec();
+    /// let mut vector = vec!(Complex::new(2.0, 2.0), Complex::new(3.0, 3.0), Complex::new(5.0, 5.0)).to_complex_time_vec();
     /// vector.diff();
     /// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);
     /// ```
@@ -30,10 +31,11 @@ pub trait DiffSumOps {
     ///
     /// ```
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// let mut vector = vec!(2.0, 3.0, 2.0, 6.0).to_real_time_vec();
     /// vector.diff_with_start();
     /// assert_eq!([2.0, 1.0, -1.0, 4.0], vector[..]);
-    /// let mut vector = vec!(2.0, 2.0, 3.0, 3.0, 5.0, 5.0).to_complex_time_vec();
+    /// let mut vector = vec!(Complex::new(2.0, 2.0), Complex::new(3.0, 3.0), Complex::new(5.0, 5.0)).to_complex_time_vec();
     /// vector.diff_with_start();
     /// assert_eq!([2.0, 2.0, 1.0, 1.0, 2.0, 2.0], vector[..]);
     /// ```

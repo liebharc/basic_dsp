@@ -27,7 +27,8 @@ where
     /// ```
     /// use std::f32;
     /// use basic_dsp_vector::*;
-    /// let vector = vec!(0.0, 0.0, 1.0, 0.0, 0.0, 0.0).to_complex_freq_vec();
+    /// # use num_complex::Complex;
+    /// let vector = vec!(Complex::new(0.0, 0.0), Complex::new(1.0, 0.0), Complex::new(0.0, 0.0)).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.plain_ifft(&mut buffer);
     /// let actual = &result[..];
@@ -48,7 +49,8 @@ where
     /// ```
     /// use std::f32;
     /// use basic_dsp_vector::*;
-    /// let vector = vec!(0.0, 0.0, 0.0, 0.0, 3.0, 0.0).to_complex_freq_vec();
+    /// # use num_complex::Complex;
+    /// let vector = vec!(Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(3.0, 0.0)).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.ifft(&mut buffer);
     /// let actual = &result[..];

@@ -23,7 +23,8 @@ where
     ///
     /// ```
     /// use basic_dsp_vector::*;
-    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_freq_vec();
+    /// # use num_complex::Complex;
+    /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0), Complex::new(5.0, 6.0)).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
     /// vector.mirror(&mut buffer);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], &vector[..]);

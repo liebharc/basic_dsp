@@ -31,8 +31,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// vector.multiply_complex_exponential(2.0, 3.0);
     /// let actual = &vector[..];
     /// let expected = &[-1.2722325, -1.838865, 4.6866837, -1.7421241];
@@ -51,8 +52,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// vector.conj();
     /// assert_eq!([1.0, -2.0, 3.0, -4.0], vector[..]);
     /// # }

@@ -74,10 +74,11 @@ where
     ///
     /// ```
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
     /// vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
-    /// let mut vector = vec!(1.0, 2.0).to_complex_time_vec();
+    /// let mut vector = vec!(Complex::new(1.0, 2.0)).to_complex_time_vec();
     /// vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// ```
@@ -94,10 +95,11 @@ where
     ///
     /// ```
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
     /// vector.zero_interleave(2);
     /// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);
-    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// vector.zero_interleave(2).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
     /// ```
@@ -126,11 +128,12 @@ where
     ///
     /// ```
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// vector.zero_pad_b(&mut buffer, 4, PaddingOption::End).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
-    /// let mut vector = vec!(1.0, 2.0).to_complex_time_vec();
+    /// let mut vector = vec!(Complex::new(1.0, 2.0)).to_complex_time_vec();
     /// vector.zero_pad_b(&mut buffer, 2, PaddingOption::End).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// ```
@@ -149,11 +152,12 @@ where
     ///
     /// ```
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// vector.zero_interleave_b(&mut buffer, 2);
     /// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);
-    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// vector.zero_interleave_b(&mut buffer, 2);
     /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
     /// ```

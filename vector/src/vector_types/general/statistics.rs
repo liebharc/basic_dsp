@@ -49,8 +49,9 @@ pub trait StatisticsOps<T> {
     /// # extern crate basic_dsp_vector;
     /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0), Complex::new(5.0, 6.0)).to_complex_time_vec();
     /// let result = vector.statistics();
     /// assert_eq!(result.sum, Complex32::new(9.0, 12.0));
     /// assert_eq!(result.count, 3);
@@ -83,7 +84,7 @@ pub trait StatisticsSplitOps<T> {
     /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
+    /// let vector = vec!(Complex32::new(1.0, 2.0), Complex32::new(3.0, 4.0), Complex32::new(5.0, 6.0)).to_complex_time_vec();
     /// let result = vector.statistics_split(2).expect("Ignoring error handling in examples");
     /// assert_eq!(result[0].sum, Complex32::new(6.0, 8.0));
     /// assert_eq!(result[1].sum, Complex32::new(3.0, 4.0));
@@ -106,7 +107,7 @@ where
     /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
+    /// let vector = vec!(Complex32::new(1.0, 2.0), Complex32::new(3.0, 4.0), Complex32::new(5.0, 6.0)).to_complex_time_vec();
     /// let result = vector.sum();
     /// assert_eq!(result, Complex32::new(9.0, 12.0));
     /// }
@@ -122,7 +123,7 @@ where
     /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
+    /// let vector = vec!(Complex64::new(1.0, 2.0), Complex64::new(3.0, 4.0), Complex64::new(5.0, 6.0)).to_complex_time_vec();
     /// let result = vector.sum_sq();
     /// assert_eq!(result, Complex64::new(-21.0, 88.0));
     /// }

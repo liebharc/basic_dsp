@@ -25,8 +25,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(3.0, -4.0), Complex::new(-3.0, 4.0)).to_complex_time_vec();
     /// let result = vector.magnitude();
     /// assert_eq!([5.0, 5.0], result[0..]);
     /// # }
@@ -40,8 +41,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(3.0, -4.0), Complex::new(-3.0, 4.0)).to_complex_time_vec();
     /// let result = vector.magnitude_squared();
     /// assert_eq!([25.0, 25.0], result[0..]);
     /// # }
@@ -55,8 +57,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// let result = vector.to_real();
     /// assert_eq!([1.0, 3.0], result[0..]);
     /// # }
@@ -70,8 +73,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// let result = vector.to_imag();
     /// assert_eq!([2.0, 4.0], result[0..]);
     /// # }
@@ -85,8 +89,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let data: Vec<f32> = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0);
+    /// let data: Vec<Complex<f32>> = vec!(Complex::new(1.0, 0.0), Complex::new(0.0, 4.0), Complex::new(-2.0, 0.0), Complex::new(0.0, -3.0), Complex::new(1.0, 1.0));
     /// let vector = data.to_complex_time_vec();
     /// let result = vector.phase();
     /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result[0..]);
@@ -112,8 +117,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(3.0, -4.0), Complex::new(-3.0, 4.0)).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.magnitude_b(&mut buffer);
     /// assert_eq!([5.0, 5.0], result[0..]);
@@ -130,8 +136,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(3.0, -4.0), Complex::new(-3.0, 4.0)).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.magnitude_squared_b(&mut buffer);
     /// assert_eq!([25.0, 25.0], result[0..]);
@@ -148,8 +155,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.to_real_b(&mut buffer);
     /// assert_eq!([1.0, 3.0], result[0..]);
@@ -166,8 +174,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.to_imag_b(&mut buffer);
     /// assert_eq!([2.0, 4.0], result[0..]);
@@ -184,8 +193,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let data: Vec<f32> = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0);
+    /// let data: Vec<Complex<f32>> = vec!(Complex::new(1.0, 0.0), Complex::new(0.0, 4.0), Complex::new(-2.0, 0.0), Complex::new(0.0, -3.0), Complex::new(1.0, 1.0));
     /// let vector = data.to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.phase_b(&mut buffer);
@@ -216,8 +226,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
     /// vector.get_real(&mut target);
     /// assert_eq!([1.0, 3.0], target[..]);
@@ -232,8 +243,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
     /// vector.get_imag(&mut target);
     /// assert_eq!([2.0, 4.0], target[..]);
@@ -248,8 +260,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(3.0, -4.0), Complex::new(-3.0, 4.0)).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
     /// vector.get_magnitude(&mut target);
     /// assert_eq!([5.0, 5.0], target[..]);
@@ -269,8 +282,9 @@ where
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
     /// # fn main() {
-    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(Complex::new(3.0, -4.0), Complex::new(-3.0, 4.0)).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
     /// vector.get_magnitude_squared(&mut target);
     /// assert_eq!([25.0, 25.0], target[..]);
@@ -285,10 +299,11 @@ where
     /// # use std::f64;
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
+    /// # use num_complex::Complex;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector =
-    ///     vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0).to_complex_time_vec();
+    ///     vec!(Complex::new(1.0, 0.0), Complex::new(0.0, 4.0), Complex::new(-2.0, 0.0), Complex::new(0.0, -3.0), Complex::new(1.0, 1.0)).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
     /// vector.get_phase(&mut target);
     /// let actual = &target[..];

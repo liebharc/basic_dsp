@@ -21,8 +21,10 @@ where
     /// # Example
     ///
     /// ```
+    /// extern crate num_complex;
     /// use basic_dsp_vector::*;
-    /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_freq_vec();
+    /// use num_complex::Complex;
+    /// let complex = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_freq_vec();
     /// let real = complex.phase();
     /// let complex = ComplexTimeVec32::rededicate_from(real);
     /// assert_eq!(true, complex.is_complex());
