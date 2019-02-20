@@ -1,9 +1,9 @@
 use super::{Simd, SimdFrom};
 use crate::numbers::*;
-use simd;
-use simd::x86::avx::*;
-use std::arch::x86_64::*;
 use std::mem;
+use std::arch::x86_64::*;
+pub use packed_simd::{f32x8, f64x4};
+use packed_simd::{FromCast, i32x8, i64x4};
 
 /// This value must be read in groups of 2 bits.
 const SWAP_IQ_PS: i32 = 0b1011_0001;
@@ -16,7 +16,7 @@ impl Simd<f32> for f32x8 {
     #[inline]
     fn to_array(self) -> Self::Array {
         let mut target = [0.0; 8];
-        self.store(&mut target, 0);
+        self.write_to_slice_unaligned(&mut target);
         target
     }
 
@@ -149,12 +149,12 @@ impl Simd<f32> for f32x8 {
     #[inline]
     fn complex_abs(self) -> f32x8 {
         let squared_sum = self.complex_abs_squared();
-        simd::x86::avx::AvxF32x8::sqrt(squared_sum)
+        squared_sum.sqrt()
     }
 
     #[inline]
     fn sqrt(self) -> f32x8 {
-        simd::x86::avx::AvxF32x8::sqrt(self)
+        self.sqrt()
     }
 
     #[inline]
@@ -187,12 +187,12 @@ impl Simd<f32> for f32x8 {
 
     #[inline]
     fn max(self, other: Self) -> Self {
-        simd::x86::avx::AvxF32x8::max(self, other)
+        self.max(other)
     }
 
     #[inline]
     fn min(self, other: Self) -> Self {
-        simd::x86::avx::AvxF32x8::min(self, other)
+        self.min(other)
     }
 
     #[inline]
@@ -207,7 +207,7 @@ impl Simd<f64> for f64x4 {
     #[inline]
     fn to_array(self) -> Self::Array {
         let mut target = [0.0; 4];
-        self.store(&mut target, 0);
+        self.write_to_slice_unaligned(&mut target);
         target
     }
 
@@ -322,12 +322,12 @@ impl Simd<f64> for f64x4 {
     #[inline]
     fn complex_abs(self) -> f64x4 {
         let squared_sum = self.complex_abs_squared();
-        simd::x86::avx::AvxF64x4::sqrt(squared_sum)
+        squared_sum.sqrt()
     }
 
     #[inline]
     fn sqrt(self) -> f64x4 {
-        simd::x86::avx::AvxF64x4::sqrt(self)
+        self.sqrt()
     }
 
     #[inline]
@@ -351,12 +351,12 @@ impl Simd<f64> for f64x4 {
 
     #[inline]
     fn max(self, other: Self) -> Self {
-        simd::x86::avx::AvxF64x4::max(self, other)
+        self.max(other)
     }
 
     #[inline]
     fn min(self, other: Self) -> Self {
-        simd::x86::avx::AvxF64x4::min(self, other)
+        self.min(other)
     }
 
     #[inline]
@@ -367,25 +367,25 @@ impl Simd<f64> for f64x4 {
 
 impl SimdFrom<f32x8> for i32x8 {
     fn regfrom(value: f32x8) -> Self {
-        value.to_i32()
+        Self::from_cast(value)
     }
 }
 
 impl SimdFrom<i32x8> for f32x8 {
     fn regfrom(value: i32x8) -> Self {
-        value.to_f32()
+        Self::from_cast(value)
     }
 }
 
 impl SimdFrom<f64x4> for i64x4 {
     fn regfrom(value: f64x4) -> Self {
-        value.to_i64()
+        Self::from_cast(value)
     }
 }
 
 impl SimdFrom<i64x4> for f64x4 {
     fn regfrom(value: i64x4) -> Self {
-        value.to_f64()
+        Self::from_cast(value)
     }
 }
 

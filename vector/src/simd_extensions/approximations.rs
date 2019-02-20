@@ -27,12 +27,7 @@
 
 use super::{Simd, SimdApproximations, SimdFrom};
 use crate::numbers::*;
-#[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-use simd::x86::avx::*;
-#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-use simd::x86::sse2::*;
-#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-use simd::*;
+use packed_simd::*;
 use std::mem;
 use std::ops::*;
 use crate::Zero;
@@ -42,7 +37,8 @@ macro_rules! simd_approx_impl {
      $bit_len: expr,
      $regf: ident,
      $regi: ident,
-     $regu: ident) => {
+     $regu: ident,
+     $regm: ident) => {
         impl SimdApproximations<$data_type> for $regf {
             #[inline]
             fn ln_approx(self) -> Self {
@@ -86,27 +82,29 @@ macro_rules! simd_approx_impl {
                 let log_q1 = $regf::splat(-2.12194440e-4);
                 let log_q2 = $regf::splat(0.693359375);
 
-                let invalid_mask = x.le($regf::zero());
+                let invalid_mask: $regm = x.le($regf::zero());
                 let x = unsafe { Simd::<$data_type>::max(x, mem::transmute(min_norm_pos)) }; // cut off denormalized stuff
                 let x: $regi = unsafe { mem::transmute(x) };
                 let emm0 = x.shr(mant_len);
 
                 // keep only the fractional part
                 let x: $regu = unsafe { mem::transmute(x) };
-                let x = x.bitand(inv_mant_mask);
-                let x = x.bitor(unsafe { mem::transmute(half) });
+                let x: $regu = x.bitand(inv_mant_mask);
+                let halfu: $regu = unsafe { mem::transmute(half) };
+                let x: $regu = x.bitor(halfu);
 
                 let emm0: $regi = emm0 - hex7fi;
                 let e: $regf = $regf::regfrom(emm0);
                 let e = e + one;
 
-                let mask = unsafe { x.lt(mem::transmute(sqrthf)) };
-                let tmp = unsafe { x.bitand(mem::transmute(mask)) };
+                let mask: $regm = unsafe { x.lt(mem::transmute(sqrthf)) };
+                let masku: $regu = unsafe { mem::transmute(mask) };
+                let tmp: $regu = x.bitand(masku);
                 let x: $regf = unsafe { mem::transmute(x) };
                 let x = x - one;
                 let x: $regu = unsafe { mem::transmute(x) };
                 let masked_one: $regf =
-                    unsafe { mem::transmute(onef_as_uint.bitand(mem::transmute(mask))) };
+                    unsafe { mem::transmute(onef_as_uint.bitand(masku)) };
                 let e = e - masked_one;
                 let tmp: $regf = unsafe { mem::transmute(tmp) };
                 let x: $regf = unsafe { mem::transmute(x) };
@@ -143,8 +141,8 @@ macro_rules! simd_approx_impl {
                 let tmp = e * log_q2;
                 let x = x + y;
                 let x = x + tmp;
-                let x: $regu = unsafe { mem::transmute(x) };
-                let x = unsafe { x.bitor(mem::transmute(invalid_mask)) };
+                let x: $regm = unsafe { mem::transmute(x) };
+                let x: $regm = x.bitor(invalid_mask);
                 let x: $regf = unsafe { mem::transmute(x) };
                 x
             }
@@ -163,6 +161,7 @@ macro_rules! simd_approx_impl {
                 // floating point constants
                 let half = $regf::splat(0.5);
                 let one = $regf::splat(1.0);
+                let onem: $regm = unsafe { mem::transmute(one) };
                 let exp_hi = $regf::splat(88.3762626647949);
                 let exp_lo = $regf::splat(-88.3762626647949);
                 let log2ef = $regf::splat(1.44269504088896341);
@@ -186,8 +185,8 @@ macro_rules! simd_approx_impl {
                 let tmp = $regf::regfrom(emm0);
 
                 // if greater, substract 1
-                let mask = tmp.gt(fx);
-                let mask = mask.bitand(unsafe { mem::transmute(one) });
+                let mask: $regm = tmp.gt(fx);
+                let mask: $regm = mask.bitand(onem);
                 let mask: $regf = unsafe { mem::transmute(mask) };
                 let fx = tmp - mask;
 
@@ -349,20 +348,18 @@ macro_rules! simd_approx_impl {
 }
 
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-simd_approx_impl!(f32, 32, f32x4, i32x4, u32x4);
+simd_approx_impl!(f32, 32, f32x4, i32x4, u32x4, m32x4);
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-simd_approx_impl!(f64, 64, f64x2, i64x2, u64x2);
+simd_approx_impl!(f64, 64, f64x2, i64x2, u64x2, m64x2);
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-simd_approx_impl!(f32, 32, f32x8, i32x8, u32x8);
+simd_approx_impl!(f32, 32, f32x8, i32x8, u32x8, m32x8);
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-simd_approx_impl!(f64, 64, f64x4, i64x4, u64x4);
+simd_approx_impl!(f64, 64, f64x4, i64x4, u64x4, m64x4);
 
 #[cfg(test)]
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
 mod tests {
     use super::super::*;
-    use simd::f32x4;
-    use simd::x86::sse2::f64x2;
     use crate::RealNumber;
 
     fn assert_eq_tol<T>(left: T, right: T, tol: T)

@@ -1,11 +1,7 @@
 use crate::numbers::*;
-#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-use simd;
-#[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-use simd::x86::avx as simdavx;
-#[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-use simd::x86::sse2 as simdsse;
-use std;
+use std;#
+[cfg(all(feature = "use_simd"))]
+use packed_simd::*;
 use std::mem;
 use std::ops::*;
 mod simd_partition;
@@ -148,7 +144,7 @@ where
     fn store(self, array: &mut [T], index: usize);
 
     /// Returns one element from the register.
-    fn extract(self, idx: u32) -> T;
+    fn extract(self, idx: usize) -> T;
 
     /// Creates a new SIMD register where every element equals `value`.
     fn splat(value: T) -> Self;
@@ -276,17 +272,17 @@ macro_rules! simd_generic_impl {
 
             #[inline]
             fn load(array: &[$data_type], idx: usize) -> Self {
-                Self::load(array, idx)
+                Self::from_slice_unaligned(&array[idx..idx+Self::LEN])
             }
 
             #[inline]
             fn store(self, array: &mut [$data_type], index: usize) {
-                Self::store(self, array, index);
+                self.write_to_slice_unaligned(&mut array[index..index+Self::LEN])
             }
 
             #[inline]
-            fn extract(self, idx: u32) -> $data_type {
-                Self::extract(self, idx)
+            fn extract(self, idx: usize) -> $data_type {
+                $mod::$reg::extract(self, idx)
             }
 
             #[inline]
@@ -298,25 +294,25 @@ macro_rules! simd_generic_impl {
 }
 
 #[cfg(feature = "use_avx512")]
-mod avx512;
+pub mod avx512;
 #[cfg(feature = "use_avx512")]
-simd_generic_impl!(f32, simd::f32x16); // Type isn't implemented in simd
+simd_generic_impl!(f32, avx512::f32x16); // Type isn't implemented in simd
 #[cfg(feature = "use_avx512")]
-simd_generic_impl!(f64, simd::f64x8); // Type isn't implemented in simd
+simd_generic_impl!(f64, avx512::f64x8); // Type isn't implemented in simd
 
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-mod avx;
+pub mod avx;
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-simd_generic_impl!(f32, simdavx::f32x8);
+simd_generic_impl!(f32, avx::f32x8);
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-simd_generic_impl!(f64, simdavx::f64x4);
+simd_generic_impl!(f64, avx::f64x4);
 
 #[cfg(feature = "use_sse2")]
-mod sse;
+pub mod sse;
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-simd_generic_impl!(f32, simd::f32x4);
+simd_generic_impl!(f32, sse::f32x4);
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-simd_generic_impl!(f64, simdsse::f64x2);
+simd_generic_impl!(f64, sse::f64x2);
 
 #[cfg(feature = "use_simd")]
 mod approximations;

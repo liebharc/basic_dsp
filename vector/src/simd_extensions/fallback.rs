@@ -25,25 +25,25 @@ impl f32x4 {
     }
 
     #[inline]
-    pub fn load(array: &[f32], index: usize) -> Self {
+    pub fn from_slice_unaligned(array: &[f32]) -> Self {
         f32x4(
-            array[index],
-            array[index + 1],
-            array[index + 2],
-            array[index + 3],
+            array[0],
+            array[1],
+            array[2],
+            array[3],
         )
     }
 
     #[inline]
-    pub fn store(self, array: &mut [f32], index: usize) {
-        array[index] = self.extract(0);
-        array[index + 1] = self.extract(1);
-        array[index + 2] = self.extract(2);
-        array[index + 3] = self.extract(3);
+    pub fn write_to_slice_unaligned(self, array: &mut [f32]) {
+        array[0] = self.extract(0);
+        array[1] = self.extract(1);
+        array[2] = self.extract(2);
+        array[3] = self.extract(3);
     }
 
     #[inline]
-    pub fn extract(self, index: u32) -> f32 {
+    pub fn extract(self, index: usize) -> f32 {
         match index {
             0 => self.0,
             1 => self.1,
@@ -66,18 +66,18 @@ impl f64x2 {
     }
 
     #[inline]
-    pub fn load(array: &[f64], index: usize) -> Self {
-        f64x2(array[index], array[index + 1])
+    pub fn from_slice_unaligned(array: &[f64]) -> Self {
+        f64x2(array[0], array[1])
     }
 
     #[inline]
-    pub fn store(self, array: &mut [f64], index: usize) {
-        array[index] = self.extract(0);
-        array[index + 1] = self.extract(1);
+    pub fn write_to_slice_unaligned(self, array: &mut [f64]) {
+        array[0] = self.extract(0);
+        array[1] = self.extract(1);
     }
 
     #[inline]
-    pub fn extract(self, index: u32) -> f64 {
+    pub fn extract(self, index: usize) -> f64 {
         match index {
             0 => self.0,
             1 => self.1,
@@ -156,7 +156,7 @@ impl Simd<f32> for f32x4 {
     #[inline]
     fn to_array(self) -> Self::Array {
         let mut target = [0.0; 4];
-        self.store(&mut target, 0);
+        self.write_to_slice_unaligned(&mut target);
         target
     }
 
@@ -293,7 +293,7 @@ impl Simd<f64> for f64x2 {
     #[inline]
     fn to_array(self) -> Self::Array {
         let mut target = [0.0; 2];
-        self.store(&mut target, 0);
+        self.write_to_slice_unaligned(&mut target);
         target
     }
 

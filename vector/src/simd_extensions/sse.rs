@@ -1,10 +1,9 @@
 use super::{Simd, SimdFrom};
 use crate::numbers::*;
-use simd;
-use simd::x86::sse2::*;
-use simd::*;
 use std::arch::x86_64::*;
 use std::mem;
+pub use packed_simd::{f32x4, f64x2};
+use packed_simd::{FromCast, i32x4, i64x2};
 
 /// This value must be read in groups of 2 bits:
 /// 10 means that the third position (since it's the third bit pair)
@@ -17,7 +16,7 @@ impl Simd<f32> for f32x4 {
     #[inline]
     fn to_array(self) -> Self::Array {
         let mut target = [0.0; 4];
-        self.store(&mut target, 0);
+        self.write_to_slice_unaligned(&mut target);
         target
     }
 
@@ -185,7 +184,7 @@ impl Simd<f64> for f64x2 {
     #[inline]
     fn to_array(self) -> Self::Array {
         let mut target = [0.0; 2];
-        self.store(&mut target, 0);
+        self.write_to_slice_unaligned(&mut target);
         target
     }
 
@@ -257,7 +256,7 @@ impl Simd<f64> for f64x2 {
 
     #[inline]
     fn sqrt(self) -> f64x2 {
-        simd::x86::sse2::Sse2F64x2::sqrt(self)
+        self.sqrt()
     }
 
     #[inline]
@@ -277,12 +276,12 @@ impl Simd<f64> for f64x2 {
 
     #[inline]
     fn max(self, other: Self) -> Self {
-        simd::x86::sse2::Sse2F64x2::max(self, other)
+        self.max(other)
     }
 
     #[inline]
     fn min(self, other: Self) -> Self {
-        simd::x86::sse2::Sse2F64x2::min(self, other)
+        self.min(other)
     }
 
     #[inline]
@@ -293,25 +292,25 @@ impl Simd<f64> for f64x2 {
 
 impl SimdFrom<f32x4> for i32x4 {
     fn regfrom(value: f32x4) -> Self {
-        value.to_i32()
+        Self::from_cast(value)
     }
 }
 
 impl SimdFrom<i32x4> for f32x4 {
     fn regfrom(value: i32x4) -> Self {
-        value.to_f32()
+        Self::from_cast(value)
     }
 }
 
 impl SimdFrom<f64x2> for i64x2 {
     fn regfrom(value: f64x2) -> Self {
-        value.to_i64()
+        Self::from_cast(value)
     }
 }
 
 impl SimdFrom<i64x2> for f64x2 {
     fn regfrom(value: i64x2) -> Self {
-        value.to_f64()
+        Self::from_cast(value)
     }
 }
 

@@ -77,7 +77,7 @@ extern crate num_traits;
 extern crate ocl;
 extern crate rustfft;
 #[cfg(feature = "use_simd")]
-extern crate simd;
+extern crate packed_simd;
 #[cfg(feature = "std")]
 extern crate time;
 #[macro_use]
@@ -104,12 +104,6 @@ pub mod numbers {
     pub use num_traits::Num;
     pub use num_traits::One;
     use rustfft;
-    #[cfg(any(
-        feature = "use_sse2",
-        feature = "use_avx2",
-        feature = "use_avx512"
-    ))]
-    use simd;
     use crate::simd_extensions;
     use crate::simd_extensions::*;
     use std::fmt::Debug;
@@ -161,17 +155,17 @@ pub mod numbers {
         type RegFallback = simd_extensions::fallback::f32x4;
 
         #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-        type RegSse = simd::f32x4;
+        type RegSse = simd_extensions::sse::f32x4;
         #[cfg(not(all(feature = "use_sse2", target_feature = "sse2")))]
         type RegSse = simd_extensions::fallback::f32x4;
 
         #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-        type RegAvx = simd::x86::avx::f32x8;
+        type RegAvx = simd_extensions::avx::f32x8;
         #[cfg(not(all(feature = "use_avx2", target_feature = "avx2")))]
         type RegAvx = simd_extensions::fallback::f32x4;
 
         #[cfg(feature = "use_avx512")]
-        type RegAvx512 = stdsimd::simd::f32x16; // Type is missing in SIMD
+        type RegAvx512 = simd_extensions::avx512::f32x16;
         #[cfg(not(feature = "use_avx512"))]
         type RegAvx512 = simd_extensions::fallback::f32x4;
 
@@ -182,17 +176,17 @@ pub mod numbers {
         type RegFallback = simd_extensions::fallback::f64x2;
 
         #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
-        type RegSse = simd::x86::sse2::f64x2;
+        type RegSse = simd_extensions::sse::f64x2;
         #[cfg(not(all(feature = "use_sse2", target_feature = "sse2")))]
         type RegSse = simd_extensions::fallback::f64x2;
 
         #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
-        type RegAvx = simd::x86::avx::f64x4;
+        type RegAvx = simd_extensions::avx::f64x4;
         #[cfg(not(all(feature = "use_avx2", target_feature = "avx2")))]
         type RegAvx = simd_extensions::fallback::f64x2;
 
         #[cfg(feature = "use_avx512")]
-        type RegAvx512 = stdsimd::simd::f64x8; // Type is missing in SIMD
+        type RegAvx512 = simd_extensions::avx512::f64x8;
         #[cfg(not(feature = "use_avx512"))]
         type RegAvx512 = simd_extensions::fallback::f64x2;
 
