@@ -351,10 +351,15 @@ macro_rules! simd_approx_impl {
 simd_approx_impl!(f32, 32, f32x4, i32x4, u32x4, m32x4);
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]
 simd_approx_impl!(f64, 64, f64x2, i64x2, u64x2, m64x2);
+
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
 simd_approx_impl!(f32, 32, f32x8, i32x8, u32x8, m32x8);
 #[cfg(all(feature = "use_avx2", target_feature = "avx2"))]
 simd_approx_impl!(f64, 64, f64x4, i64x4, u64x4, m64x4);
+#[cfg(all(feature = "use_avx512", target_feature = "avx512vl"))]
+simd_approx_impl!(f32, 32, f32x16, i32x16, u32x16, m32x16);
+#[cfg(all(feature = "use_avx512", target_feature = "avx512vl"))]
+simd_approx_impl!(f64, 64, f64x8, i64x8, u64x8, m64x8);
 
 #[cfg(test)]
 #[cfg(all(feature = "use_sse2", target_feature = "sse2"))]

@@ -1,7 +1,9 @@
 use super::{Simd, SimdFrom};
-use numbers::*;
-use stdsimd::simd::*;
-use stdsimd::vendor::*;
+use crate::numbers::*;
+use std::mem;
+use std::arch::x86_64::*;
+pub use packed_simd::{f32x16, f64x8};
+use packed_simd::{FromCast, i32x16, i64x8};
 
 /// This value must be read in groups of 2 bits.
 const SWAP_IQ_PS: i32 = 0b1011_0001;
@@ -402,26 +404,26 @@ impl Simd<f64> for f64x8 {
     }
 }
 
-impl SimdFrom<f32x16> for i32x8 {
+impl SimdFrom<f32x16> for i32x16 {
     fn regfrom(value: f32x16) -> Self {
-        value.as_i32x8()
+        Self::from_cast(value)
     }
 }
 
-impl SimdFrom<i32x8> for f32x16 {
-    fn regfrom(value: i32x8) -> Self {
-        value.as_f32x16()
+impl SimdFrom<i32x16> for f32x16 {
+    fn regfrom(value: f32x16) -> Self {
+        Self::from_cast(value)
     }
 }
 
-impl SimdFrom<f64x8> for i64x4 {
+impl SimdFrom<f64x8> for i64x8 {
     fn regfrom(value: f64x8) -> Self {
-        value.as_i64x4()
+        Self::from_cast(value)
     }
 }
 
-impl SimdFrom<i64x4> for f64x8 {
-    fn regfrom(value: i64x4) -> Self {
-        value.as_f64x8()
+impl SimdFrom<i64x8> for f64x8 {
+    fn regfrom(value: f64x8) -> Self {
+        Self::from_cast(value)
     }
 }

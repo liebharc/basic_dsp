@@ -381,7 +381,7 @@ mod tests {
         use super::super::*;
         #[test]
         fn get_alignment_offset_test() {
-            let reg_len = mem::size_of::<simdavx::f64x4>();
+            let reg_len = mem::size_of::<f64x4>();
             assert_eq!(reg_len, 32);
             assert_eq!(get_alignment_offset(0, reg_len), 0);
             assert_eq!(get_alignment_offset(8, reg_len), 8);
