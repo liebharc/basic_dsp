@@ -17,7 +17,7 @@ pub use self::real_interpolation::*;
 
 use super::{
     Buffer, BufferBorrow, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace,
-    ToSliceMut, Vector, VoidResult, FloatIndex
+    ToSliceMut, Vector, VoidResult
 };
 use crate::gpu_support::GpuSupport;
 use crate::inline_vector::InlineVector;
@@ -83,7 +83,7 @@ fn create_shifted_copies<O, T: RealNumber, Reg: SimdGeneric<T>>(
     vec: &O,
 ) -> InlineVector<InlineVector<Reg>>
 where
-    O: Vector<T> + FloatIndex<RangeFull, Output = [T]>,
+    O: Vector<T>,
 {
     let step = if vec.is_complex() { 2 } else { 1 };
     let number_of_shifts = Reg::LEN / step;
@@ -222,7 +222,7 @@ where
         vector: &O,
         range: Range<usize>,
     ) where
-        O: Vector<T> + FloatIndex<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+        O: Vector<T> + GetMetaData<T, NO, DO>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -276,7 +276,7 @@ where
     fn convolve_signal_scalar<B, O, NO, DO>(&mut self, buffer: &mut B, vector: &O)
     where
         B: for<'a> Buffer<'a, S, T>,
-        O: Vector<T> + FloatIndex<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+        O: Vector<T> + GetMetaData<T, NO, DO>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -503,7 +503,7 @@ where
         vector: &O,
     ) where
         B: for<'a> Buffer<'a, S, T>,
-        O: Vector<T> + FloatIndex<RangeFull, Output = [T]>,
+        O: Vector<T>,
     {
         if self.is_complex() {
             self.convolve_signal_simd_impl::<Reg, _, _, _, _, _, _, _>(
@@ -539,7 +539,7 @@ where
         simd_sum: RSum,
     ) where
         B: for<'a> Buffer<'a, S, T>,
-        O: Vector<T> + FloatIndex<RangeFull, Output = [T]>,
+        O: Vector<T>,
         TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
         C: Fn(&[T]) -> &[TT],
         CMut: Fn(&mut [T]) -> &mut [TT],

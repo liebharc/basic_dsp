@@ -3,10 +3,9 @@ use super::super::{
     FrequencyDomain, FrequencyDomainOperations, FrequencyToTimeDomainOperations, GetMetaData,
     InsertZerosOpsBuffered, MetaData, NoTradeBuffer, NumberSpace, PaddingOption, PosEq,
     ReorganizeDataOps, ScaleOps, TimeDomain, TimeToFrequencyDomainOperations, ToComplexVector,
-    ToFreqResult, ToSliceMut, Vector, VoidResult, FloatIndex, FloatIndexMut
+    ToFreqResult, ToSliceMut, Vector, VoidResult, FloatIndexMut
 };
 use crate::numbers::*;
-use std::ops::*;
 
 /// This trait allows to transform an argument so that it can be used for cross correlation. Refer to the description of
 /// `CrossCorrelationOps` for more details.
@@ -126,7 +125,7 @@ where
     N: ComplexNumberSpace,
     D: TimeDomain,
     DF: FrequencyDomain,
-    O: Vector<T> + GetMetaData<T, NO, DF> + FloatIndex<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DF>,
     NO: PosEq<N> + NumberSpace,
 {
     fn correlate<B>(&mut self, buffer: &mut B, other: &O) -> VoidResult

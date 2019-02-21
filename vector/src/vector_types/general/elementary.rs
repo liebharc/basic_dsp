@@ -1,7 +1,7 @@
 //! Fundamental math operations
 use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace, PosEq,
-    ToSliceMut, Vector, VoidResult, FloatIndex
+    ToSliceMut, Vector, VoidResult
 };
 use crate::multicore_support::*;
 use crate::numbers::*;
@@ -382,7 +382,7 @@ macro_rules! assert_meta_data {
 
 macro_rules! impl_binary_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + FloatIndex<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -419,7 +419,7 @@ macro_rules! impl_binary_vector_operation {
 
 macro_rules! impl_binary_complex_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + FloatIndex<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -456,7 +456,7 @@ macro_rules! impl_binary_complex_vector_operation {
 
 macro_rules! impl_binary_smaller_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + FloatIndex<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -486,7 +486,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
 macro_rules! impl_binary_smaller_complex_vector_ops {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + FloatIndex<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -543,7 +543,7 @@ where
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
-    O: Vector<T> + FloatIndex<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+    O: Vector<T> + GetMetaData<T, NO, DO>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
@@ -594,7 +594,7 @@ where
     T: RealNumber,
     N: NumberSpace,
     D: Domain,
-    O: Vector<T> + FloatIndex<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+    O: Vector<T> + GetMetaData<T, NO, DO>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {

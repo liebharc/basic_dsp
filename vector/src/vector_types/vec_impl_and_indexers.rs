@@ -98,6 +98,8 @@ pub trait ResizeBufferedOps<S: ToSliceMut<T>, T: RealNumber> {
 
 /// A trait for vector types.
 pub trait Vector<T>: MetaData + ResizeOps
+    + FloatIndex<RangeFull, Output=[T]> + FloatIndex<Range<usize>>  + FloatIndex<RangeFrom<usize>, Output=[T]>
+    + FloatIndex<RangeTo<usize>> + FloatIndex<usize>
 where
     T: RealNumber,
 {

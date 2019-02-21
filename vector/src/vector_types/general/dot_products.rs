@@ -1,13 +1,12 @@
 use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace, PosEq,
-    RealNumberSpace, ScalarResult, ToSlice, Vector, FloatIndex
+    RealNumberSpace, ScalarResult, ToSlice, Vector
 };
 use super::kahan_sum;
 use crate::array_to_complex;
 use crate::multicore_support::*;
 use crate::numbers::*;
 use crate::simd_extensions::*;
-use std::ops::*;
 
 /// An operation which multiplies each vector element with a constant
 pub trait DotProductOps<A, R, T, N, D>
@@ -71,7 +70,7 @@ where
         factor: &O,
     ) -> ScalarResult<T>
     where
-        O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
+        O: Vector<T> + GetMetaData<T, NO, DO>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -118,7 +117,7 @@ where
         factor: &O,
     ) -> ScalarResult<Complex<T>>
     where
-        O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
+        O: Vector<T> + GetMetaData<T, NO, DO>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -170,7 +169,7 @@ where
         factor: &O,
     ) -> ScalarResult<T>
     where
-        O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
+        O: Vector<T> + GetMetaData<T, NO, DO>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -216,7 +215,7 @@ where
         factor: &O,
     ) -> ScalarResult<Complex<T>>
     where
-        O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
+        O: Vector<T> + GetMetaData<T, NO, DO>,
         NO: NumberSpace,
         DO: Domain,
     {
@@ -269,7 +268,7 @@ where
     T: RealNumber,
     N: RealNumberSpace,
     D: Domain,
-    O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DO>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
@@ -286,7 +285,7 @@ where
     T: RealNumber,
     N: ComplexNumberSpace,
     D: Domain,
-    O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DO>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
@@ -303,7 +302,7 @@ where
     T: RealNumber,
     N: RealNumberSpace,
     D: Domain,
-    O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DO>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
@@ -320,7 +319,7 @@ where
     T: RealNumber,
     N: ComplexNumberSpace,
     D: Domain,
-    O: Vector<T> + GetMetaData<T, NO, DO> + FloatIndex<RangeFull, Output = [T]>,
+    O: Vector<T> + GetMetaData<T, NO, DO>,
     NO: PosEq<N> + NumberSpace,
     DO: PosEq<D> + Domain,
 {
