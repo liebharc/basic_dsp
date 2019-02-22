@@ -1,11 +1,11 @@
 //! Conversions to and from vectors which serve as constructors.
-use super::super::meta;
 use super::{
     ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, GenDspVec, NumberSpace,
     RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
 use crate::multicore_support::MultiCoreSettings;
 use crate::numbers::*;
+use crate::meta;
 use std::convert::From;
 
 /// Conversion from a generic data type into a dsp vector which tracks
@@ -65,6 +65,33 @@ where
     fn to_complex_freq_vec(self) -> ComplexFreqVec<S, T>;
 }
 
+/// Retrieves the underlying storage from a vector. Returned value will always hold floating point numbers.
+pub trait FromVectorFloat<T>
+where
+    T: RealNumber,
+{
+    /// Type of the underlying storage of a vector.
+    type Output;
+
+    /// Gets the underlying storage and the number of elements which
+    /// contain valid data. In case of complex vectors the values are returned real-imag pairs. Refer to `FromVector`
+    /// for a method which returns the data of complex vectors in a different manner.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num_complex;
+    /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
+    /// let v: Vec<Complex<f64>> = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0));
+    /// let v: DspVec<Vec<f64>, f64, meta::Complex, meta::Time> = v.to_complex_time_vec();
+    /// // Note that the resulting type is always a vector or floats and not a vector of complex numbers
+    /// let (v, p): (Vec<f64>, usize) = v.getf();
+    /// assert_eq!(4, p);
+    /// assert_eq!(vec!(1.0, 2.0, 3.0, 4.0), v);
+    /// ```
+    fn getf(self) -> (Self::Output, usize);
+}
+
 /// Retrieves the underlying storage from a vector.
 pub trait FromVector<T>
 where
@@ -74,14 +101,23 @@ where
     type Output;
 
     /// Gets the underlying storage and the number of elements which
-    /// contain valid.
+    /// contain valid data.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num_complex;
+    /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
+    /// let v: Vec<Complex<f64>> = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0));
+    /// let v: DspVec<Vec<f64>, f64, meta::Complex, meta::Time> = v.to_complex_time_vec();
+    /// let (v, p): (Vec<Complex<f64>>, usize) = v.get();
+    /// assert_eq!(2, p);
+    /// assert_eq!(vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)), v);
+    /// ```
     fn get(self) -> (Self::Output, usize);
-
-    /// Gets the underlying slice of a vector.
-    fn to_slice(&self) -> &[T];
 }
 
-impl<S, T, N, D> FromVector<T> for DspVec<S, T, N, D>
+impl<S, T, N, D> FromVectorFloat<T> for DspVec<S, T, N, D>
 where
     S: ToSlice<T>,
     T: RealNumber,
@@ -90,17 +126,27 @@ where
 {
     type Output = S;
 
+    fn getf(self) -> (Self::Output, usize) {
+        let len = self.valid_len;
+        (self.data, len)
+    }
+}
+
+impl<S, T, D> FromVector<T> for DspVec<S, T, meta::Real, D>
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = S;
+
     fn get(self) -> (Self::Output, usize) {
         let len = self.valid_len;
         (self.data, len)
     }
-
-    fn to_slice(&self) -> &[T] {
-        let len = self.valid_len;
-        let slice = self.data.to_slice();
-        &slice[0..len]
-    }
 }
+
+
 
 impl<S, T> From<S> for RealTimeVec<S, T>
 where

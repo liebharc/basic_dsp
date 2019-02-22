@@ -1,6 +1,6 @@
 use super::super::{
     Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, Domain, DspVec, ErrorReason,
-    FrequencyDomain, FromVector, InsertZerosOps, MetaData, NumberSpace, PaddingOption, PosEq,
+    FrequencyDomain, FromVectorFloat, InsertZerosOps, MetaData, NumberSpace, PaddingOption, PosEq,
     ResizeOps, TimeDomain, TimeToFrequencyDomainOperations, ToComplexVector, ToSliceMut, Vector,
     VoidResult, FloatIndexMut
 };
@@ -363,7 +363,7 @@ where
             h_time_padded
                 .zero_pad(fft_len, PaddingOption::End)
                 .expect("zero padding should always have enough space");
-            let (h_time_padded, _) = h_time_padded.get();
+            let (h_time_padded, _) = h_time_padded.getf();
 
             let x_time = self.data.to_slice_mut();
             let h_time: &[Complex<T>] = array_to_complex(&h_time[..]);

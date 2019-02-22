@@ -2,7 +2,7 @@ use super::super::meta;
 use super::{
     complex_to_array, complex_to_array_mut, Buffer, BufferBorrow, DataDomain, Domain, DspVec,
     ErrorReason, MetaData, NumberSpace, ToComplexVector, ToDspVector, ToRealVector, ToSlice,
-    ToSliceMut, TypeMetaData, VoidResult,
+    ToSliceMut, TypeMetaData, VoidResult, FromVector, array_to_complex_mut, array_to_complex
 };
 use arrayvec;
 use arrayvec::{Array, ArrayVec};
@@ -756,5 +756,31 @@ where
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
+    }
+}
+
+impl<'a, T, D> FromVector<T> for DspVec<&'a [T], T, meta::Complex, D>
+where
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = &'a [Complex<T>];
+
+    fn get(self) -> (Self::Output, usize) {
+        let len = self.valid_len / 2;
+        (array_to_complex(self.data), len)
+    }
+}
+
+impl<'a, T, D> FromVector<T> for DspVec<&'a mut [T], T, meta::Complex, D>
+where
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = &'a mut [Complex<T>];
+
+    fn get(self) -> (Self::Output, usize) {
+        let len = self.valid_len / 2;
+        (array_to_complex_mut(self.data), len)
     }
 }

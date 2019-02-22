@@ -2,9 +2,13 @@
 Changes:
 
 ## Version 0.8.0
+This release aims to improve the conversions from Rust standard library types to/from DSP vectors.
 
 - Renamed `complex(..)` function on vectors to `cdata(..)`
-- Redefined index functions for better usability. If the old functionality is required then replace calls to indexers with call to `.data(..)` and `.data_mut(..)`, e.g. (`&vec[5..10]` becomes `vec.data(5..10)` and `&mut vec[5..10]` becomes `vec.data_mut(5..10)`)
+- Redefined index functions for better usability. If the old functionality is required then replace calls to indexers
+with call to `.data(..)` and `.data_mut(..)`, e.g. (`&vec[5..10]` becomes `vec.data(5..10)` and `&mut vec[5..10]`
+becomes `vec.data_mut(5..10)`)
+- Changed `FromVector` trait. Call `getf` instead of `get` if the old functionality is required.
 
 ## Version 0.7.2
 

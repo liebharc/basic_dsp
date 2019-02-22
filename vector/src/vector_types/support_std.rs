@@ -2,7 +2,7 @@ use super::super::meta;
 /// ! Support for types in Rust std
 use super::{
     Buffer, BufferBorrow, ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, ErrorReason,
-    GenDspVec, MetaData, NumberSpace, RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
+    GenDspVec, MetaData, NumberSpace, RealFreqVec, RealTimeVec, ToSlice, TypeMetaData, FromVector
 };
 use super::{Resize, ToComplexVector, ToDspVector, ToRealVector, ToSliceMut, VoidResult};
 use crate::multicore_support::MultiCoreSettings;
@@ -568,6 +568,19 @@ where
     }
 }
 
+impl<T, D> FromVector<T> for DspVec<Vec<T>, T, meta::Complex, D>
+where
+    T: RealNumber,
+    D: Domain,
+{
+    type Output = Vec<Complex<T>>;
+
+    fn get(self) -> (Self::Output, usize) {
+        let len = self.valid_len / 2;
+        (interleaved_vec_to_complex_vec(self.data), len)
+    }
+}
+
 fn expand_to_full_capacity<T>(vec: &mut Vec<T>)
 where
     T: Zero,
@@ -589,6 +602,23 @@ where
     unsafe {
         let mut trans: Box<[T]> = mem::transmute(boxed);
         let vec = Vec::<T>::from_raw_parts(&mut trans[0] as *mut T, len * 2, len * 2);
+        mem::forget(trans); // TODO memory leak?
+        vec
+    }
+}
+
+fn interleaved_vec_to_complex_vec<T>(mut vec: Vec<T>) -> Vec<Complex<T>>
+where
+    T: RealNumber,
+{
+    use std::mem;
+
+    expand_to_full_capacity(&mut vec);
+    let boxed = vec.into_boxed_slice();
+    let len = boxed.len();
+    unsafe {
+        let mut trans: Box<[Complex<T>]> = mem::transmute(boxed);
+        let vec = Vec::<Complex<T>>::from_raw_parts(&mut trans[0] as *mut Complex<T>, len / 2, len / 2);
         mem::forget(trans); // TODO memory leak?
         vec
     }
