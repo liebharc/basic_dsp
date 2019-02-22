@@ -235,7 +235,7 @@ macro_rules! add_real_linear_table_impl {
                         vector.set_delta(self.delta);
                         let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2 * vector.len()));
                         let complex = vector.to_complex_b(&mut buffer);
-                        let complex = complex.cdata(..);
+                        let complex = complex.datac(..);
                         let is_symmetric = self.is_symmetric;
                         let mut table = InlineVector::with_capacity(complex.len());
                         for n in complex {
@@ -303,7 +303,7 @@ macro_rules! add_complex_time_linear_table_impl {
                     let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), vector.len()));
                     let freq = vector.fft(&mut buffer);
                     let delta = freq.delta();
-                    let freq = freq.cdata(..);
+                    let freq = freq.datac(..);
                     let is_symmetric = self.is_symmetric;
                     let mut table = InlineVector::with_capacity(freq.len());
                     for n in freq {
@@ -370,7 +370,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
                     let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), vector.len()));
                     let time = vector.ifft(&mut buffer);
                     let delta = time.delta();
-                    let time = time.cdata(..);
+                    let time = time.datac(..);
                     let is_symmetric = self.is_symmetric;
                     let mut table = InlineVector::with_capacity(time.len());
                     for n in time {

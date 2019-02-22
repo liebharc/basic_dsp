@@ -151,7 +151,7 @@ pub extern "C" fn get_delta64(vector: &VecBuf) -> f64 {
 
 #[no_mangle]
 pub extern "C" fn complex_data64(vector: &VecBuf) -> &[Complex64] {
-    vector.vec.cdata(..)
+    vector.vec.datac(..)
 }
 
 #[no_mangle]

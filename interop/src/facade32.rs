@@ -150,7 +150,7 @@ pub extern "C" fn get_delta32(vector: &VecBuf) -> f32 {
 
 #[no_mangle]
 pub extern "C" fn complex_data32(vector: &VecBuf) -> &[Complex32] {
-    vector.vec.cdata(..)
+    vector.vec.datac(..)
 }
 
 #[no_mangle]

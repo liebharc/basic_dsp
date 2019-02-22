@@ -46,7 +46,7 @@ where
 {
     type Output: ?Sized;
     /// The method for complex indexing
-    fn cdata(&self, index: Idx) -> &Self::Output;
+    fn datac(&self, index: Idx) -> &Self::Output;
 }
 
 /// Like [`std::ops::IndexMut`](https://doc.rust-lang.org/std/ops/trait.IndexMut.html)
@@ -59,7 +59,7 @@ where
     Idx: Sized,
 {
     /// The method for complex indexing
-    fn cdata_mut(&mut self, index: Idx) -> &mut Self::Output;
+    fn datac_mut(&mut self, index: Idx) -> &mut Self::Output;
 }
 
 /// A trait which provides information about number space and domain.
@@ -468,7 +468,7 @@ where
 {
     type Output = Complex<T>;
 
-    fn cdata(&self, index: usize) -> &Complex<T> {
+    fn datac(&self, index: usize) -> &Complex<T> {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = array_to_complex(&slice[0..len]);
@@ -483,7 +483,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn cdata_mut(&mut self, index: usize) -> &mut Complex<T> {
+    fn datac_mut(&mut self, index: usize) -> &mut Complex<T> {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
@@ -500,7 +500,7 @@ where
 {
     type Output = [Complex<T>];
 
-    fn cdata(&self, _index: RangeFull) -> &[Complex<T>] {
+    fn datac(&self, _index: RangeFull) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         array_to_complex(&slice[0..len])
@@ -514,7 +514,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn cdata_mut(&mut self, _index: RangeFull) -> &mut [Complex<T>] {
+    fn datac_mut(&mut self, _index: RangeFull) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         array_to_complex_mut(&mut slice[0..len])
@@ -530,7 +530,7 @@ where
 {
     type Output = [Complex<T>];
 
-    fn cdata(&self, index: RangeFrom<usize>) -> &[Complex<T>] {
+    fn datac(&self, index: RangeFrom<usize>) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = array_to_complex(&slice[0..len]);
@@ -545,7 +545,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn cdata_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>] {
+    fn datac_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
@@ -562,7 +562,7 @@ where
 {
     type Output = [Complex<T>];
 
-    fn cdata(&self, index: RangeTo<usize>) -> &[Complex<T>] {
+    fn datac(&self, index: RangeTo<usize>) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = array_to_complex(&slice[0..len]);
@@ -577,7 +577,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn cdata_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>] {
+    fn datac_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
@@ -594,7 +594,7 @@ where
 {
     type Output = [Complex<T>];
 
-    fn cdata(&self, index: Range<usize>) -> &[Complex<T>] {
+    fn datac(&self, index: Range<usize>) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
         let slice = array_to_complex(&slice[0..len]);
@@ -609,7 +609,7 @@ where
     N: ComplexNumberSpace,
     D: Domain,
 {
-    fn cdata_mut(&mut self, index: Range<usize>) -> &mut [Complex<T>] {
+    fn datac_mut(&mut self, index: Range<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
         let slice = array_to_complex_mut(&mut slice[0..len]);
@@ -746,7 +746,7 @@ where
     type Output = Complex<T>;
 
     fn index(&self, index: usize) -> &Complex<T> {
-        self.cdata(index)
+        self.datac(index)
     }
 }
 
@@ -757,7 +757,7 @@ where
     D: Domain,
 {
     fn index_mut(&mut self, index: usize) -> &mut Complex<T> {
-        self.cdata_mut(index)
+        self.datac_mut(index)
     }
 }
 
@@ -770,7 +770,7 @@ where
     type Output = [Complex<T>];
 
     fn index(&self, index: RangeFull) -> &[Complex<T>] {
-        self.cdata(index)
+        self.datac(index)
     }
 }
 
@@ -781,7 +781,7 @@ where
     D: Domain,
 {
     fn index_mut(&mut self, index: RangeFull) -> &mut [Complex<T>] {
-        self.cdata_mut(index)
+        self.datac_mut(index)
     }
 }
 
@@ -794,7 +794,7 @@ where
     type Output = [Complex<T>];
 
     fn index(&self, index: RangeFrom<usize>) -> &[Complex<T>] {
-        self.cdata(index)
+        self.datac(index)
     }
 }
 
@@ -805,7 +805,7 @@ where
     D: Domain,
 {
     fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>] {
-        self.cdata_mut(index)
+        self.datac_mut(index)
     }
 }
 
@@ -818,7 +818,7 @@ where
     type Output = [Complex<T>];
 
     fn index(&self, index: RangeTo<usize>) -> &[Complex<T>] {
-        self.cdata(index)
+        self.datac(index)
     }
 }
 
@@ -829,7 +829,7 @@ where
     D: Domain,
 {
     fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>] {
-        self.cdata_mut(index)
+        self.datac_mut(index)
     }
 }
 
@@ -842,7 +842,7 @@ where
     type Output = [Complex<T>];
 
     fn index(&self, index: Range<usize>) -> &[Complex<T>] {
-        self.cdata(index)
+        self.datac(index)
     }
 }
 
@@ -853,7 +853,7 @@ where
     D: Domain,
 {
     fn index_mut(&mut self, index: Range<usize>) -> &mut [Complex<T>] {
-        self.cdata_mut(index)
+        self.datac_mut(index)
     }
 }
 
