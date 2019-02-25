@@ -240,7 +240,7 @@ where
     where
         B: for<'a> Buffer<'a, S, T>,
     {
-        let mut result = r#try!(self.sifft(buffer));
+        let mut result = self.sifft(buffer)?;
         result.unapply_window(window);
         Ok(result)
     }

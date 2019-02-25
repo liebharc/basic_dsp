@@ -147,7 +147,7 @@ where
         }
 
         let points = other.points();
-        r#try!(self.zero_pad_b(buffer, points, PaddingOption::Surround));
+        self.zero_pad_b(buffer, points, PaddingOption::Surround)?;
         let len = self.len();
         let mut temp = buffer.borrow(len);
         // The next steps: fft, mul, ifft
@@ -161,7 +161,7 @@ where
         {
             let other = (other.data(..)).to_complex_freq_vec();
             let mut complex = (&mut temp[..]).to_complex_freq_vec();
-            r#try!(complex.mul(&other));
+            complex.mul(&other)?;
             let mut buffer = NoTradeBuffer::new(self.data_mut(..));
             complex.plain_ifft(&mut buffer); // the result is now back in `self`.
         }

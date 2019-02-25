@@ -206,7 +206,7 @@ where
         }
 
         if len > self.alloc_len() {
-            r#try!(self.data.try_resize(len));
+            self.data.try_resize(len)?;
         }
 
         self.valid_len = len;

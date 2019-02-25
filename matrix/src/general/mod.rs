@@ -16,7 +16,7 @@ where
     fn dot_product(&self, factor: &MatrixMxN<V, S, T>) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for (v, o) in self.rows().iter().zip(factor.rows()) {
-            let res = r#try!(v.dot_product(o));
+            let res = v.dot_product(o)?;
             result.push(res);
         }
 
@@ -34,7 +34,7 @@ where
     fn dot_product(&self, factor: &Matrix2xN<V, S, T>) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for (v, o) in self.rows().iter().zip(factor.rows()) {
-            let res = r#try!(v.dot_product(o));
+            let res = v.dot_product(o)?;
             result.push(res);
         }
 
@@ -52,7 +52,7 @@ where
     fn dot_product(&self, factor: &Matrix3xN<V, S, T>) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for (v, o) in self.rows().iter().zip(factor.rows()) {
-            let res = r#try!(v.dot_product(o));
+            let res = v.dot_product(o)?;
             result.push(res);
         }
 
@@ -70,7 +70,7 @@ where
     fn dot_product(&self, factor: &Matrix4xN<V, S, T>) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for (v, o) in self.rows().iter().zip(factor.rows()) {
-            let res = r#try!(v.dot_product(o));
+            let res = v.dot_product(o)?;
             result.push(res);
         }
 
@@ -88,7 +88,7 @@ where
     fn dot_product(&self, factor: &V) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.dot_product(factor));
+            let res = v.dot_product(factor)?;
             result.push(res);
         }
 
@@ -106,7 +106,7 @@ where
     fn dot_product(&self, factor: &V) -> ScalarResult<[T; 2]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.dot_product(factor));
+            let res = v.dot_product(factor)?;
             result.push(res);
         }
 
@@ -124,7 +124,7 @@ where
     fn dot_product(&self, factor: &V) -> ScalarResult<[T; 3]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.dot_product(factor));
+            let res = v.dot_product(factor)?;
             result.push(res);
         }
 
@@ -142,7 +142,7 @@ where
     fn dot_product(&self, factor: &V) -> ScalarResult<[T; 4]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.dot_product(factor));
+            let res = v.dot_product(factor)?;
             result.push(res);
         }
 
@@ -160,7 +160,7 @@ where
     fn dot_product_prec(&self, factor: &MatrixMxN<V, S, T>) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for (v, o) in self.rows().iter().zip(factor.rows()) {
-            let res = r#try!(v.dot_product_prec(o));
+            let res = v.dot_product_prec(o)?;
             result.push(res);
         }
 
@@ -178,7 +178,7 @@ where
     fn dot_product_prec(&self, factor: &Matrix2xN<V, S, T>) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for (v, o) in self.rows().iter().zip(factor.rows()) {
-            let res = r#try!(v.dot_product_prec(o));
+            let res = v.dot_product_prec(o)?;
             result.push(res);
         }
 
@@ -196,7 +196,7 @@ where
     fn dot_product_prec(&self, factor: &Matrix3xN<V, S, T>) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for (v, o) in self.rows().iter().zip(factor.rows()) {
-            let res = r#try!(v.dot_product_prec(o));
+            let res = v.dot_product_prec(o)?;
             result.push(res);
         }
 
@@ -214,7 +214,7 @@ where
     fn dot_product_prec(&self, factor: &Matrix4xN<V, S, T>) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for (v, o) in self.rows().iter().zip(factor.rows()) {
-            let res = r#try!(v.dot_product_prec(o));
+            let res = v.dot_product_prec(o)?;
             result.push(res);
         }
 
@@ -232,7 +232,7 @@ where
     fn dot_product_prec(&self, factor: &V) -> ScalarResult<Vec<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.dot_product_prec(factor));
+            let res = v.dot_product_prec(factor)?;
             result.push(res);
         }
 
@@ -250,7 +250,7 @@ where
     fn dot_product_prec(&self, factor: &V) -> ScalarResult<[T; 2]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.dot_product_prec(factor));
+            let res = v.dot_product_prec(factor)?;
             result.push(res);
         }
 
@@ -268,7 +268,7 @@ where
     fn dot_product_prec(&self, factor: &V) -> ScalarResult<[T; 3]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.dot_product_prec(factor));
+            let res = v.dot_product_prec(factor)?;
             result.push(res);
         }
 
@@ -286,7 +286,7 @@ where
     fn dot_product_prec(&self, factor: &V) -> ScalarResult<[T; 4]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.dot_product_prec(factor));
+            let res = v.dot_product_prec(factor)?;
             result.push(res);
         }
 
@@ -315,7 +315,7 @@ where
     {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.map_aggregate(argument, &map, &aggregate));
+            let res = v.map_aggregate(argument, &map, &aggregate)?;
             result.push(res);
         }
 
@@ -344,7 +344,7 @@ where
     {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.map_aggregate(argument, &map, &aggregate));
+            let res = v.map_aggregate(argument, &map, &aggregate)?;
             result.push(res);
         }
 
@@ -373,7 +373,7 @@ where
     {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.map_aggregate(argument, &map, &aggregate));
+            let res = v.map_aggregate(argument, &map, &aggregate)?;
             result.push(res);
         }
 
@@ -402,7 +402,7 @@ where
     {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.map_aggregate(argument, &map, &aggregate));
+            let res = v.map_aggregate(argument, &map, &aggregate)?;
             result.push(res);
         }
 

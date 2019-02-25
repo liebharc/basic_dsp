@@ -582,7 +582,7 @@ where
         let complex_orig_len = self.len();
         let complex_dest_len = 2 * dest_points;
         let temp_len = std::cmp::max(complex_orig_len, complex_dest_len);
-        r#try!(self.resize_b(buffer, temp_len)); // allocate space
+        self.resize_b(buffer, temp_len)?; // allocate space
         let mut temp = buffer.borrow(temp_len);
         {
             let complex = (self.data_mut(0..complex_orig_len)).to_complex_time_vec();
@@ -601,7 +601,7 @@ where
             }
 
             if dest_len > orig_len {
-                r#try!(complex.zero_pad_b(&mut buffer, dest_points, PaddingOption::Center));
+                complex.zero_pad_b(&mut buffer, dest_points, PaddingOption::Center)?;
                 // data is in `self` now, so we have to copy it back into `temp` so that
                 // it finally ends up at the correct destination after `plain_ifft`
                 complex.data_mut(0..complex_dest_len)

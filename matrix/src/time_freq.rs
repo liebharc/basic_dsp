@@ -256,7 +256,7 @@ macro_rules! add_mat_impl {
 						-> VoidResult
                     where B: for<'b> Buffer<'b, S, T> {
 					for (v, o) in self.rows_mut().iter_mut().zip(other.rows()) {
-						r#try!(v.correlate(buffer, o));
+						v.correlate(buffer, o)?;
 					}
 
 					Ok(())
@@ -286,7 +286,7 @@ macro_rules! add_mat_impl {
                         interpolation_factor: u32) -> VoidResult
 					where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
-                        r#try!(v.interpolatei(buffer, function, interpolation_factor));
+                        v.interpolatei(buffer, function, interpolation_factor)?;
                     }
 
 					Ok(())
@@ -300,7 +300,7 @@ macro_rules! add_mat_impl {
                         delay: T) -> VoidResult
 					where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
-                        r#try!(v.interpolate(buffer, function, dest_points, delay));
+                        v.interpolate(buffer, function, dest_points, delay)?;
                     }
 
 					Ok(())
@@ -424,7 +424,7 @@ macro_rules! add_mat_impl {
 						impulse_response: &DspVec<S, T, N, D>) -> VoidResult
 							where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
-                        r#try!(v.convolve_signal(buffer, impulse_response));
+                        v.convolve_signal(buffer, impulse_response)?;
                     }
 
 					Ok(())

@@ -47,7 +47,7 @@ macro_rules! add_mat_impl {
                     where V: ElementaryOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn add(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
-						r#try!(v.add(o));
+						v.add(o)?;
 					}
 
 					Ok(())
@@ -55,7 +55,7 @@ macro_rules! add_mat_impl {
 
 				fn sub(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
-						r#try!(v.sub(o));
+						v.sub(o)?;
 					}
 
 					Ok(())
@@ -63,7 +63,7 @@ macro_rules! add_mat_impl {
 
 				fn div(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
-						r#try!(v.div(o));
+						v.div(o)?;
 					}
 
 					Ok(())
@@ -71,7 +71,7 @@ macro_rules! add_mat_impl {
 
 				fn mul(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
-						r#try!(v.mul(o));
+						v.mul(o)?;
 					}
 
 					Ok(())
@@ -83,7 +83,7 @@ macro_rules! add_mat_impl {
                     where V: ElementaryOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn add(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
-						r#try!(v.add(summand));
+						v.add(summand)?;
 					}
 
 					Ok(())
@@ -91,7 +91,7 @@ macro_rules! add_mat_impl {
 
 				fn sub(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
-						r#try!(v.sub(summand));
+						v.sub(summand)?;
 					}
 
 					Ok(())
@@ -99,7 +99,7 @@ macro_rules! add_mat_impl {
 
 				fn div(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
-						r#try!(v.div(summand));
+						v.div(summand)?;
 					}
 
 					Ok(())
@@ -107,7 +107,7 @@ macro_rules! add_mat_impl {
 
 				fn mul(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
-						r#try!(v.mul(summand));
+						v.mul(summand)?;
 					}
 
 					Ok(())
@@ -120,7 +120,7 @@ macro_rules! add_mat_impl {
                     where V: ElementaryWrapAroundOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn add_smaller(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
-						r#try!(v.add_smaller(o));
+						v.add_smaller(o)?;
 					}
 
 					Ok(())
@@ -128,7 +128,7 @@ macro_rules! add_mat_impl {
 
 				fn sub_smaller(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
-						r#try!(v.sub_smaller(o));
+						v.sub_smaller(o)?;
 					}
 
 					Ok(())
@@ -136,7 +136,7 @@ macro_rules! add_mat_impl {
 
 				fn div_smaller(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
-						r#try!(v.div_smaller(o));
+						v.div_smaller(o)?;
 					}
 
 					Ok(())
@@ -144,7 +144,7 @@ macro_rules! add_mat_impl {
 
 				fn mul_smaller(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
-						r#try!(v.mul_smaller(o));
+						v.mul_smaller(o)?;
 					}
 
 					Ok(())
@@ -156,7 +156,7 @@ macro_rules! add_mat_impl {
                     where V: ElementaryWrapAroundOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn add_smaller(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
-						r#try!(v.add_smaller(summand));
+						v.add_smaller(summand)?;
 					}
 
 					Ok(())
@@ -164,7 +164,7 @@ macro_rules! add_mat_impl {
 
 				fn sub_smaller(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
-						r#try!(v.sub_smaller(summand));
+						v.sub_smaller(summand)?;
 					}
 
 					Ok(())
@@ -172,7 +172,7 @@ macro_rules! add_mat_impl {
 
 				fn div_smaller(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
-						r#try!(v.div_smaller(summand));
+						v.div_smaller(summand)?;
 					}
 
 					Ok(())
@@ -180,7 +180,7 @@ macro_rules! add_mat_impl {
 
 				fn mul_smaller(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
-						r#try!(v.mul_smaller(summand));
+						v.mul_smaller(summand)?;
 					}
 
 					Ok(())

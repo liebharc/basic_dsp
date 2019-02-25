@@ -98,11 +98,11 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
     for _ in 0..iterations {
         sizes.push(size as f64);
         let mut data = vec![1.0; size];
-        ono_thread.push(r#try!(measure(1, &mut data)));
-        let two_threads_result = r#try!(measure(2, &mut data));
+        ono_thread.push(measure(1, &mut data)?);
+        let two_threads_result = measure(2, &mut data)?;
         two_threads.push(two_threads_result);
         if number_of_cores > 2 {
-            max_threads.push(r#try!(measure(number_of_cores, &mut data)));
+            max_threads.push(measure(number_of_cores, &mut data)?);
         } else {
             max_threads.push(two_threads_result);
         }

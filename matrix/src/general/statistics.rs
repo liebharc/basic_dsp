@@ -27,7 +27,7 @@ where
     fn statistics_split(&self, len: usize) -> ScalarResult<Vec<StatsVec<Statistics<T>>>> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.statistics_split(len));
+            let res = v.statistics_split(len)?;
             result.push(res);
         }
 
@@ -61,7 +61,7 @@ where
     fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.statistics_split(len));
+            let res = v.statistics_split(len)?;
             result.push(res);
         }
 
@@ -95,7 +95,7 @@ where
     fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.statistics_split(len));
+            let res = v.statistics_split(len)?;
             result.push(res);
         }
 
@@ -129,7 +129,7 @@ where
     fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.statistics_split(len));
+            let res = v.statistics_split(len)?;
             result.push(res);
         }
 
@@ -263,7 +263,7 @@ where
     fn statistics_split_prec(&self, len: usize) -> ScalarResult<Vec<StatsVec<Statistics<T>>>> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.statistics_split_prec(len));
+            let res = v.statistics_split_prec(len)?;
             result.push(res);
         }
 
@@ -297,7 +297,7 @@ where
     fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.statistics_split_prec(len));
+            let res = v.statistics_split_prec(len)?;
             result.push(res);
         }
 
@@ -331,7 +331,7 @@ where
     fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.statistics_split_prec(len));
+            let res = v.statistics_split_prec(len)?;
             result.push(res);
         }
 
@@ -365,7 +365,7 @@ where
     fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = r#try!(v.statistics_split_prec(len));
+            let res = v.statistics_split_prec(len)?;
             result.push(res);
         }
 

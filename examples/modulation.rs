@@ -74,7 +74,7 @@ fn complex_vector_to_file(vector: &ComplexTimeVec64, f: &mut File) -> io::Result
     let mut i = 0;
     let vector = vector.data(..);
     while i < vector.len() {
-        r#try! { writeln!(f, "{}, {}", vector[i], vector[i + 1]) };
+        writeln!(f, "{}, {}", vector[i], vector[i + 1])?;
         i += 2;
     }
     Ok(())

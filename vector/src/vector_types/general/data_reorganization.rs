@@ -316,7 +316,7 @@ where
             return Err(ErrorReason::InvalidArgumentLength);
         }
 
-        r#try!(self.resize(len));
+        self.resize(len)?;
         let data = self.data.to_slice_mut();
         match option {
             PaddingOption::End => {
@@ -368,7 +368,7 @@ where
             return Ok(());
         }
 
-        r#try!(self.resize(len));
+        self.resize(len)?;
 
         if is_complex {
             let data = self.data.to_slice_mut();
@@ -489,7 +489,7 @@ where
         }
 
         for t in targets.iter_mut() {
-            r#try!(t.resize(data_length / num_targets));
+            t.resize(data_length / num_targets)?;
         }
 
         let data = &self.data.to_slice();
@@ -532,7 +532,7 @@ where
                 }
             }
 
-            r#try!(self.resize(sources[0].len() * num_sources));
+            self.resize(sources[0].len() * num_sources)?;
 
             let data_length = self.len();
             let is_complex = self.is_complex();

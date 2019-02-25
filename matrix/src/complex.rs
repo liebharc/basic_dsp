@@ -181,7 +181,7 @@ macro_rules! add_mat_impl {
                     for ((v, r), i) in self.rows_mut().iter_mut()
                                     .zip(real.rows())
                                     .zip(imag.rows()) {
- 						r#try!(v.set_real_imag(r, i));
+ 						v.set_real_imag(r, i)?;
  					}
 
                     Ok(())
@@ -193,7 +193,7 @@ macro_rules! add_mat_impl {
                     for ((v, r), i) in self.rows_mut().iter_mut()
                                      .zip(mag.rows())
                                      .zip(phase.rows()) {
-  						r#try!(v.set_mag_phase(r, i));
+  						v.set_mag_phase(r, i)?;
   					}
 
                     Ok(())
