@@ -1026,12 +1026,14 @@
 <span id="1026">1026</span>
 <span id="1027">1027</span>
 <span id="1028">1028</span>
+<span id="1029">1029</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{
     <span class="ident">Buffer</span>, <span class="ident">BufferBorrow</span>, <span class="ident">ComplexOps</span>, <span class="ident">DataDomain</span>, <span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>,
     <span class="ident">FrequencyToTimeDomainOperations</span>, <span class="ident">GenDspVec</span>, <span class="ident">InsertZerosOpsBuffered</span>, <span class="ident">MetaData</span>, <span class="ident">NoTradeBuffer</span>,
     <span class="ident">NumberSpace</span>, <span class="ident">PaddingOption</span>, <span class="ident">ResizeBufferedOps</span>, <span class="ident">ResizeOps</span>, <span class="ident">ScaleOps</span>,
-    <span class="ident">TimeToFrequencyDomainOperations</span>, <span class="ident">ToComplexVector</span>, <span class="ident">ToDspVector</span>, <span class="ident">ToSliceMut</span>, <span class="ident">Vector</span>, <span class="ident">VoidResult</span>,
+    <span class="ident">TimeToFrequencyDomainOperations</span>, <span class="ident">ToComplexVector</span>, <span class="ident">ToDspVector</span>, <span class="ident">ToSliceMut</span>, <span class="ident">Vector</span>, <span class="ident">VoidResult</span>, <span class="ident">FloatIndex</span>,
+    <span class="ident">FloatIndexMut</span>
 };
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">create_shifted_copies</span>, <span class="ident">WrappingIterator</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">conv_types</span>::{<span class="ident">RealFrequencyResponse</span>, <span class="ident">RealImpulseResponse</span>};
@@ -1202,7 +1204,7 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="op">-</span>(<span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">conv_len</span>).<span class="ident">unwrap</span>() <span class="op">-</span> <span class="ident">T</span>::<span class="ident">one</span>()) <span class="op">+</span> <span class="ident">delay</span>;
     <span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">data_len</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">function</span>.<span class="ident">calc</span>(<span class="ident">j</span> <span class="op">-</span> <span class="ident">offset</span>);
-        <span class="ident">imp_resp</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">value</span>;
+        <span class="kw-2">*</span><span class="ident">imp_resp</span>.<span class="ident">data_mut</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">value</span>;
         <span class="ident">i</span> <span class="op">+=</span> <span class="ident">step</span>;
         <span class="ident">j</span> <span class="op">=</span> <span class="ident">j</span> <span class="op">+</span> <span class="ident">T</span>::<span class="ident">one</span>();
     }
@@ -1337,7 +1339,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="ident">TT</span>::<span class="ident">zero</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="ident">iter</span> {
-            <span class="ident">sum</span> <span class="op">=</span> <span class="ident">sum</span> <span class="op">+</span> <span class="ident">c</span> <span class="op">*</span> <span class="ident">TT</span>::<span class="ident">from</span>(<span class="ident">vector</span>[<span class="ident">j</span>]);
+            <span class="ident">sum</span> <span class="op">=</span> <span class="ident">sum</span> <span class="op">+</span> <span class="ident">c</span> <span class="op">*</span> <span class="ident">TT</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">vector</span>.<span class="ident">data</span>(<span class="ident">j</span>));
             <span class="ident">j</span> <span class="op">+=</span> <span class="ident">step</span>;
         }
         <span class="ident">sum</span>
@@ -1354,13 +1356,13 @@
         <span class="kw">let</span> <span class="ident">phase_inc</span> <span class="op">=</span> <span class="ident">two</span> <span class="op">*</span> <span class="ident">pi</span> <span class="op">*</span> <span class="ident">delay</span> <span class="op">/</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">points</span>).<span class="ident">unwrap</span>();
         {
             <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">freq</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="number">2</span> <span class="op">*</span> <span class="ident">pos_points</span>..<span class="ident">len</span>]).<span class="ident">to_complex_freq_vec</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">freq</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">data_mut</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">pos_points</span>..<span class="ident">len</span>)).<span class="ident">to_complex_freq_vec</span>();
             <span class="comment">// Negative frequencies</span>
             <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="op">-</span><span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">neg_points</span>).<span class="ident">unwrap</span>() <span class="op">*</span> <span class="ident">phase_inc</span>;
             <span class="ident">freq</span>.<span class="ident">multiply_complex_exponential</span>(<span class="ident">phase_inc</span>, <span class="ident">start</span>);
         }
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">freq</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="number">0</span>..<span class="number">2</span> <span class="op">*</span> <span class="ident">pos_points</span>]).<span class="ident">to_complex_freq_vec</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">freq</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">data_mut</span>(<span class="number">0</span>..<span class="number">2</span> <span class="op">*</span> <span class="ident">pos_points</span>)).<span class="ident">to_complex_freq_vec</span>();
             <span class="comment">// Zero and psoitive frequencies</span>
             <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">zero</span>();
             <span class="ident">freq</span>.<span class="ident">multiply_complex_exponential</span>(<span class="ident">phase_inc</span>, <span class="ident">start</span>);
@@ -1541,7 +1543,7 @@
         <span class="comment">// However to keep the impl definition simpler and to avoid uncessary copies</span>
         <span class="comment">// we have to to be creative with where we store our signal and what&#39;s the buffer.</span>
         {
-            <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[..]).<span class="ident">to_complex_time_vec</span>();
+            <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">data_mut</span>(..)).<span class="ident">to_complex_time_vec</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">NoTradeBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">temp</span>[..]);
             <span class="ident">complex</span>.<span class="ident">plain_fft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>); <span class="comment">// after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.</span>
         }
@@ -1556,7 +1558,7 @@
                 <span class="ident">function</span>,
                 <span class="op">|</span><span class="ident">f</span>, <span class="ident">x</span><span class="op">|</span> <span class="ident">Complex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">f</span>.<span class="ident">calc</span>(<span class="ident">x</span>), <span class="ident">T</span>::<span class="ident">zero</span>()),
             );
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">NoTradeBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[..]);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">NoTradeBuffer</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">data_mut</span>(..));
             <span class="ident">complex</span>.<span class="ident">plain_ifft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>); <span class="comment">// the result is now back in `self`.</span>
         }
         <span class="kw">let</span> <span class="ident">points</span> <span class="op">=</span> <span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>;
@@ -1610,10 +1612,10 @@
         <span class="kw">let</span> <span class="ident">complex_orig_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">complex_dest_len</span> <span class="op">=</span> <span class="number">2</span> <span class="op">*</span> <span class="ident">dest_points</span>;
         <span class="kw">let</span> <span class="ident">temp_len</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">complex_orig_len</span>, <span class="ident">complex_dest_len</span>);
-        <span class="macro">r#try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">resize_b</span>(<span class="ident">buffer</span>, <span class="ident">temp_len</span>)); <span class="comment">// allocate space</span>
+        <span class="self">self</span>.<span class="ident">resize_b</span>(<span class="ident">buffer</span>, <span class="ident">temp_len</span>)<span class="question-mark">?</span>; <span class="comment">// allocate space</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">temp</span> <span class="op">=</span> <span class="ident">buffer</span>.<span class="ident">borrow</span>(<span class="ident">temp_len</span>);
         {
-            <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="number">0</span>..<span class="ident">complex_orig_len</span>]).<span class="ident">to_complex_time_vec</span>();
+            <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">data_mut</span>(<span class="number">0</span>..<span class="ident">complex_orig_len</span>)).<span class="ident">to_complex_time_vec</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">NoTradeBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">temp</span>[<span class="number">0</span>..<span class="ident">temp_len</span>]);
             <span class="ident">complex</span>.<span class="ident">plain_fft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>); <span class="comment">// after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.</span>
         }
@@ -1622,17 +1624,17 @@
             <span class="ident">complex</span>
                 .<span class="ident">resize</span>(<span class="ident">complex_orig_len</span>)
                 .<span class="ident">expect</span>(<span class="string">&quot;Shrinking should always succeed&quot;</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">NoTradeBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="number">0</span>..<span class="ident">temp_len</span>]);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">NoTradeBuffer</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">data_mut</span>(<span class="number">0</span>..<span class="ident">temp_len</span>));
             <span class="comment">// Add the delay, which is a linear phase in frequency domain</span>
             <span class="kw">if</span> <span class="ident">delay</span> <span class="op">!=</span> <span class="ident">T</span>::<span class="ident">zero</span>() {
                 <span class="ident">complex</span>.<span class="ident">apply_linear_phase</span>(<span class="ident">delay</span> <span class="op">/</span> <span class="ident">delta_t</span>);
             }
 
             <span class="kw">if</span> <span class="ident">dest_len</span> <span class="op">&gt;</span> <span class="ident">orig_len</span> {
-                <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">complex</span>.<span class="ident">zero_pad_b</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="ident">dest_points</span>, <span class="ident">PaddingOption</span>::<span class="ident">Center</span>));
+                <span class="ident">complex</span>.<span class="ident">zero_pad_b</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="ident">dest_points</span>, <span class="ident">PaddingOption</span>::<span class="ident">Center</span>)<span class="question-mark">?</span>;
                 <span class="comment">// data is in `self` now, so we have to copy it back into `temp` so that</span>
                 <span class="comment">// it finally ends up at the correct destination after `plain_ifft`</span>
-                (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">complex</span>[<span class="number">0</span>..<span class="ident">complex_dest_len</span>])
+                <span class="ident">complex</span>.<span class="ident">data_mut</span>(<span class="number">0</span>..<span class="ident">complex_dest_len</span>)
                     .<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">buffer</span>.<span class="ident">borrow</span>(<span class="ident">complex_dest_len</span>)[..]);
                 <span class="ident">complex</span>.<span class="ident">interpolate_upsample</span>(<span class="ident">function</span>, <span class="ident">interpolation_factorf</span>);
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">dest_len</span> <span class="op">&lt;</span> <span class="ident">orig_len</span> {
@@ -1703,7 +1705,7 @@
     <span class="kw">fn</span> <span class="ident">interpolatei_sinc_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="number">2</span> <span class="op">*</span> <span class="ident">len</span>].<span class="ident">to_complex_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
         <span class="ident">time</span>.<span class="ident">interpolatei</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">2</span>)
@@ -1723,14 +1725,14 @@
             <span class="number">0.16666667</span>,
             <span class="number">0.044658206</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolate_sinc_even_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="number">2</span> <span class="op">*</span> <span class="ident">len</span>].<span class="ident">to_complex_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
         <span class="ident">time</span>.<span class="ident">interpolate</span>(
@@ -1745,14 +1747,14 @@
             <span class="number">0.00000</span>, <span class="number">0.04466</span>, <span class="number">0.00000</span>, <span class="op">-</span><span class="number">0.16667</span>, <span class="number">0.00000</span>, <span class="number">0.62201</span>, <span class="number">1.00000</span>, <span class="number">0.62201</span>, <span class="number">0.00000</span>,
             <span class="op">-</span><span class="number">0.16667</span>, <span class="number">0.00000</span>, <span class="number">0.04466</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolate_sinc_odd_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">7</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="ident">len</span>].<span class="ident">to_real_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident">time</span>.<span class="ident">to_complex</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
@@ -1768,14 +1770,14 @@
             <span class="number">0.00000</span>, <span class="number">0.15856</span>, <span class="number">0.00000</span>, <span class="op">-</span><span class="number">0.22913</span>, <span class="number">0.00000</span>, <span class="number">0.64199</span>, <span class="number">1.00000</span>, <span class="number">0.64199</span>, <span class="number">0.00000</span>,
             <span class="op">-</span><span class="number">0.22913</span>, <span class="op">-</span><span class="number">0.00000</span>, <span class="number">0.15856</span>, <span class="number">0.00000</span>, <span class="op">-</span><span class="number">0.14286</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolatei_rc_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="number">2</span> <span class="op">*</span> <span class="ident">len</span>].<span class="ident">to_complex_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="ident">rc</span>: <span class="ident">RaisedCosineFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">RaisedCosineFunction</span>::<span class="ident">new</span>(<span class="number">0.4</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
         <span class="ident">time</span>.<span class="ident">interpolatei</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">2</span>)
@@ -1795,14 +1797,14 @@
             <span class="number">0.000000048099658</span>,
             <span class="number">0.038979173</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolatef_by_integer_sinc_even_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="ident">len</span>].<span class="ident">to_real_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident">time</span>.<span class="ident">to_complex</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
@@ -1818,14 +1820,14 @@
             <span class="number">0.00000</span>, <span class="number">0.04466</span>, <span class="number">0.00000</span>, <span class="op">-</span><span class="number">0.16667</span>, <span class="number">0.00000</span>, <span class="number">0.62201</span>, <span class="number">1.00000</span>, <span class="number">0.62201</span>, <span class="number">0.00000</span>,
             <span class="op">-</span><span class="number">0.16667</span>, <span class="number">0.00000</span>, <span class="number">0.04466</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolatef_by_integer_sinc_odd_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">7</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="ident">len</span>].<span class="ident">to_real_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident">time</span>.<span class="ident">to_complex</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
@@ -1841,14 +1843,14 @@
             <span class="number">0.00000</span>, <span class="number">0.15856</span>, <span class="number">0.00000</span>, <span class="op">-</span><span class="number">0.22913</span>, <span class="number">0.00000</span>, <span class="number">0.64199</span>, <span class="number">1.00000</span>, <span class="number">0.64199</span>, <span class="number">0.00000</span>,
             <span class="op">-</span><span class="number">0.22913</span>, <span class="op">-</span><span class="number">0.00000</span>, <span class="number">0.15856</span>, <span class="number">0.00000</span>, <span class="op">-</span><span class="number">0.14286</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolatef_by_fractional_sinc_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="ident">len</span>].<span class="ident">to_real_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident">time</span>.<span class="ident">to_complex</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
@@ -1876,14 +1878,14 @@
             <span class="number">2.0934e-02</span>,
             <span class="number">4.0780e-02</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolate_by_fractional_sinc_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="ident">len</span>].<span class="ident">to_real_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident">time</span>.<span class="ident">to_complex</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
@@ -1910,14 +1912,14 @@
             <span class="number">2.0934e-02</span>,
             <span class="number">4.0780e-02</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolate_by_fractional_sinc_real_data_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="ident">len</span>].<span class="ident">to_real_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
         <span class="ident">time</span>.<span class="ident">interpolate</span>(
@@ -1942,14 +1944,14 @@
             <span class="number">2.0934e-02</span>,
             <span class="number">4.0780e-02</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">time</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">time</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">interpolatef_delayed_sinc_test</span>() {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="number">2</span> <span class="op">*</span> <span class="ident">len</span>].<span class="ident">to_complex_time_vec</span>();
-        <span class="ident">time</span>[<span class="ident">len</span>] <span class="op">=</span> <span class="number">1.0</span>;
+        <span class="kw-2">*</span><span class="ident">time</span>.<span class="ident">data_mut</span>(<span class="ident">len</span>) <span class="op">=</span> <span class="number">1.0</span>;
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
         <span class="ident">time</span>.<span class="ident">interpolatef</span>(
@@ -1964,7 +1966,7 @@
             <span class="number">0.00000</span>, <span class="number">0.00000</span>, <span class="number">0.00000</span>, <span class="number">0.04466</span>, <span class="number">0.00000</span>, <span class="number">0.16667</span>, <span class="number">0.00000</span>, <span class="number">0.62201</span>, <span class="number">1.00000</span>,
             <span class="number">0.62201</span>, <span class="number">0.00000</span>, <span class="number">0.16667</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1993,7 +1995,7 @@
             <span class="number">0.132513</span>, <span class="number">0.244227</span>, <span class="number">0.347660</span>, <span class="number">0.390094</span>, <span class="number">0.347660</span>, <span class="number">0.244227</span>, <span class="number">0.132513</span>, <span class="number">0.054953</span>,
             <span class="number">0.019827</span>, <span class="number">0.011546</span>, <span class="number">0.019827</span>, <span class="number">0.054953</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -2005,7 +2007,7 @@
         <span class="ident">time</span>.<span class="ident">interpft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="ident">len</span>);
         <span class="comment">// expected in Octave: interpft([time(2:end) 0], 12);</span>
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> [<span class="number">0.019827</span>, <span class="number">0.132513</span>, <span class="number">0.347660</span>, <span class="number">0.347660</span>, <span class="number">0.132513</span>, <span class="number">0.019827</span>];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">time</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">time</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -2014,7 +2016,7 @@
             .<span class="ident">to_complex_time_vec</span>();
         <span class="ident">time</span>.<span class="ident">decimatei</span>(<span class="number">2</span>, <span class="number">1</span>);
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> [<span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">6.0</span>, <span class="number">7.0</span>, <span class="number">10.0</span>, <span class="number">11.0</span>];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">time</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">time</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">0.1</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -2052,7 +2054,7 @@
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> [
             <span class="number">2.0600e-03</span>, <span class="number">2.1088e-02</span>, <span class="number">1.5072e-01</span>, <span class="number">2.1024e-01</span>, <span class="number">8.0868e-02</span>, <span class="number">7.5036e-04</span>,
         ];
-        <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>[..], <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
+        <span class="ident">assert_eq_tol</span>(<span class="ident">result</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
     }
 }
 </pre></div>

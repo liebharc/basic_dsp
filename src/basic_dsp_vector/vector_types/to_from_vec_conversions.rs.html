@@ -212,15 +212,61 @@
 <span id="212">212</span>
 <span id="213">213</span>
 <span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Conversions to and from vectors which serve as constructors.</span>
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">meta</span>;
 <span class="kw">use</span> <span class="kw">super</span>::{
     <span class="ident">ComplexFreqVec</span>, <span class="ident">ComplexTimeVec</span>, <span class="ident">DataDomain</span>, <span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">GenDspVec</span>, <span class="ident">NumberSpace</span>,
     <span class="ident">RealFreqVec</span>, <span class="ident">RealTimeVec</span>, <span class="ident">ToSlice</span>, <span class="ident">TypeMetaData</span>,
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::<span class="ident">MultiCoreSettings</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">meta</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">From</span>;
 
 <span class="doccomment">/// Conversion from a generic data type into a dsp vector which tracks</span>
@@ -280,6 +326,33 @@
     <span class="kw">fn</span> <span class="ident">to_complex_freq_vec</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ComplexFreqVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
+<span class="doccomment">/// Retrieves the underlying storage from a vector. Returned value will always hold floating point numbers.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FromVectorFloat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+{
+    <span class="doccomment">/// Type of the underlying storage of a vector.</span>
+    <span class="kw">type</span> <span class="ident">Output</span>;
+
+    <span class="doccomment">/// Gets the underlying storage and the number of elements which</span>
+    <span class="doccomment">/// contain valid data. In case of complex vectors the values are returned real-imag pairs. Refer to `FromVector`</span>
+    <span class="doccomment">/// for a method which returns the data of complex vectors in a different manner.</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # extern crate num_complex;</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
+    <span class="doccomment">/// let v: Vec&lt;Complex&lt;f64&gt;&gt; = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0));</span>
+    <span class="doccomment">/// let v: DspVec&lt;Vec&lt;f64&gt;, f64, meta::Complex, meta::Time&gt; = v.to_complex_time_vec();</span>
+    <span class="doccomment">/// // Note that the resulting type is always a vector or floats and not a vector of complex numbers</span>
+    <span class="doccomment">/// let (v, p): (Vec&lt;f64&gt;, usize) = v.getf();</span>
+    <span class="doccomment">/// assert_eq!(4, p);</span>
+    <span class="doccomment">/// assert_eq!(vec!(1.0, 2.0, 3.0, 4.0), v);</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">fn</span> <span class="ident">getf</span>(<span class="self">self</span>) <span class="op">-&gt;</span> (<span class="self">Self</span>::<span class="ident">Output</span>, <span class="ident">usize</span>);
+}
+
 <span class="doccomment">/// Retrieves the underlying storage from a vector.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FromVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
@@ -289,14 +362,23 @@
     <span class="kw">type</span> <span class="ident">Output</span>;
 
     <span class="doccomment">/// Gets the underlying storage and the number of elements which</span>
-    <span class="doccomment">/// contain valid.</span>
+    <span class="doccomment">/// contain valid data.</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// # extern crate num_complex;</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
+    <span class="doccomment">/// let v: Vec&lt;Complex&lt;f64&gt;&gt; = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0));</span>
+    <span class="doccomment">/// let v: DspVec&lt;Vec&lt;f64&gt;, f64, meta::Complex, meta::Time&gt; = v.to_complex_time_vec();</span>
+    <span class="doccomment">/// let (v, p): (Vec&lt;Complex&lt;f64&gt;&gt;, usize) = v.get();</span>
+    <span class="doccomment">/// assert_eq!(2, p);</span>
+    <span class="doccomment">/// assert_eq!(vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)), v);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">get</span>(<span class="self">self</span>) <span class="op">-&gt;</span> (<span class="self">Self</span>::<span class="ident">Output</span>, <span class="ident">usize</span>);
-
-    <span class="doccomment">/// Gets the underlying slice of a vector.</span>
-    <span class="kw">fn</span> <span class="ident">to_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>];
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">FromVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">FromVectorFloat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
@@ -305,17 +387,27 @@
 {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">S</span>;
 
+    <span class="kw">fn</span> <span class="ident">getf</span>(<span class="self">self</span>) <span class="op">-&gt;</span> (<span class="self">Self</span>::<span class="ident">Output</span>, <span class="ident">usize</span>) {
+        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">valid_len</span>;
+        (<span class="self">self</span>.<span class="ident">data</span>, <span class="ident">len</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">FromVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Real</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
+{
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">S</span>;
+
     <span class="kw">fn</span> <span class="ident">get</span>(<span class="self">self</span>) <span class="op">-&gt;</span> (<span class="self">Self</span>::<span class="ident">Output</span>, <span class="ident">usize</span>) {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">valid_len</span>;
         (<span class="self">self</span>.<span class="ident">data</span>, <span class="ident">len</span>)
     }
-
-    <span class="kw">fn</span> <span class="ident">to_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>] {
-        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">valid_len</span>;
-        <span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
-        <span class="kw-2">&amp;</span><span class="ident">slice</span>[<span class="number">0</span>..<span class="ident">len</span>]
-    }
 }
+
+
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RealTimeVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>

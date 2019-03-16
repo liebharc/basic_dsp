@@ -776,7 +776,7 @@
         <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="kw-2">*</span>;
         <span class="attribute">#[<span class="ident">test</span>]</span>
         <span class="kw">fn</span> <span class="ident">get_alignment_offset_test</span>() {
-            <span class="kw">let</span> <span class="ident">reg_len</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">simdavx</span>::<span class="ident">f64x4</span><span class="op">&gt;</span>();
+            <span class="kw">let</span> <span class="ident">reg_len</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">f64x4</span><span class="op">&gt;</span>();
             <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">reg_len</span>, <span class="number">32</span>);
             <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">get_alignment_offset</span>(<span class="number">0</span>, <span class="ident">reg_len</span>), <span class="number">0</span>);
             <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">get_alignment_offset</span>(<span class="number">8</span>, <span class="ident">reg_len</span>), <span class="number">8</span>);

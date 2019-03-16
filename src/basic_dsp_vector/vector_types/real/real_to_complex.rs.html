@@ -108,6 +108,8 @@
 <span id="108">108</span>
 <span id="109">109</span>
 <span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{
     <span class="ident">Buffer</span>, <span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>, <span class="ident">InsertZerosOps</span>, <span class="ident">InsertZerosOpsBuffered</span>, <span class="ident">MetaData</span>,
@@ -130,9 +132,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
     <span class="doccomment">/// let vector = vec!(1.0, 2.0).to_real_time_vec();</span>
     <span class="doccomment">/// let result = vector.to_complex().expect(&quot;Ignoring error handling in examples&quot;);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 0.0), Complex::new(2.0, 0.0)], result[..]);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">to_complex</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">ComplexResult</span><span class="op">&gt;</span>;
 }
@@ -154,10 +157,11 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
     <span class="doccomment">/// let vector = vec!(1.0, 2.0).to_real_time_vec();</span>
     <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
     <span class="doccomment">/// let result = vector.to_complex_b(&amp;mut buffer);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 0.0), Complex::new(2.0, 0.0)], result[..]);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">to_complex_b</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">ComplexResult</span>
     <span class="kw">where</span>

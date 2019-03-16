@@ -120,7 +120,7 @@
     <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0), Complex::new(5.0, 6.0)).to_complex_freq_vec();</span>
     <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
     <span class="doccomment">/// vector.mirror(&amp;mut buffer);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], &amp;vector[..]);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(3.0, 4.0), Complex::new(5.0, 6.0), Complex::new(5.0, -6.0), Complex::new(3.0, -4.0)], &amp;vector[..]);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">mirror</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>)
     <span class="kw">where</span>

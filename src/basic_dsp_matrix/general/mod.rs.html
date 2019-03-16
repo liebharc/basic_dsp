@@ -458,7 +458,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> (<span class="ident">v</span>, <span class="ident">o</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">factor</span>.<span class="ident">rows</span>()) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">o</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">o</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -476,7 +476,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> (<span class="ident">v</span>, <span class="ident">o</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">factor</span>.<span class="ident">rows</span>()) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">o</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">o</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -494,7 +494,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">Matrix3xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> (<span class="ident">v</span>, <span class="ident">o</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">factor</span>.<span class="ident">rows</span>()) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">o</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">o</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -512,7 +512,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">Matrix4xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> (<span class="ident">v</span>, <span class="ident">o</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">factor</span>.<span class="ident">rows</span>()) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">o</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">o</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -530,7 +530,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">V</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">factor</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">factor</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -548,7 +548,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">V</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">2</span>]<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">factor</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">factor</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -566,7 +566,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">V</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">3</span>]<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">factor</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">factor</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -584,7 +584,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">V</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">4</span>]<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">factor</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product</span>(<span class="ident">factor</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -602,7 +602,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">MatrixMxN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> (<span class="ident">v</span>, <span class="ident">o</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">factor</span>.<span class="ident">rows</span>()) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">o</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">o</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -620,7 +620,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">Matrix2xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> (<span class="ident">v</span>, <span class="ident">o</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">factor</span>.<span class="ident">rows</span>()) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">o</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">o</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -638,7 +638,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">Matrix3xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> (<span class="ident">v</span>, <span class="ident">o</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">factor</span>.<span class="ident">rows</span>()) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">o</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">o</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -656,7 +656,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">Matrix4xN</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> (<span class="ident">v</span>, <span class="ident">o</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">factor</span>.<span class="ident">rows</span>()) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">o</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">o</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -674,7 +674,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">V</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">factor</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">factor</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -692,7 +692,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">V</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">2</span>]<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">factor</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">factor</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -710,7 +710,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">V</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">3</span>]<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">factor</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">factor</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -728,7 +728,7 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">V</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">4</span>]<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">factor</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">dot_product_prec</span>(<span class="ident">factor</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -757,7 +757,7 @@
     {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">map_aggregate</span>(<span class="ident">argument</span>, <span class="kw-2">&amp;</span><span class="ident">map</span>, <span class="kw-2">&amp;</span><span class="ident">aggregate</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">map_aggregate</span>(<span class="ident">argument</span>, <span class="kw-2">&amp;</span><span class="ident">map</span>, <span class="kw-2">&amp;</span><span class="ident">aggregate</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -786,7 +786,7 @@
     {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">map_aggregate</span>(<span class="ident">argument</span>, <span class="kw-2">&amp;</span><span class="ident">map</span>, <span class="kw-2">&amp;</span><span class="ident">aggregate</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">map_aggregate</span>(<span class="ident">argument</span>, <span class="kw-2">&amp;</span><span class="ident">map</span>, <span class="kw-2">&amp;</span><span class="ident">aggregate</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -815,7 +815,7 @@
     {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">map_aggregate</span>(<span class="ident">argument</span>, <span class="kw-2">&amp;</span><span class="ident">map</span>, <span class="kw-2">&amp;</span><span class="ident">aggregate</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">map_aggregate</span>(<span class="ident">argument</span>, <span class="kw-2">&amp;</span><span class="ident">map</span>, <span class="kw-2">&amp;</span><span class="ident">aggregate</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -844,7 +844,7 @@
     {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">col_len</span>());
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">rows</span>() {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="ident">v</span>.<span class="ident">map_aggregate</span>(<span class="ident">argument</span>, <span class="kw-2">&amp;</span><span class="ident">map</span>, <span class="kw-2">&amp;</span><span class="ident">aggregate</span>));
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">map_aggregate</span>(<span class="ident">argument</span>, <span class="kw-2">&amp;</span><span class="ident">map</span>, <span class="kw-2">&amp;</span><span class="ident">aggregate</span>)<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">res</span>);
         }
 
@@ -868,8 +868,8 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mat1</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>, <span class="number">1.0</span>], <span class="macro">vec</span><span class="macro">!</span>[<span class="number">2.0</span>, <span class="number">3.0</span>]].<span class="ident">to_real_time_mat</span>();
         <span class="kw">let</span> <span class="ident">mat2</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">vec</span><span class="macro">!</span>[<span class="number">3.0</span>, <span class="number">7.0</span>], <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1.0</span>, <span class="number">4.0</span>]].<span class="ident">to_real_time_mat</span>();
         <span class="ident">mat1</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">mat2</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">mat1</span>.<span class="ident">rows</span>[<span class="number">0</span>][..], <span class="kw-2">&amp;</span>[<span class="number">3.0</span>, <span class="number">8.0</span>]);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">mat1</span>.<span class="ident">rows</span>[<span class="number">1</span>][..], <span class="kw-2">&amp;</span>[<span class="number">1.0</span>, <span class="number">7.0</span>]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">mat1</span>.<span class="ident">rows</span>[<span class="number">0</span>].<span class="ident">data</span>(..), <span class="kw-2">&amp;</span>[<span class="number">3.0</span>, <span class="number">8.0</span>]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">mat1</span>.<span class="ident">rows</span>[<span class="number">1</span>].<span class="ident">data</span>(..), <span class="kw-2">&amp;</span>[<span class="number">1.0</span>, <span class="number">7.0</span>]);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -877,8 +877,8 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mat</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>, <span class="number">1.0</span>], <span class="macro">vec</span><span class="macro">!</span>[<span class="number">2.0</span>, <span class="number">3.0</span>]].<span class="ident">to_real_time_mat</span>();
         <span class="kw">let</span> <span class="ident">vec</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">3.0</span>, <span class="number">7.0</span>].<span class="ident">to_real_time_vec</span>();
         <span class="ident">mat</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">vec</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">mat</span>.<span class="ident">rows</span>[<span class="number">0</span>][..], <span class="kw-2">&amp;</span>[<span class="number">3.0</span>, <span class="number">8.0</span>]);
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">mat</span>.<span class="ident">rows</span>[<span class="number">1</span>][..], <span class="kw-2">&amp;</span>[<span class="number">5.0</span>, <span class="number">10.0</span>]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">mat</span>.<span class="ident">rows</span>[<span class="number">0</span>].<span class="ident">data</span>(..), <span class="kw-2">&amp;</span>[<span class="number">3.0</span>, <span class="number">8.0</span>]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">mat</span>.<span class="ident">rows</span>[<span class="number">1</span>].<span class="ident">data</span>(..), <span class="kw-2">&amp;</span>[<span class="number">5.0</span>, <span class="number">10.0</span>]);
     }
 }
 </pre></div>

@@ -249,7 +249,7 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{
     <span class="ident">Buffer</span>, <span class="ident">ComplexNumberSpace</span>, <span class="ident">DataDomain</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>, <span class="ident">FrequencyDomain</span>,
     <span class="ident">FrequencyDomainOperations</span>, <span class="ident">InsertZerosOpsBuffered</span>, <span class="ident">MetaData</span>, <span class="ident">RededicateForceOps</span>, <span class="ident">ScaleOps</span>,
-    <span class="ident">TimeDomainOperations</span>, <span class="ident">ToRealTimeResult</span>, <span class="ident">ToSliceMut</span>, <span class="ident">ToTimeResult</span>, <span class="ident">TransRes</span>, <span class="ident">Vector</span>,
+    <span class="ident">TimeDomainOperations</span>, <span class="ident">ToRealTimeResult</span>, <span class="ident">ToSliceMut</span>, <span class="ident">ToTimeResult</span>, <span class="ident">TransRes</span>, <span class="ident">Vector</span>, <span class="ident">FloatIndex</span>
 };
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">fft</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
@@ -280,10 +280,10 @@
     <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
     <span class="doccomment">/// let result = vector.plain_ifft(&amp;mut buffer);</span>
     <span class="doccomment">/// let actual = &amp;result[..];</span>
-    <span class="doccomment">/// let expected = &amp;[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];</span>
+    <span class="doccomment">/// let expected = &amp;[Complex::new(1.0, 0.0), Complex::new(-0.5, 0.8660254), Complex::new(-0.5, -0.8660254)];</span>
     <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
     <span class="doccomment">/// for i in 0..actual.len() {</span>
-    <span class="doccomment">///        assert!(f32::abs(actual[i] - expected[i]) &lt; 1e-4);</span>
+    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">plain_ifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">TimeResult</span>
@@ -302,10 +302,10 @@
     <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
     <span class="doccomment">/// let result = vector.ifft(&amp;mut buffer);</span>
     <span class="doccomment">/// let actual = &amp;result[..];</span>
-    <span class="doccomment">/// let expected = &amp;[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];</span>
+    <span class="doccomment">/// let expected = &amp;[Complex::new(1.0, 0.0), Complex::new(-0.5, 0.8660254), Complex::new(-0.5, -0.8660254)];</span>
     <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
     <span class="doccomment">/// for i in 0..actual.len() {</span>
-    <span class="doccomment">///        assert!(f32::abs(actual[i] - expected[i]) &lt; 1e-4);</span>
+    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">ifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">TimeResult</span>
@@ -448,7 +448,7 @@
             ));
         }
 
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">points</span>() <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>[<span class="number">1</span>].<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">1e-10</span>).<span class="ident">unwrap</span>() {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">points</span>() <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">data</span>(<span class="number">1</span>).<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">1e-10</span>).<span class="ident">unwrap</span>() {
             <span class="self">self</span>.<span class="ident">mark_vector_as_invalid</span>();
             <span class="self">self</span>.<span class="ident">number_space</span>.<span class="ident">to_complex</span>();
             <span class="self">self</span>.<span class="ident">domain</span>.<span class="ident">to_freq</span>();
@@ -488,7 +488,7 @@
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="macro">r#try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">sifft</span>(<span class="ident">buffer</span>));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sifft</span>(<span class="ident">buffer</span>)<span class="question-mark">?</span>;
         <span class="ident">result</span>.<span class="ident">unapply_window</span>(<span class="ident">window</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
     }

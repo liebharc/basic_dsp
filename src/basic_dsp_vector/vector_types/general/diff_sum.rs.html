@@ -144,7 +144,7 @@
     <span class="doccomment">/// assert_eq!([1.0, -1.0, 4.0], vector[..]);</span>
     <span class="doccomment">/// let mut vector = vec!(Complex::new(2.0, 2.0), Complex::new(3.0, 3.0), Complex::new(5.0, 5.0)).to_complex_time_vec();</span>
     <span class="doccomment">/// vector.diff();</span>
-    <span class="doccomment">/// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)], vector[..]);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">diff</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
 
@@ -161,7 +161,7 @@
     <span class="doccomment">/// assert_eq!([2.0, 1.0, -1.0, 4.0], vector[..]);</span>
     <span class="doccomment">/// let mut vector = vec!(Complex::new(2.0, 2.0), Complex::new(3.0, 3.0), Complex::new(5.0, 5.0)).to_complex_time_vec();</span>
     <span class="doccomment">/// vector.diff_with_start();</span>
-    <span class="doccomment">/// assert_eq!([2.0, 2.0, 1.0, 1.0, 2.0, 2.0], vector[..]);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(2.0, 2.0), Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)], vector[..]);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">diff_with_start</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
 

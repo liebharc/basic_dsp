@@ -611,12 +611,42 @@
 <span id="611">611</span>
 <span id="612">612</span>
 <span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">meta</span>;
 <span class="doccomment">/// ! Support for types in Rust std</span>
 <span class="kw">use</span> <span class="kw">super</span>::{
     <span class="ident">Buffer</span>, <span class="ident">BufferBorrow</span>, <span class="ident">ComplexFreqVec</span>, <span class="ident">ComplexTimeVec</span>, <span class="ident">DataDomain</span>, <span class="ident">Domain</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>,
-    <span class="ident">GenDspVec</span>, <span class="ident">MetaData</span>, <span class="ident">NumberSpace</span>, <span class="ident">RealFreqVec</span>, <span class="ident">RealTimeVec</span>, <span class="ident">ToSlice</span>, <span class="ident">TypeMetaData</span>,
+    <span class="ident">GenDspVec</span>, <span class="ident">MetaData</span>, <span class="ident">NumberSpace</span>, <span class="ident">RealFreqVec</span>, <span class="ident">RealTimeVec</span>, <span class="ident">ToSlice</span>, <span class="ident">TypeMetaData</span>, <span class="ident">FromVector</span>
 };
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Resize</span>, <span class="ident">ToComplexVector</span>, <span class="ident">ToDspVector</span>, <span class="ident">ToRealVector</span>, <span class="ident">ToSliceMut</span>, <span class="ident">VoidResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">multicore_support</span>::<span class="ident">MultiCoreSettings</span>;
@@ -1182,6 +1212,19 @@
     }
 }
 
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">FromVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Complex</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+    <span class="ident">D</span>: <span class="ident">Domain</span>,
+{
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>;
+
+    <span class="kw">fn</span> <span class="ident">get</span>(<span class="self">self</span>) <span class="op">-&gt;</span> (<span class="self">Self</span>::<span class="ident">Output</span>, <span class="ident">usize</span>) {
+        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">valid_len</span> <span class="op">/</span> <span class="number">2</span>;
+        (<span class="ident">interleaved_vec_to_complex_vec</span>(<span class="self">self</span>.<span class="ident">data</span>), <span class="ident">len</span>)
+    }
+}
+
 <span class="kw">fn</span> <span class="ident">expand_to_full_capacity</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">vec</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Zero</span>,
@@ -1203,6 +1246,23 @@
     <span class="kw">unsafe</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trans</span>: <span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">T</span>]<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="ident">boxed</span>);
         <span class="kw">let</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">from_raw_parts</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">trans</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>, <span class="ident">len</span> <span class="op">*</span> <span class="number">2</span>, <span class="ident">len</span> <span class="op">*</span> <span class="number">2</span>);
+        <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">trans</span>); <span class="comment">// TODO memory leak?</span>
+        <span class="ident">vec</span>
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">interleaved_vec_to_complex_vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+{
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+
+    <span class="ident">expand_to_full_capacity</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vec</span>);
+    <span class="kw">let</span> <span class="ident">boxed</span> <span class="op">=</span> <span class="ident">vec</span>.<span class="ident">into_boxed_slice</span>();
+    <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">boxed</span>.<span class="ident">len</span>();
+    <span class="kw">unsafe</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trans</span>: <span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>]<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="ident">boxed</span>);
+        <span class="kw">let</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>::<span class="ident">from_raw_parts</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">trans</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>, <span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>);
         <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">trans</span>); <span class="comment">// TODO memory leak?</span>
         <span class="ident">vec</span>
     }

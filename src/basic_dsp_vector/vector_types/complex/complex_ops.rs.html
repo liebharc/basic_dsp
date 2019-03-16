@@ -154,10 +154,10 @@
     <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();</span>
     <span class="doccomment">/// vector.multiply_complex_exponential(2.0, 3.0);</span>
     <span class="doccomment">/// let actual = &amp;vector[..];</span>
-    <span class="doccomment">/// let expected = &amp;[-1.2722325, -1.838865, 4.6866837, -1.7421241];</span>
+    <span class="doccomment">/// let expected = &amp;[Complex::new(-1.2722325, -1.838865), Complex::new(4.6866837, -1.7421241)];</span>
     <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
     <span class="doccomment">/// for i in 0..actual.len() {</span>
-    <span class="doccomment">///        assert!(f64::abs(actual[i] - expected[i]) &lt; 1e-4);</span>
+    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
@@ -174,7 +174,7 @@
     <span class="doccomment">/// # fn main() {</span>
     <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();</span>
     <span class="doccomment">/// vector.conj();</span>
-    <span class="doccomment">/// assert_eq!([1.0, -2.0, 3.0, -4.0], vector[..]);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, -2.0), Complex::new(3.0, -4.0)], vector[..]);</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">conj</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);

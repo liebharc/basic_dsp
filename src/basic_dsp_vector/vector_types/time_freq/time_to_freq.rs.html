@@ -328,10 +328,10 @@
     <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
     <span class="doccomment">/// let result = vector.plain_fft(&amp;mut buffer);</span>
     <span class="doccomment">/// let actual = &amp;result[..];</span>
-    <span class="doccomment">/// let expected = &amp;[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];</span>
+    <span class="doccomment">/// let expected = &amp;[Complex::new(0.0, 0.0), Complex::new(3.0, 0.0), Complex::new(0.0, 0.0)];</span>
     <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
     <span class="doccomment">/// for i in 0..actual.len() {</span>
-    <span class="doccomment">///        assert!(f32::abs(actual[i] - expected[i]) &lt; 1e-4);</span>
+    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">plain_fft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">FreqResult</span>
@@ -350,10 +350,10 @@
     <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
     <span class="doccomment">/// let result = vector.fft(&amp;mut buffer);</span>
     <span class="doccomment">/// let actual = &amp;result[..];</span>
-    <span class="doccomment">/// let expected = &amp;[0.0, 0.0, 0.0, 0.0, 3.0, 0.0];</span>
+    <span class="doccomment">/// let expected = &amp;[Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(3.0, 0.0)];</span>
     <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
     <span class="doccomment">/// for i in 0..actual.len() {</span>
-    <span class="doccomment">///        assert!(f32::abs(actual[i] - expected[i]) &lt; 1e-4);</span>
+    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
     <span class="doccomment">/// }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">fft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">FreqResult</span>
