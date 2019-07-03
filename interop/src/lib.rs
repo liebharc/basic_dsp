@@ -148,10 +148,12 @@ pub fn get_error_marker<T: RealNumber>(vec: &InteropVec<T>) -> i32 {
 pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>>
     where T: RealNumber
 {
-    if value == 0 {
-        Box::new(TriangularWindow)
-    } else {
-        Box::new(HammingWindow::default())
+    match value {
+        0 => Box::new(TriangularWindow),
+        1 => Box::new(HammingWindow::default()),
+        2 => Box::new(BlackmanHarrisWindow),
+        3 => Box::new(RectangularWindow),
+        _ => Box::new(RectangularWindow),
     }
 }
 
