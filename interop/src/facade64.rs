@@ -907,7 +907,11 @@ pub extern "C" fn ifft_shift64(vector: Box<VecBuf>) -> VectorInteropResult<VecBu
 /// `window` argument is translated to:
 ///
 /// 1. `0` to [`TriangularWindow`](../../window_functions/struct.TriangularWindow.html)
-/// 2. `1` to [`HammingWindow`](../../window_functions/struct.TriangularWindow.html)
+/// 2. `1` to [`HammingWindow`](../../window_functions/struct.HammingWindow.html)
+/// 3. `2` to [`BlackmanHarrisWindow`](../../window_functions/struct.BlackmanHarrisWindow.html)
+/// 4. `3` to [`RectangularWindow`](../../window_functions/struct.RectagnularWindow.html)
+/// 5. Undefined window argument will fall through to
+///    [`RectangularWindow`](../../window_functions/struct.RectagnularWindow.html)
 #[no_mangle]
 pub extern "C" fn apply_window64(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
     let window = translate_to_window_function(window);

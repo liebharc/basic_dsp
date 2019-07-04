@@ -87,6 +87,48 @@ where
     }
 }
 
+/// A Blackman-Harris Window: `https://en.wikipedia.org/wiki/Window_function#Blackman-Harris_window`
+pub struct BlackmanHarrisWindow;
+impl<T> WindowFunction<T> for BlackmanHarrisWindow
+where
+    T: RealNumber,
+{
+   fn is_symmetric(&self) -> bool {
+       true
+   }
+
+   fn window(&self, n: usize, length: usize) -> T {
+        let one = T::one();
+        let two = T::from(2.0).unwrap();
+        let four = T::from(4.0).unwrap();
+        let six = T::from(6.0).unwrap();
+        let pi = T::PI();
+        let a_naught = T::from(0.35875).unwrap();
+        let a_one = T::from(0.48829).unwrap();
+        let a_two = T::from(0.14128).unwrap();
+        let a_three = T::from(0.01168).unwrap();
+        let n = T::from(n).unwrap();
+        let length = T::from(length).unwrap();
+        a_naught - a_one * (two * pi * n / (length - one)).cos() + a_two * (four * pi * n / (length - one)).cos() - a_three * (six * pi * n / (length - one)).cos()
+   }
+}
+
+/// A rectangular window: `https://en.wikipedia.org/wiki/Window_function#Rectangular_window`
+pub struct RectangularWindow;
+impl<T> WindowFunction<T> for RectangularWindow
+where
+    T: RealNumber,
+{
+    fn is_symmetric(&self) -> bool {
+        true
+    }
+
+    fn window(&self, _n: usize, _length: usize) -> T {
+        let one = T::one();
+        one
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -121,5 +163,19 @@ mod tests {
         let hamming = HammingWindow::<f32>::default();
         let expected = [0.08, 0.54, 1.0, 0.54, 0.08];
         window_test(hamming, &expected);
+    }
+
+    #[test]
+    fn blackmanharris_window32_test() {
+        let blackmanharris = BlackmanHarrisWindow;
+        let expected = [0.0001, 0.2175, 1.0000, 0.2175, 0.0001];
+        window_test(blackmanharris, &expected);
+    }
+
+    #[test]
+    fn rectangular_window32_test() {
+        let rectangular = RectangularWindow;
+        let expected = [1.0, 1.0, 1.0, 1.0, 1.0];
+        window_test(rectangular, &expected);
     }
 }
