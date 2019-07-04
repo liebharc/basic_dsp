@@ -1,14 +1,14 @@
 //! This module defines the basic vector trait and indexers.
+use super::meta::Complex as ComplexSpace;
+use super::meta::Real as RealSpace;
 use super::{
     Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, Domain, DspVec, ErrorReason, NumberSpace,
-    ToSlice, ToSliceMut, TypeMetaData, VoidResult
+    ToSlice, ToSliceMut, TypeMetaData, VoidResult,
 };
 use crate::multicore_support::MultiCoreSettings;
 use crate::numbers::*;
-use std::ops::*;
 use crate::{array_to_complex, array_to_complex_mut};
-use super::meta::Real as RealSpace;
-use super::meta::Complex as ComplexSpace;
+use std::ops::*;
 
 /// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
 /// but with a different method name so that it can be used to implement an additional range
@@ -97,9 +97,14 @@ pub trait ResizeBufferedOps<S: ToSliceMut<T>, T: RealNumber> {
 }
 
 /// A trait for vector types.
-pub trait Vector<T>: MetaData + ResizeOps
-    + FloatIndex<RangeFull, Output=[T]> + FloatIndex<Range<usize>>  + FloatIndex<RangeFrom<usize>, Output=[T]>
-    + FloatIndex<RangeTo<usize>> + FloatIndex<usize>
+pub trait Vector<T>:
+    MetaData
+    + ResizeOps
+    + FloatIndex<RangeFull, Output = [T]>
+    + FloatIndex<Range<usize>>
+    + FloatIndex<RangeFrom<usize>, Output = [T]>
+    + FloatIndex<RangeTo<usize>>
+    + FloatIndex<usize>
 where
     T: RealNumber,
 {

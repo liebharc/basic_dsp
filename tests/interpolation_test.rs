@@ -4,10 +4,10 @@ extern crate rand;
 pub mod tools;
 
 mod inter_test {
+    use crate::tools::*;
     use basic_dsp::conv_types::*;
     use basic_dsp::*;
     use num::complex::*;
-    use crate::tools::*;
 
     #[test]
     fn compare_interpolatef_and_interpolatei() {

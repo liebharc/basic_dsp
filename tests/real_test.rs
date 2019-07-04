@@ -4,8 +4,8 @@ extern crate rand;
 pub mod tools;
 
 mod real_test {
-    use basic_dsp::*;
     use crate::tools::*;
+    use basic_dsp::*;
 
     #[allow(dead_code)]
     fn real_add(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {

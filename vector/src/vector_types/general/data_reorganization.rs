@@ -4,9 +4,9 @@ use super::super::{
 };
 use crate::multicore_support::*;
 use crate::numbers::*;
+use crate::{array_to_complex_mut, memcpy, memzero};
 use std::mem;
 use std::ptr;
-use crate::{array_to_complex_mut, memcpy, memzero};
 
 /// This trait allows to reorganize the data by changing positions of the individual elements.
 pub trait ReorganizeDataOps<T>
@@ -590,7 +590,10 @@ mod tests {
     fn swap_halves_complex_odd_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         v.swap_halves();
-        assert_eq!(v.data(..), &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        assert_eq!(
+            v.data(..),
+            &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+        );
     }
 
     #[test]
@@ -744,7 +747,10 @@ mod tests {
     fn zero_interleave_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0].to_real_time_vec();
         v.zero_interleave(2).unwrap();
-        assert_eq!(v.data(..), &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]);
+        assert_eq!(
+            v.data(..),
+            &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]
+        );
     }
 
     #[test]
@@ -759,7 +765,10 @@ mod tests {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0].to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         v.zero_interleave_b(&mut buffer, 2);
-        assert_eq!(v.data(..), &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]);
+        assert_eq!(
+            v.data(..),
+            &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]
+        );
     }
 
     #[test]

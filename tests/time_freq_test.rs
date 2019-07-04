@@ -4,11 +4,11 @@ extern crate rand;
 pub mod tools;
 
 mod time_freq_test {
+    use crate::tools::*;
     use basic_dsp::window_functions::*;
     use basic_dsp::*;
     use num::complex::*;
     use std::f64::consts::PI;
-    use crate::tools::*;
 
     #[test]
     fn complex_plain_fft_plain_ifft_vector32_large() {

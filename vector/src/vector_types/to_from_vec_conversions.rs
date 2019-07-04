@@ -3,9 +3,9 @@ use super::{
     ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, GenDspVec, NumberSpace,
     RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
+use crate::meta;
 use crate::multicore_support::MultiCoreSettings;
 use crate::numbers::*;
-use crate::meta;
 use std::convert::From;
 
 /// Conversion from a generic data type into a dsp vector which tracks
@@ -145,8 +145,6 @@ where
         (self.data, len)
     }
 }
-
-
 
 impl<S, T> From<S> for RealTimeVec<S, T>
 where

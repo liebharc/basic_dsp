@@ -7,10 +7,10 @@ pub mod tools;
 
 #[cfg(test)]
 mod time_freq {
-    use basic_dsp::window_functions::TriangularWindow;
-    use basic_dsp::*;
     use crate::test::Bencher;
     use crate::tools::*;
+    use basic_dsp::window_functions::TriangularWindow;
+    use basic_dsp::*;
 
     #[bench]
     fn plain_fft_ifft_32t_benchmark(b: &mut Bencher) {

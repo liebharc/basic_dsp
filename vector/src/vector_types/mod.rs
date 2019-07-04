@@ -1,13 +1,13 @@
 use crate::multicore_support::{Chunk, Complexity, MultiCoreSettings};
 use crate::numbers::*;
 use crate::simd_extensions::*;
+use crate::{array_to_complex, array_to_complex_mut};
 use std;
 use std::cmp;
 use std::fmt;
 use std::mem;
 use std::ops::*;
 use std::result;
-use crate::{array_to_complex, array_to_complex_mut};
 
 mod requirements;
 pub use self::requirements::*;

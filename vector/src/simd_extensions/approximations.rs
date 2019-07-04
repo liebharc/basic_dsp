@@ -27,10 +27,10 @@
 
 use super::{Simd, SimdApproximations, SimdFrom};
 use crate::numbers::*;
+use crate::Zero;
 use packed_simd::*;
 use std::mem;
 use std::ops::*;
-use crate::Zero;
 
 macro_rules! simd_approx_impl {
     ($data_type: ident,
@@ -103,8 +103,7 @@ macro_rules! simd_approx_impl {
                 let x: $regf = unsafe { mem::transmute(x) };
                 let x = x - one;
                 let x: $regu = unsafe { mem::transmute(x) };
-                let masked_one: $regf =
-                    unsafe { mem::transmute(onef_as_uint.bitand(masku)) };
+                let masked_one: $regf = unsafe { mem::transmute(onef_as_uint.bitand(masku)) };
                 let e = e - masked_one;
                 let tmp: $regf = unsafe { mem::transmute(tmp) };
                 let x: $regf = unsafe { mem::transmute(x) };

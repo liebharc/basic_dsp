@@ -1,6 +1,6 @@
 use super::*;
-use std::marker;
 use crate::TransformContent;
+use std::marker;
 
 macro_rules! add_mat_impl {
     ($($matrix:ident);*) => {

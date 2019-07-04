@@ -1,13 +1,13 @@
 //! Fundamental math operations
 use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace, PosEq,
-    ToSliceMut, Vector, VoidResult
+    ToSliceMut, Vector, VoidResult,
 };
 use crate::multicore_support::*;
 use crate::numbers::*;
 use crate::simd_extensions::*;
-use std::ops::*;
 use crate::{array_to_complex, array_to_complex_mut};
+use std::ops::*;
 
 /// An operation which multiplies each vector element with a constant
 pub trait ScaleOps<T>: Sized

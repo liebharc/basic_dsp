@@ -2,7 +2,7 @@ use super::super::meta;
 /// ! Support for types in Rust std
 use super::{
     Buffer, BufferBorrow, ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, ErrorReason,
-    GenDspVec, MetaData, NumberSpace, RealFreqVec, RealTimeVec, ToSlice, TypeMetaData, FromVector
+    FromVector, GenDspVec, MetaData, NumberSpace, RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
 use super::{Resize, ToComplexVector, ToDspVector, ToRealVector, ToSliceMut, VoidResult};
 use crate::multicore_support::MultiCoreSettings;
@@ -618,7 +618,8 @@ where
     let len = boxed.len();
     unsafe {
         let mut trans: Box<[Complex<T>]> = mem::transmute(boxed);
-        let vec = Vec::<Complex<T>>::from_raw_parts(&mut trans[0] as *mut Complex<T>, len / 2, len / 2);
+        let vec =
+            Vec::<Complex<T>>::from_raw_parts(&mut trans[0] as *mut Complex<T>, len / 2, len / 2);
         mem::forget(trans); // TODO memory leak?
         vec
     }

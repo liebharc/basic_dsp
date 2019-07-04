@@ -1,9 +1,8 @@
 use super::super::{
-    Buffer, BufferBorrow, ComplexOps, DataDomain, Domain, DspVec, ErrorReason,
-    FrequencyToTimeDomainOperations, GenDspVec, InsertZerosOpsBuffered, MetaData, NoTradeBuffer,
-    NumberSpace, PaddingOption, ResizeBufferedOps, ResizeOps, ScaleOps,
-    TimeToFrequencyDomainOperations, ToComplexVector, ToDspVector, ToSliceMut, Vector, VoidResult, FloatIndex,
-    FloatIndexMut
+    Buffer, BufferBorrow, ComplexOps, DataDomain, Domain, DspVec, ErrorReason, FloatIndex,
+    FloatIndexMut, FrequencyToTimeDomainOperations, GenDspVec, InsertZerosOpsBuffered, MetaData,
+    NoTradeBuffer, NumberSpace, PaddingOption, ResizeBufferedOps, ResizeOps, ScaleOps,
+    TimeToFrequencyDomainOperations, ToComplexVector, ToDspVector, ToSliceMut, Vector, VoidResult,
 };
 use super::{create_shifted_copies, WrappingIterator};
 use crate::conv_types::{RealFrequencyResponse, RealImpulseResponse};
@@ -11,9 +10,9 @@ use crate::inline_vector::InlineVector;
 use crate::multicore_support::*;
 use crate::numbers::*;
 use crate::simd_extensions::*;
+use crate::{array_to_complex, array_to_complex_mut, memcpy, Zero};
 use std;
 use std::ops::{Add, Mul};
-use crate::{array_to_complex, array_to_complex_mut, memcpy, Zero};
 
 /// Provides interpolation operations for real and complex data vectors.
 pub trait InterpolationOps<S, T>
@@ -604,7 +603,8 @@ where
                 complex.zero_pad_b(&mut buffer, dest_points, PaddingOption::Center)?;
                 // data is in `self` now, so we have to copy it back into `temp` so that
                 // it finally ends up at the correct destination after `plain_ifft`
-                complex.data_mut(0..complex_dest_len)
+                complex
+                    .data_mut(0..complex_dest_len)
                     .copy_from_slice(&buffer.borrow(complex_dest_len)[..]);
                 complex.interpolate_upsample(function, interpolation_factorf);
             } else if dest_len < orig_len {

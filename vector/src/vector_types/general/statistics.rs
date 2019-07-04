@@ -3,10 +3,10 @@ use super::super::{
     ToSlice, Vector,
 };
 use crate::array_to_complex;
-use arrayvec::ArrayVec;
 use crate::multicore_support::*;
 use crate::numbers::*;
 use crate::simd_extensions::*;
+use arrayvec::ArrayVec;
 
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug)]

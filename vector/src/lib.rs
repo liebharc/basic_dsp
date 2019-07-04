@@ -54,10 +54,7 @@
 //! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
 #![cfg_attr(feature = "cargo-clippy", feature(tool_lints))]
-#![cfg_attr(
-    feature = "cargo-clippy",
-    allow(clippy::new_without_default_derive)
-)] // This LINT gives false positives
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::new_without_default_derive))] // This LINT gives false positives
 
 extern crate arrayvec;
 #[cfg(feature = "use_gpu")]
@@ -75,9 +72,9 @@ extern crate num_cpus;
 extern crate num_traits;
 #[cfg(feature = "use_gpu")]
 extern crate ocl;
-extern crate rustfft;
 #[cfg(feature = "use_simd")]
 extern crate packed_simd;
+extern crate rustfft;
 #[cfg(feature = "std")]
 extern crate time;
 #[macro_use]
@@ -98,14 +95,14 @@ use std::ops::Range;
 pub mod numbers {
     //! Traits from the `num` crate which are used inside `basic_dsp` and extensions to those traits.
     use crate::gpu_support::{Gpu32, Gpu64, GpuFloat, GpuRegTrait};
+    use crate::simd_extensions;
+    use crate::simd_extensions::*;
     pub use num_complex::Complex;
     use num_traits;
     pub use num_traits::Float;
     pub use num_traits::Num;
     pub use num_traits::One;
     use rustfft;
-    use crate::simd_extensions;
-    use crate::simd_extensions::*;
     use std::fmt::Debug;
 
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
@@ -124,7 +121,7 @@ pub mod numbers {
         + rustfft::FFTnum
         + 'static
     {
-}
+    }
     impl<T> DspNumber for T where
         T: Num
             + Copy
@@ -137,7 +134,8 @@ pub mod numbers {
             + num_traits::FromPrimitive
             + rustfft::FFTnum
             + 'static
-    {}
+    {
+    }
 
     /// Associates a number type with a SIMD register type.
     pub trait ToSimd: Sized + Sync + Send {

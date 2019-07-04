@@ -17,17 +17,17 @@ pub use self::real_interpolation::*;
 
 use super::{
     Buffer, BufferBorrow, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace,
-    ToSliceMut, Vector, VoidResult
+    ToSliceMut, Vector, VoidResult,
 };
 use crate::gpu_support::GpuSupport;
 use crate::inline_vector::InlineVector;
 use crate::multicore_support::*;
 use crate::numbers::*;
-use rustfft::FFTplanner;
 use crate::simd_extensions::*;
+use crate::{array_to_complex, array_to_complex_mut};
+use rustfft::FFTplanner;
 use std::fmt::Debug;
 use std::ops::*;
-use crate::{array_to_complex, array_to_complex_mut};
 
 fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
 where

@@ -1,8 +1,8 @@
 use super::*;
+use crate::TransformContent;
 use basic_dsp_vector::conv_types::*;
 use basic_dsp_vector::window_functions::*;
 use std::marker;
-use crate::TransformContent;
 
 macro_rules! try_transform {
     ($op: expr, $matrix: ident) => {{
@@ -458,7 +458,8 @@ macro_rules! convolve_signal {
 
         for n in 0..col_len {
             let row = &mut $self_.rows_mut()[n];
-            row.data_mut(..).clone_from_slice(&target[n * row_len..(n + 1) * row_len]);
+            row.data_mut(..)
+                .clone_from_slice(&target[n * row_len..(n + 1) * row_len]);
         }
 
         Ok(())
@@ -623,9 +624,9 @@ mod tests {
         let mut mat = {
             let len = 11;
             let mut time = vec![0.0; len].to_real_time_vec();
-            *time.data_mut(len / 2 ) = 0.5;
+            *time.data_mut(len / 2) = 0.5;
             let mut time2 = vec![0.0; len].to_real_time_vec();
-            *time2.data_mut(len / 2 ) = 2.0;
+            *time2.data_mut(len / 2) = 2.0;
             [time, time2].to_mat()
         };
 

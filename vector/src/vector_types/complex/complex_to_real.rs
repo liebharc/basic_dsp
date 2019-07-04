@@ -1,7 +1,7 @@
 use super::super::{
-    Buffer, ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace,
-    PosEq, RealNumberSpace, RededicateForceOps, Resize, ToRealResult, ToSlice, ToSliceMut, Vector,
-    VoidResult, FloatIndex, FloatIndexMut
+    Buffer, ComplexNumberSpace, Domain, DspVec, ErrorReason, FloatIndex, FloatIndexMut,
+    GetMetaData, MetaData, NumberSpace, PosEq, RealNumberSpace, RededicateForceOps, Resize,
+    ToRealResult, ToSlice, ToSliceMut, Vector, VoidResult,
 };
 use crate::array_to_complex;
 use crate::multicore_support::*;

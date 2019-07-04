@@ -44,8 +44,8 @@ impl VectorBox<RealTimeVec<Vec<f32>, f32>, f32> {
         let data = vec![10.0; size];
         let argument = vec![10.0; size];
         VectorBox {
-            vector:  Box::into_raw(Box::new(data.to_real_time_vec_par())),
-            argument:  Box::into_raw(Box::new(argument.to_real_time_vec_par())),
+            vector: Box::into_raw(Box::new(data.to_real_time_vec_par())),
+            argument: Box::into_raw(Box::new(argument.to_real_time_vec_par())),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -91,7 +91,9 @@ impl VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
         let argument = vec![10.0; size];
         VectorBox {
             vector: Box::into_raw(Box::new(data.to_gen_dsp_vec_par(true, DataDomain::Time))),
-            argument: Box::into_raw(Box::new(argument.to_gen_dsp_vec_par(true, DataDomain::Time))),
+            argument: Box::into_raw(Box::new(
+                argument.to_gen_dsp_vec_par(true, DataDomain::Time),
+            )),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -149,8 +151,8 @@ where
     }
 
     pub fn execute_with_arg<F>(&mut self, function: F) -> bool
-        where
-            F: Fn(B, B, &mut SingleBuffer<T>) -> (B, B) + 'static + Sync
+    where
+        F: Fn(B, B, &mut SingleBuffer<T>) -> (B, B) + 'static + Sync,
     {
         unsafe {
             let vector = Box::from_raw(self.vector);

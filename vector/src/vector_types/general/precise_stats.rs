@@ -5,8 +5,8 @@ use super::super::{
 use super::{kahan_sum, kahan_sumb};
 use crate::array_to_complex;
 use crate::multicore_support::*;
-use num_complex::Complex64;
 use crate::numbers::*;
+use num_complex::Complex64;
 
 /// Offers the same functionality as the `StatisticsOps` trait but
 /// the statistics are calculated in a more precise (and slower) way.

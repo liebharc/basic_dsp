@@ -1,17 +1,17 @@
 use super::super::{
     Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, Domain, DspVec, ErrorReason,
-    FrequencyDomain, FromVectorFloat, InsertZerosOps, MetaData, NumberSpace, PaddingOption, PosEq,
-    ResizeOps, TimeDomain, TimeToFrequencyDomainOperations, ToComplexVector, ToSliceMut, Vector,
-    VoidResult, FloatIndexMut
+    FloatIndexMut, FrequencyDomain, FromVectorFloat, InsertZerosOps, MetaData, NumberSpace,
+    PaddingOption, PosEq, ResizeOps, TimeDomain, TimeToFrequencyDomainOperations, ToComplexVector,
+    ToSliceMut, Vector, VoidResult,
 };
 use crate::conv_types::*;
 use crate::gpu_support::GpuSupport;
 use crate::inline_vector::InlineVector;
 use crate::multicore_support::*;
 use crate::numbers::*;
-use rustfft::FFTplanner;
 use crate::simd_extensions::*;
 use crate::{array_to_complex, array_to_complex_mut};
+use rustfft::FFTplanner;
 
 /// Provides a convolution operations.
 pub trait Convolution<'a, S, T, C: 'a>

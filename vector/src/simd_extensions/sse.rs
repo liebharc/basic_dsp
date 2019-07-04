@@ -1,9 +1,9 @@
 use super::{Simd, SimdFrom};
 use crate::numbers::*;
+pub use packed_simd::{f32x4, f64x2};
+use packed_simd::{i32x4, i64x2, FromCast};
 use std::arch::x86_64::*;
 use std::mem;
-pub use packed_simd::{f32x4, f64x2};
-use packed_simd::{FromCast, i32x4, i64x2};
 
 /// This value must be read in groups of 2 bits:
 /// 10 means that the third position (since it's the third bit pair)

@@ -93,11 +93,11 @@ impl<T> WindowFunction<T> for BlackmanHarrisWindow
 where
     T: RealNumber,
 {
-   fn is_symmetric(&self) -> bool {
-       true
-   }
+    fn is_symmetric(&self) -> bool {
+        true
+    }
 
-   fn window(&self, n: usize, length: usize) -> T {
+    fn window(&self, n: usize, length: usize) -> T {
         let one = T::one();
         let two = T::from(2.0).unwrap();
         let four = T::from(4.0).unwrap();
@@ -109,8 +109,10 @@ where
         let a_three = T::from(0.01168).unwrap();
         let n = T::from(n).unwrap();
         let length = T::from(length).unwrap();
-        a_naught - a_one * (two * pi * n / (length - one)).cos() + a_two * (four * pi * n / (length - one)).cos() - a_three * (six * pi * n / (length - one)).cos()
-   }
+        a_naught - a_one * (two * pi * n / (length - one)).cos()
+            + a_two * (four * pi * n / (length - one)).cos()
+            - a_three * (six * pi * n / (length - one)).cos()
+    }
 }
 
 /// A rectangular window: `https://en.wikipedia.org/wiki/Window_function#Rectangular_window`

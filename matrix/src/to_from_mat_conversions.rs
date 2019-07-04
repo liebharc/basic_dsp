@@ -1,6 +1,6 @@
 use super::*;
-use std::marker;
 use crate::TransformContent;
+use std::marker;
 
 /// Conversion from a collection of vectors to a matrix.
 pub trait ToMatrix<V, T>

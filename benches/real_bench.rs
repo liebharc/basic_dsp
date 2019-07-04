@@ -7,9 +7,9 @@ pub mod tools;
 
 #[cfg(test)]
 mod real {
-    use basic_dsp::*;
     use crate::test::Bencher;
     use crate::tools::*;
+    use basic_dsp::*;
 
     #[inline(never)]
     pub fn add_offset_reference32(mut array: Vec<f32>, offset: f32) -> Vec<f32> {

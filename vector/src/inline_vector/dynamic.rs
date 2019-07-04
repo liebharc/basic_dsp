@@ -1,10 +1,10 @@
-use arrayvec::*;
 use crate::numbers::*;
+use crate::{ErrorReason, VoidResult};
+use arrayvec::*;
 use std::iter::FromIterator;
 use std::ops::*;
 use std::slice::{Iter, IterMut};
 use std::usize;
-use crate::{ErrorReason, VoidResult};
 
 /// A type which internally switches between stack and heap allocation.
 /// This is supposed to perform faster but the main reason is that this

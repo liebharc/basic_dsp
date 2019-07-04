@@ -26,12 +26,7 @@ impl f32x4 {
 
     #[inline]
     pub fn from_slice_unaligned(array: &[f32]) -> Self {
-        f32x4(
-            array[0],
-            array[1],
-            array[2],
-            array[3],
-        )
+        f32x4(array[0], array[1], array[2], array[3])
     }
 
     #[inline]

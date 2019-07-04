@@ -17,19 +17,19 @@ macro_rules! simd_approx_impl {
             fn ln_approx(self) -> Self {
                 self.iter_over_vector(|x: $data_type| x.ln())
             }
-        
+
             fn exp_approx(self) -> Self {
                 self.iter_over_vector(|x: $data_type| x.exp())
             }
-        
+
             fn sin_approx(self) -> Self {
                 self.iter_over_vector(|x: $data_type| x.sin())
             }
-        
+
             fn cos_approx(self) -> Self {
                 self.iter_over_vector(|x: $data_type| x.cos())
             }
-        
+
             fn sin_cos_approx(self, is_sin: bool) -> Self {
                 if is_sin {
                     self.sin_approx()

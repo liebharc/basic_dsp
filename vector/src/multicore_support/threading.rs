@@ -1,12 +1,12 @@
 #![cfg_attr(feature = "cargo-clippy", allow(clippy::toplevel_ref_arg))]
 
 use super::Complexity;
-use crossbeam;
 use crate::inline_vector::InlineVector;
+use crate::numbers::*;
+use crossbeam;
 use linreg::linear_regression;
 use num_cpus;
 use num_traits::FromPrimitive;
-use crate::numbers::*;
 use std::iter::Iterator;
 use std::mem;
 use std::ops::Range;
@@ -447,7 +447,8 @@ impl Chunk {
                     function(chunk, arguments);
                 });
             }
-        }).expect("Failed to spawn thread");
+        })
+        .expect("Failed to spawn thread");
     }
 
     /// Executes the given function on the all elements of the array and also tells the function
@@ -477,7 +478,8 @@ impl Chunk {
                         function(chunk.0, chunk.1, arguments);
                     });
                 }
-            }).expect("Failed to spawn thread");
+            })
+            .expect("Failed to spawn thread");
         } else {
             function(
                 array,
@@ -522,7 +524,8 @@ impl Chunk {
                         stack_array.lock().unwrap().push(r);
                     });
                 }
-            }).expect("Failed to spawn thread");
+            })
+            .expect("Failed to spawn thread");
             let mut guard = stack_array.lock().unwrap();
             mem::replace(&mut guard, InlineVector::empty())
         } else {
@@ -585,7 +588,8 @@ impl Chunk {
                         function(pair1.0, pair1.1, pair2.0, pair2.1, arguments);
                     });
                 }
-            }).expect("Failed to spawn thread");
+            })
+            .expect("Failed to spawn thread");
         } else {
             let mut chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
             let mut chunks1 = chunks.next().unwrap();
@@ -644,7 +648,8 @@ impl Chunk {
                         stack_array.lock().unwrap().push(r);
                     });
                 }
-            }).expect("Failed to spawn thread");
+            })
+            .expect("Failed to spawn thread");
             let mut guard = stack_array.lock().unwrap();
             mem::replace(&mut guard, InlineVector::empty())
         } else {
@@ -696,7 +701,8 @@ impl Chunk {
                         stack_array.lock().unwrap().push(r);
                     });
                 }
-            }).expect("Failed to spawn thread");
+            })
+            .expect("Failed to spawn thread");
             let mut guard = stack_array.lock().unwrap();
             mem::replace(&mut guard, InlineVector::empty())
         } else {
@@ -742,7 +748,8 @@ impl Chunk {
                         function(original, chunk.1, chunk.0, arguments);
                     });
                 }
-            }).expect("Failed to spawn thread");
+            })
+            .expect("Failed to spawn thread");
         } else {
             function(
                 original,

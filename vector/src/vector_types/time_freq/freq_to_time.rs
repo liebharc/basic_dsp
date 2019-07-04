@@ -1,7 +1,7 @@
 use super::super::{
-    Buffer, ComplexNumberSpace, DataDomain, DspVec, ErrorReason, FrequencyDomain,
+    Buffer, ComplexNumberSpace, DataDomain, DspVec, ErrorReason, FloatIndex, FrequencyDomain,
     FrequencyDomainOperations, InsertZerosOpsBuffered, MetaData, RededicateForceOps, ScaleOps,
-    TimeDomainOperations, ToRealTimeResult, ToSliceMut, ToTimeResult, TransRes, Vector, FloatIndex
+    TimeDomainOperations, ToRealTimeResult, ToSliceMut, ToTimeResult, TransRes, Vector,
 };
 use super::fft;
 use crate::multicore_support::*;

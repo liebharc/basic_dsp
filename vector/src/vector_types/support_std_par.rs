@@ -134,8 +134,8 @@ impl<Type: ToComplexVector<S, T> + Sized + ToSlice<T>, S: Sized + ToSlice<T>, T:
 
 #[cfg(test)]
 mod tests {
-    use num_cpus;
     use crate::vector_types::*;
+    use num_cpus;
 
     #[test]
     fn single_threaded_vector() {

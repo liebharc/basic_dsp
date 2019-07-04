@@ -1,9 +1,9 @@
 use super::{Simd, SimdFrom};
 use crate::numbers::*;
-use std::mem;
-use std::arch::x86_64::*;
 pub use packed_simd::{f32x16, f64x8};
-use packed_simd::{FromCast, i32x16, i64x8};
+use packed_simd::{i32x16, i64x8, FromCast};
+use std::arch::x86_64::*;
+use std::mem;
 
 /// This value must be read in groups of 2 bits.
 const SWAP_IQ_PS: i32 = 0b1011_0001;

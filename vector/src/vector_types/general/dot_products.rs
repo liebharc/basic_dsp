@@ -1,6 +1,6 @@
 use super::super::{
     ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace, PosEq,
-    RealNumberSpace, ScalarResult, ToSlice, Vector
+    RealNumberSpace, ScalarResult, ToSlice, Vector,
 };
 use super::kahan_sum;
 use crate::array_to_complex;

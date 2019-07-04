@@ -5,11 +5,11 @@
 //! which is the analog operation to a convolution in time domain.
 use super::FixedLenBuffer;
 use crate::inline_vector::InlineVector;
-use num_complex::{Complex32, Complex64};
 use crate::numbers::*;
+use crate::vector_types::*;
+use num_complex::{Complex32, Complex64};
 use std::marker::PhantomData;
 use std::ops::*;
-use crate::vector_types::*;
 
 /// A convolution function in time domain and real number space
 pub trait RealImpulseResponse<T>: Sync

@@ -1,15 +1,15 @@
 use super::super::meta;
 use super::{
-    complex_to_array, complex_to_array_mut, Buffer, BufferBorrow, DataDomain, Domain, DspVec,
-    ErrorReason, MetaData, NumberSpace, ToComplexVector, ToDspVector, ToRealVector, ToSlice,
-    ToSliceMut, TypeMetaData, VoidResult, FromVector, array_to_complex_mut, array_to_complex
+    array_to_complex, array_to_complex_mut, complex_to_array, complex_to_array_mut, Buffer,
+    BufferBorrow, DataDomain, Domain, DspVec, ErrorReason, FromVector, MetaData, NumberSpace,
+    ToComplexVector, ToDspVector, ToRealVector, ToSlice, ToSliceMut, TypeMetaData, VoidResult,
 };
-use arrayvec;
-use arrayvec::{Array, ArrayVec};
 use crate::inline_vector::InlineVector;
 use crate::multicore_support::MultiCoreSettings;
 /// ! Support for types in the Rust core
 use crate::numbers::*;
+use arrayvec;
+use arrayvec::{Array, ArrayVec};
 use std;
 use std::ops::*;
 

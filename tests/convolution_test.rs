@@ -4,9 +4,9 @@ extern crate rand;
 pub mod tools;
 
 mod conv_test {
+    use crate::tools::*;
     use basic_dsp::conv_types::*;
     use basic_dsp::*;
-    use crate::tools::*;
 
     #[test]
     fn compare_conv_freq_multiplication_for_rc() {

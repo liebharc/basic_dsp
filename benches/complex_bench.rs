@@ -8,11 +8,11 @@ pub mod tools;
 
 #[cfg(test)]
 mod complex {
+    use crate::test::Bencher;
+    use crate::tools::*;
     use basic_dsp::conv_types::*;
     use basic_dsp::*;
     use num::complex::Complex32;
-    use crate::test::Bencher;
-    use crate::tools::*;
 
     #[bench]
     fn complex_offset_32s_benchmark(b: &mut Bencher) {

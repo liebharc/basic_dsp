@@ -1,7 +1,7 @@
 use crate::numbers::*;
-use std;#
-[cfg(all(feature = "use_simd"))]
+#[cfg(all(feature = "use_simd"))]
 use packed_simd::*;
+use std;
 use std::mem;
 use std::ops::*;
 mod simd_partition;
@@ -272,12 +272,12 @@ macro_rules! simd_generic_impl {
 
             #[inline]
             fn load(array: &[$data_type], idx: usize) -> Self {
-                Self::from_slice_unaligned(&array[idx..idx+Self::LEN])
+                Self::from_slice_unaligned(&array[idx..idx + Self::LEN])
             }
 
             #[inline]
             fn store(self, array: &mut [$data_type], index: usize) {
-                self.write_to_slice_unaligned(&mut array[index..index+Self::LEN])
+                self.write_to_slice_unaligned(&mut array[index..index + Self::LEN])
             }
 
             #[inline]
