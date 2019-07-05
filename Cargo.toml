@@ -45,7 +45,7 @@ version = "0.8.0"
 hamcrest = "^0.1.0"
 rand = "^0.6.4"
 hound = "^3.4.0"
-docopt = "^1.0.2"
+docopt = "^1.1.0"
 num = "^0.2"
 time = "^0.1"
 

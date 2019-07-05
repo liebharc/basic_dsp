@@ -30,7 +30,7 @@ version = "^0.8.0"
 
 [dev-dependencies]
 hamcrest = "^0.1.0"
-rand = "^0.6.4"
+rand = "^0.7.0"
 
 [features]
 use_avx512 = ["basic_dsp_vector/use_avx512"]
