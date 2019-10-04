@@ -150,7 +150,7 @@ pub fn get_error_marker<T: RealNumber>(vec: &InteropVec<T>) -> i32 {
     }
 }
 
-pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>>
+pub fn translate_to_window_function<T>(value: i32) -> Box<dyn WindowFunction<T>>
 where
     T: RealNumber,
 {
@@ -166,7 +166,7 @@ where
 pub fn translate_to_real_convolution_function<T>(
     value: i32,
     rolloff: T,
-) -> Box<RealImpulseResponse<T>>
+) -> Box<dyn RealImpulseResponse<T>>
 where
     T: RealNumber,
 {
@@ -180,7 +180,7 @@ where
 pub fn translate_to_real_frequency_response<T>(
     value: i32,
     rolloff: T,
-) -> Box<RealFrequencyResponse<T>>
+) -> Box<dyn RealFrequencyResponse<T>>
 where
     T: RealNumber,
 {

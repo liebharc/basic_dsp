@@ -14,10 +14,10 @@ where
     T: RealNumber,
 {
     /// Applies a window to the data vector.
-    fn apply_window(&mut self, window: &WindowFunction<T>);
+    fn apply_window(&mut self, window: &dyn WindowFunction<T>);
 
     /// Removes a window from the data vector.
-    fn unapply_window(&mut self, window: &WindowFunction<T>);
+    fn unapply_window(&mut self, window: &dyn WindowFunction<T>);
 }
 
 impl<S, T, N, D> TimeDomainOperations<S, T> for DspVec<S, T, N, D>
@@ -29,7 +29,7 @@ where
     N: NumberSpace,
     D: TimeDomain,
 {
-    fn apply_window(&mut self, window: &WindowFunction<T>) {
+    fn apply_window(&mut self, window: &dyn WindowFunction<T>) {
         if self.is_complex() {
             self.multiply_window_priv(
                 window.is_symmetric(),
@@ -47,7 +47,7 @@ where
         }
     }
 
-    fn unapply_window(&mut self, window: &WindowFunction<T>) {
+    fn unapply_window(&mut self, window: &dyn WindowFunction<T>) {
         if self.is_complex() {
             self.multiply_window_priv(
                 window.is_symmetric(),

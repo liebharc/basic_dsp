@@ -22,14 +22,14 @@ mod inter_test {
             let mut left = time.clone();
             left.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor as f32,
                 0.0,
                 10,
             );
             let mut right = time;
             right
-                .interpolatei(&mut buffer, &fun as &RealFrequencyResponse<f32>, factor)
+                .interpolatei(&mut buffer, &fun as &dyn RealFrequencyResponse<f32>, factor)
                 .unwrap();
             assert_vector_eq_with_reason_and_tolerance(
                 left.data(..),
@@ -61,14 +61,14 @@ mod inter_test {
             let mut left = time.clone();
             left.interpolate(
                 &mut buffer,
-                Some(&fun as &RealFrequencyResponse<f32>),
+                Some(&fun as &dyn RealFrequencyResponse<f32>),
                 time.points() * factor as usize,
                 0.0,
             )
             .unwrap();
             let mut right = time;
             right
-                .interpolatei(&mut buffer, &fun as &RealFrequencyResponse<f32>, factor)
+                .interpolatei(&mut buffer, &fun as &dyn RealFrequencyResponse<f32>, factor)
                 .unwrap();
             assert_vector_eq_with_reason_and_tolerance(
                 left.data(..),
@@ -100,7 +100,7 @@ mod inter_test {
             let mut left = time.clone();
             left.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor as f32 + offset,
                 0.0,
                 12,
@@ -108,7 +108,7 @@ mod inter_test {
             let mut right = time;
             right.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor as f32,
                 0.0,
                 12,
@@ -143,7 +143,7 @@ mod inter_test {
             let mut left = time.clone();
             left.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor as f32,
                 0.0,
                 12,
@@ -152,7 +152,7 @@ mod inter_test {
             right
                 .interpolate(
                     &mut buffer,
-                    Some(&fun as &RealFrequencyResponse<f32>),
+                    Some(&fun as &dyn RealFrequencyResponse<f32>),
                     left.points(),
                     0.0,
                 )
@@ -189,7 +189,7 @@ mod inter_test {
             let mut left = time.clone();
             left.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor as f32,
                 delay,
                 12,
@@ -198,7 +198,7 @@ mod inter_test {
             right
                 .interpolate(
                     &mut buffer,
-                    Some(&fun as &RealFrequencyResponse<f32>),
+                    Some(&fun as &dyn RealFrequencyResponse<f32>),
                     left.points(),
                     delay,
                 )
@@ -239,7 +239,7 @@ mod inter_test {
             let mut left = time.clone();
             left.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor as f32 + offset,
                 delay,
                 12,
@@ -247,7 +247,7 @@ mod inter_test {
             let mut right = time;
             right.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor as f32,
                 delay,
                 12,
@@ -280,7 +280,7 @@ mod inter_test {
             let mut left = real.clone();
             left.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor,
                 0.0,
                 12,
@@ -288,7 +288,7 @@ mod inter_test {
             let mut right = real.to_complex().unwrap();
             right.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor,
                 0.0,
                 12,
@@ -319,11 +319,11 @@ mod inter_test {
             let mut buffer = SingleBuffer::new();
             let factor = iteration as u32 + 1;
             let mut left = real.clone();
-            left.interpolatei(&mut buffer, &fun as &RealFrequencyResponse<f32>, factor)
+            left.interpolatei(&mut buffer, &fun as &dyn RealFrequencyResponse<f32>, factor)
                 .unwrap();
             let mut right = real.to_complex().unwrap();
             right
-                .interpolatei(&mut buffer, &fun as &RealFrequencyResponse<f32>, factor)
+                .interpolatei(&mut buffer, &fun as &dyn RealFrequencyResponse<f32>, factor)
                 .unwrap();
             let right = right.to_real();
             assert_vector_eq_with_reason_and_tolerance(
@@ -349,14 +349,14 @@ mod inter_test {
             let mut upsample = time.clone();
             upsample.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 factor,
                 0.0,
                 13,
             );
             upsample.interpolatef(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 1.0 / factor,
                 0.0,
                 13,

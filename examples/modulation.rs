@@ -84,7 +84,7 @@ fn real_vector_to_file(vector: &RealTimeVec64, f: &mut File) -> io::Result<()> {
     let mut i = 0;
     let vector = vector.data(..);
     while i < vector.len() {
-        r#try! { writeln!(f, "{}", vector[i]) };
+        writeln!(f, "{}", vector[i])?;
         i += 2;
     }
     Ok(())

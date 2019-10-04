@@ -195,7 +195,7 @@ macro_rules! add_linear_table_lookup_impl {
 
                     /// Creates a lookup table from another convolution function. The `delta` argument
                     /// can be used to balance performance vs. accuracy.
-                    pub fn from_conv_function(other: &$conv_type<$data_type>,
+                    pub fn from_conv_function(other: &dyn $conv_type<$data_type>,
                                               delta: $data_type,
                                               len: usize) -> Self {
                         let center = len as isize;

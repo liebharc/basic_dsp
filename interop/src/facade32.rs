@@ -216,13 +216,13 @@ pub extern "C" fn complex_dot_product32(
 
 #[no_mangle]
 pub extern "C" fn real_statistics32(vector: &VecBuf) -> Statistics<f32> {
-    let vec = &vector.vec as &StatisticsOps<f32, Result = Statistics<f32>>;
+    let vec = &vector.vec as &dyn StatisticsOps<f32, Result = Statistics<f32>>;
     vec.statistics()
 }
 
 #[no_mangle]
 pub extern "C" fn complex_statistics32(vector: &VecBuf) -> Statistics<Complex32> {
-    let vec = &vector.vec as &StatisticsOps<Complex32, Result = Statistics<Complex32>>;
+    let vec = &vector.vec as &dyn StatisticsOps<Complex32, Result = Statistics<Complex32>>;
     vec.statistics()
 }
 
@@ -285,13 +285,13 @@ pub extern "C" fn complex_dot_product_prec32(
 
 #[no_mangle]
 pub extern "C" fn real_statistics_prec32(vector: &VecBuf) -> Statistics<f64> {
-    let vec = &vector.vec as &PreciseStatisticsOps<f64, Result = Statistics<f64>>;
+    let vec = &vector.vec as &dyn PreciseStatisticsOps<f64, Result = Statistics<f64>>;
     vec.statistics_prec()
 }
 
 #[no_mangle]
 pub extern "C" fn complex_statistics_prec32(vector: &VecBuf) -> Statistics<Complex64> {
-    let vec = &vector.vec as &PreciseStatisticsOps<Complex64, Result = Statistics<Complex64>>;
+    let vec = &vector.vec as &dyn PreciseStatisticsOps<Complex64, Result = Statistics<Complex64>>;
     vec.statistics_prec()
 }
 
@@ -846,7 +846,7 @@ pub extern "C" fn real_statistics_split32(
     len: usize,
 ) -> i32 {
     let data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let vec = &vector.vec as &StatisticsSplitOps<f32, Result = StatsVec<Statistics<f32>>>;
+    let vec = &vector.vec as &dyn StatisticsSplitOps<f32, Result = StatsVec<Statistics<f32>>>;
     let stats = vec.statistics_split(data.len());
     match stats {
         Ok(s) => {
@@ -868,7 +868,7 @@ pub extern "C" fn complex_statistics_split32(
 ) -> i32 {
     let data = unsafe { slice::from_raw_parts_mut(data, len) };
     let vec =
-        &vector.vec as &StatisticsSplitOps<Complex32, Result = StatsVec<Statistics<Complex32>>>;
+        &vector.vec as &dyn StatisticsSplitOps<Complex32, Result = StatsVec<Statistics<Complex32>>>;
     let stats = vec.statistics_split(data.len());
     match stats {
         Ok(s) => {
@@ -889,7 +889,7 @@ pub extern "C" fn real_statistics_split_prec32(
     len: usize,
 ) -> i32 {
     let data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let vec = &vector.vec as &PreciseStatisticsSplitOps<f64, Result = StatsVec<Statistics<f64>>>;
+    let vec = &vector.vec as &dyn PreciseStatisticsSplitOps<f64, Result = StatsVec<Statistics<f64>>>;
     let stats = vec.statistics_split_prec(data.len());
     match stats {
         Ok(s) => {
@@ -911,7 +911,7 @@ pub extern "C" fn complex_statistics_split_prec32(
 ) -> i32 {
     let data = unsafe { slice::from_raw_parts_mut(data, len) };
     let vec = &vector.vec
-        as &PreciseStatisticsSplitOps<Complex64, Result = StatsVec<Statistics<Complex64>>>;
+        as &dyn PreciseStatisticsSplitOps<Complex64, Result = StatsVec<Statistics<Complex64>>>;
     let stats = vec.statistics_split_prec(data.len());
     match stats {
         Ok(s) => {
@@ -1184,7 +1184,7 @@ pub extern "C" fn convolve_real32(
     len: usize,
 ) -> VectorInteropResult<VecBuf> {
     unsafe {
-        let function: &RealImpulseResponse<f32> = &ForeignRealConvolutionFunction {
+        let function: &dyn RealImpulseResponse<f32> = &ForeignRealConvolutionFunction {
             conv_function: impulse_response,
             conv_data: mem::transmute(impulse_response_data),
             is_symmetric: is_symmetric,
@@ -1207,7 +1207,7 @@ pub extern "C" fn convolve_complex32(
     len: usize,
 ) -> VectorInteropResult<VecBuf> {
     unsafe {
-        let function: &ComplexImpulseResponse<f32> = &ForeignComplexConvolutionFunction {
+        let function: &dyn ComplexImpulseResponse<f32> = &ForeignComplexConvolutionFunction {
             conv_function: impulse_response,
             conv_data: mem::transmute(impulse_response_data),
             is_symmetric: is_symmetric,
@@ -1247,7 +1247,7 @@ pub extern "C" fn multiply_frequency_response_real32(
     ratio: f32,
 ) -> VectorInteropResult<VecBuf> {
     unsafe {
-        let function: &RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction {
+        let function: &dyn RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction {
             conv_function: frequency_response,
             conv_data: mem::transmute(frequency_response_data),
             is_symmetric: is_symmetric,
@@ -1269,7 +1269,7 @@ pub extern "C" fn multiply_frequency_response_complex32(
     ratio: f32,
 ) -> VectorInteropResult<VecBuf> {
     unsafe {
-        let function: &ComplexFrequencyResponse<f32> = &ForeignComplexConvolutionFunction {
+        let function: &dyn ComplexFrequencyResponse<f32> = &ForeignComplexConvolutionFunction {
             conv_function: frequency_response,
             conv_data: mem::transmute(frequency_response_data),
             is_symmetric: is_symmetric,
@@ -1310,7 +1310,7 @@ pub extern "C" fn interpolatef_custom32(
     len: usize,
 ) -> VectorInteropResult<VecBuf> {
     unsafe {
-        let function: &RealImpulseResponse<f32> = &ForeignRealConvolutionFunction {
+        let function: &dyn RealImpulseResponse<f32> = &ForeignRealConvolutionFunction {
             conv_function: impulse_response,
             conv_data: mem::transmute(impulse_response_data),
             is_symmetric: is_symmetric,
@@ -1354,7 +1354,7 @@ pub extern "C" fn interpolate_custom32(
     delay: f32,
 ) -> VectorInteropResult<VecBuf> {
     unsafe {
-        let function: &RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction {
+        let function: &dyn RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction {
             conv_function: frequency_response,
             conv_data: mem::transmute(frequency_response_data),
             is_symmetric: is_symmetric,
@@ -1402,7 +1402,7 @@ pub extern "C" fn interpolatei_custom32(
     interpolation_factor: i32,
 ) -> VectorInteropResult<VecBuf> {
     unsafe {
-        let function: &RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction {
+        let function: &dyn RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction {
             conv_function: frequency_response,
             conv_data: mem::transmute(frequency_response_data),
             is_symmetric: is_symmetric,

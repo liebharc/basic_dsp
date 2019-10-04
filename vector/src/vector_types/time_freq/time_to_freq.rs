@@ -64,7 +64,7 @@ where
 
     /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time
     /// domain vector into a frequency domain vector.
-    fn windowed_fft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
+    fn windowed_fft<B>(self, buffer: &mut B, window: &dyn WindowFunction<T>) -> Self::FreqResult
     where
         B: for<'a> Buffer<'a, S, T>;
 }
@@ -116,7 +116,7 @@ where
     fn windowed_sfft<B>(
         self,
         buffer: &mut B,
-        window: &WindowFunction<T>,
+        window: &dyn WindowFunction<T>,
     ) -> TransRes<Self::FreqResult>
     where
         B: for<'a> Buffer<'a, S, T>;
@@ -163,7 +163,7 @@ where
         result
     }
 
-    fn windowed_fft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
+    fn windowed_fft<B>(mut self, buffer: &mut B, window: &dyn WindowFunction<T>) -> Self::FreqResult
     where
         B: for<'a> Buffer<'a, S, T>,
     {
@@ -261,7 +261,7 @@ where
     fn windowed_sfft<B>(
         mut self,
         buffer: &mut B,
-        window: &WindowFunction<T>,
+        window: &dyn WindowFunction<T>,
     ) -> TransRes<Self::FreqResult>
     where
         B: for<'a> Buffer<'a, S, T>,

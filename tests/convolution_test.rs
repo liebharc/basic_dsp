@@ -23,11 +23,11 @@ mod conv_test {
             let ratio = create_delta(20160229, iteration).abs() / 10.0;
             time.convolve(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 ratio,
                 points,
             );
-            freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio);
+            freq.multiply_frequency_response(&fun as &dyn RealFrequencyResponse<f32>, 1.0 / ratio);
             let ifreq_res = freq.ifft(&mut buffer);
             assert_vector_eq_with_reason_and_tolerance(
                 ifreq_res.data(..),
@@ -54,11 +54,11 @@ mod conv_test {
             let ratio = create_delta(201602216, iteration).abs() / 20.0 + 0.5;
             time.convolve(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 ratio,
                 points,
             );
-            freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio);
+            freq.multiply_frequency_response(&fun as &dyn RealFrequencyResponse<f32>, 1.0 / ratio);
             let ifreq_res = freq.ifft(&mut buffer);
             assert_vector_eq_with_reason_and_tolerance(
                 ifreq_res.data(..),
@@ -90,13 +90,13 @@ mod conv_test {
             let mut left = time.clone();
             left.convolve(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 ratio,
                 b.len(),
             );
             time.convolve(
                 &mut buffer,
-                &fun as &RealImpulseResponse<f32>,
+                &fun as &dyn RealImpulseResponse<f32>,
                 ratio + offset,
                 b.len(),
             );

@@ -540,7 +540,7 @@ where
         let data_length = self.len();
         destination
             .resize(data_length / 2)
-            .expect("Target should be real and thus all values for len / 2 should be valid");;
+            .expect("Target should be real and thus all values for len / 2 should be valid");
         destination.set_delta(self.delta);
         let temp = destination.data_mut(0..data_length / 2);
         let array = &self.data.to_slice();

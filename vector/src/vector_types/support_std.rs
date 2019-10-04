@@ -594,8 +594,6 @@ fn complex_vec_to_interleaved_vec<T>(mut vec: Vec<Complex<T>>) -> Vec<T>
 where
     T: RealNumber,
 {
-    use std::mem;
-
     expand_to_full_capacity(&mut vec);
     let boxed = vec.into_boxed_slice();
     let len = boxed.len();
@@ -611,8 +609,6 @@ fn interleaved_vec_to_complex_vec<T>(mut vec: Vec<T>) -> Vec<Complex<T>>
 where
     T: RealNumber,
 {
-    use std::mem;
-
     expand_to_full_capacity(&mut vec);
     let boxed = vec.into_boxed_slice();
     let len = boxed.len();

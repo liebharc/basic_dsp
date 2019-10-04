@@ -38,7 +38,7 @@ where
     fn interpolatef<B>(
         &mut self,
         buffer: &mut B,
-        function: &RealImpulseResponse<T>,
+        function: &dyn RealImpulseResponse<T>,
         interpolation_factor: T,
         delay: T,
         conv_len: usize,
@@ -59,7 +59,7 @@ where
     fn interpolatei<B>(
         &mut self,
         buffer: &mut B,
-        function: &RealFrequencyResponse<T>,
+        function: &dyn RealFrequencyResponse<T>,
         interpolation_factor: u32,
     ) -> VoidResult
     where
@@ -69,7 +69,7 @@ where
     fn interpolate<B>(
         &mut self,
         buffer: &mut B,
-        function: Option<&RealFrequencyResponse<T>>,
+        function: Option<&dyn RealFrequencyResponse<T>>,
         target_points: usize,
         delay: T,
     ) -> VoidResult
@@ -92,7 +92,7 @@ where
 fn interpolate_priv_scalar<T, TT>(
     temp: &mut [TT],
     data: &[TT],
-    function: &RealImpulseResponse<T>,
+    function: &dyn RealImpulseResponse<T>,
     interpolation_factor: T,
     delay: T,
     conv_len: usize,
@@ -131,7 +131,7 @@ fn interpolate_priv_scalar<T, TT>(
 }
 
 fn function_to_vectors<T>(
-    function: &RealImpulseResponse<T>,
+    function: &dyn RealImpulseResponse<T>,
     conv_len: usize,
     complex_result: bool,
     interpolation_factor: usize,
@@ -156,7 +156,7 @@ where
 }
 
 fn function_to_vector<T>(
-    function: &RealImpulseResponse<T>,
+    function: &dyn RealImpulseResponse<T>,
     conv_len: usize,
     complex_result: bool,
     offset: T,
@@ -192,7 +192,7 @@ where
         &mut self,
         _: RegType<Reg>,
         buffer: &mut B,
-        function: &RealImpulseResponse<T>,
+        function: &dyn RealImpulseResponse<T>,
         interpolation_factor: usize,
         delay: T,
         conv_len: usize,
@@ -340,7 +340,7 @@ where
 
     fn interpolate_upsample(
         &mut self,
-        function: Option<&RealFrequencyResponse<T>>,
+        function: Option<&dyn RealFrequencyResponse<T>>,
         interpolation_factorf: T,
     ) {
         match function {
@@ -387,7 +387,7 @@ where
     fn interpolatef<B>(
         &mut self,
         buffer: &mut B,
-        function: &RealImpulseResponse<T>,
+        function: &dyn RealImpulseResponse<T>,
         interpolation_factor: T,
         delay: T,
         conv_len: usize,
@@ -484,7 +484,7 @@ where
     fn interpolatei<B>(
         &mut self,
         buffer: &mut B,
-        function: &RealFrequencyResponse<T>,
+        function: &dyn RealFrequencyResponse<T>,
         interpolation_factor: u32,
     ) -> VoidResult
     where
@@ -551,7 +551,7 @@ where
     fn interpolate<B>(
         &mut self,
         buffer: &mut B,
-        function: Option<&RealFrequencyResponse<T>>,
+        function: Option<&dyn RealFrequencyResponse<T>>,
         dest_points: usize,
         delay: T,
     ) -> VoidResult
@@ -678,7 +678,7 @@ mod tests {
         *time.data_mut(len) = 1.0;
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
-        time.interpolatei(&mut buffer, &sinc as &RealFrequencyResponse<f32>, 2)
+        time.interpolatei(&mut buffer, &sinc as &dyn RealFrequencyResponse<f32>, 2)
             .unwrap();
         let result = time.magnitude();
         let expected = [
@@ -707,7 +707,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolate(
             &mut buffer,
-            Some(&sinc as &RealFrequencyResponse<f32>),
+            Some(&sinc as &dyn RealFrequencyResponse<f32>),
             2 * len,
             0.0,
         )
@@ -730,7 +730,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolate(
             &mut buffer,
-            Some(&sinc as &RealFrequencyResponse<f32>),
+            Some(&sinc as &dyn RealFrequencyResponse<f32>),
             2 * len,
             0.0,
         )
@@ -750,7 +750,7 @@ mod tests {
         *time.data_mut(len) = 1.0;
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.4);
         let mut buffer = SingleBuffer::new();
-        time.interpolatei(&mut buffer, &rc as &RealFrequencyResponse<f32>, 2)
+        time.interpolatei(&mut buffer, &rc as &dyn RealFrequencyResponse<f32>, 2)
             .unwrap();
         let result = time.magnitude();
         let expected = [
@@ -780,7 +780,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolatef(
             &mut buffer,
-            &sinc as &RealImpulseResponse<f32>,
+            &sinc as &dyn RealImpulseResponse<f32>,
             2.0,
             0.0,
             len,
@@ -803,7 +803,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolatef(
             &mut buffer,
-            &sinc as &RealImpulseResponse<f32>,
+            &sinc as &dyn RealImpulseResponse<f32>,
             2.0,
             0.0,
             len,
@@ -826,7 +826,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolatef(
             &mut buffer,
-            &sinc as &RealImpulseResponse<f32>,
+            &sinc as &dyn RealImpulseResponse<f32>,
             13.0 / 6.0,
             0.0,
             len,
@@ -861,7 +861,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolate(
             &mut buffer,
-            Some(&sinc as &RealFrequencyResponse<f32>),
+            Some(&sinc as &dyn RealFrequencyResponse<f32>),
             13,
             0.0,
         )
@@ -894,7 +894,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolate(
             &mut buffer,
-            Some(&sinc as &RealFrequencyResponse<f32>),
+            Some(&sinc as &dyn RealFrequencyResponse<f32>),
             13,
             0.0,
         )
@@ -926,7 +926,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolatef(
             &mut buffer,
-            &sinc as &RealImpulseResponse<f32>,
+            &sinc as &dyn RealImpulseResponse<f32>,
             2.0,
             1.0,
             len,
@@ -954,7 +954,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.interpolate(
             &mut buffer,
-            Some(&sinc as &RealFrequencyResponse<f32>),
+            Some(&sinc as &dyn RealFrequencyResponse<f32>),
             2 * len,
             1.0,
         )
@@ -1014,7 +1014,7 @@ mod tests {
         let sinc: SincFunction<f32> = SincFunction::new();
         time.interpolate(
             &mut buffer,
-            Some(&sinc as &RealFrequencyResponse<f32>),
+            Some(&sinc as &dyn RealFrequencyResponse<f32>),
             len / 2,
             0.0,
         )

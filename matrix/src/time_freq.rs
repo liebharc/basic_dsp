@@ -69,7 +69,7 @@ macro_rules! add_mat_impl {
                     }
 				}
 
-				fn windowed_fft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
+				fn windowed_fft<B>(self, buffer: &mut B, window: &dyn WindowFunction<T>) -> Self::FreqResult
                     where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.windowed_fft(buffer, window));
                     $matrix {
@@ -99,7 +99,7 @@ macro_rules! add_mat_impl {
 				fn windowed_sfft<B>(
 						self,
 						buffer: &mut B,
-						window: &WindowFunction<T>) -> TransRes<Self::FreqResult>
+						window: &dyn WindowFunction<T>) -> TransRes<Self::FreqResult>
                     where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform_res(|v|v.windowed_sfft(buffer, window));
 					try_transform!(rows, $matrix)
@@ -130,7 +130,7 @@ macro_rules! add_mat_impl {
                     }
 				}
 
-				fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::TimeResult
+				fn windowed_ifft<B>(self, buffer: &mut B, window: &dyn WindowFunction<T>) -> Self::TimeResult
                     where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.windowed_ifft(buffer, window));
                     $matrix {
@@ -160,7 +160,7 @@ macro_rules! add_mat_impl {
 				fn windowed_sifft<B>(
 						self,
 						buffer: &mut B,
-						window: &WindowFunction<T>) -> TransRes<Self::RealTimeResult>
+						window: &dyn WindowFunction<T>) -> TransRes<Self::RealTimeResult>
                     where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform_res(|v|v.windowed_sifft(buffer, window));
 					try_transform!(rows, $matrix)
@@ -192,13 +192,13 @@ macro_rules! add_mat_impl {
 			impl<V: Vector<T>, S: ToSliceMut<T>, T: RealNumber> TimeDomainOperations<S, T>
                     for $matrix<V, S, T>
                     where V: TimeDomainOperations<S, T> {
-				fn apply_window(&mut self, window: &WindowFunction<T>) {
+				fn apply_window(&mut self, window: &dyn WindowFunction<T>) {
                     for v in self.rows_mut() {
                         v.apply_window(window);
                     }
 				}
 
-				fn unapply_window(&mut self, window: &WindowFunction<T>) {
+				fn unapply_window(&mut self, window: &dyn WindowFunction<T>) {
                     for v in self.rows_mut() {
                         v.unapply_window(window);
                     }
@@ -269,7 +269,7 @@ macro_rules! add_mat_impl {
 				fn interpolatef<B>(
 						&mut self,
 						buffer: &mut B,
-						function: &RealImpulseResponse<T>,
+						function: &dyn RealImpulseResponse<T>,
 						interpolation_factor: T,
 						delay: T,
 						conv_len: usize)
@@ -282,7 +282,7 @@ macro_rules! add_mat_impl {
 				fn interpolatei<B>(
 						&mut self,
 						buffer: &mut B,
-                        function: &RealFrequencyResponse<T>,
+                        function: &dyn RealFrequencyResponse<T>,
                         interpolation_factor: u32) -> VoidResult
 					where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
@@ -295,7 +295,7 @@ macro_rules! add_mat_impl {
 				fn interpolate<B>(
 						&mut self,
 						buffer: &mut B,
-                        function: Option<&RealFrequencyResponse<T>>,
+                        function: Option<&dyn RealFrequencyResponse<T>>,
                         dest_points: usize,
                         delay: T) -> VoidResult
 					where B: for<'b> Buffer<'b, S, T> {
@@ -353,13 +353,13 @@ macro_rules! add_mat_impl {
 			}
 
 			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber>
-                    Convolution<'a, S, T, &'a RealImpulseResponse<T>>
+                    Convolution<'a, S, T, &'a dyn RealImpulseResponse<T>>
                     for $matrix<V, S, T>
-                    where V: Convolution<'a, S, T, &'a RealImpulseResponse<T>> {
+                    where V: Convolution<'a, S, T, &'a dyn RealImpulseResponse<T>> {
 				fn convolve<B>(
 						&mut self,
 						buffer: &mut B,
-						impulse_response: &'a RealImpulseResponse<T>,
+						impulse_response: &'a dyn RealImpulseResponse<T>,
 						ratio: T,
 						len: usize)
 				 	where B: for<'b> Buffer<'b, S, T> {
@@ -370,13 +370,13 @@ macro_rules! add_mat_impl {
 			}
 
 			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber>
-                    Convolution<'a, S, T, &'a ComplexImpulseResponse<T>>
+                    Convolution<'a, S, T, &'a dyn ComplexImpulseResponse<T>>
                     for $matrix<V, S, T>
-                    where V: Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> {
+                    where V: Convolution<'a, S, T, &'a dyn ComplexImpulseResponse<T>> {
 				fn convolve<B>(
 						&mut self,
 						buffer: &mut B,
-						impulse_response: &'a ComplexImpulseResponse<T>,
+						impulse_response: &'a dyn ComplexImpulseResponse<T>,
 						ratio: T,
 						len: usize)
 				 	where B: for<'b> Buffer<'b, S, T> {
@@ -387,12 +387,12 @@ macro_rules! add_mat_impl {
 			}
 
 			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber>
-                        FrequencyMultiplication<'a, S, T, &'a RealFrequencyResponse<T>>
+                        FrequencyMultiplication<'a, S, T, &'a dyn RealFrequencyResponse<T>>
                     for $matrix<V, S, T>
-                    where V: FrequencyMultiplication<'a, S, T, &'a RealFrequencyResponse<T>> {
+                    where V: FrequencyMultiplication<'a, S, T, &'a dyn RealFrequencyResponse<T>> {
 				fn multiply_frequency_response(
 						&mut self,
-						frequency_response: &'a RealFrequencyResponse<T>,
+						frequency_response: &'a dyn RealFrequencyResponse<T>,
 						ratio: T) {
                     for v in self.rows_mut() {
                         v.multiply_frequency_response(frequency_response, ratio);
@@ -401,12 +401,12 @@ macro_rules! add_mat_impl {
 			}
 
 			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber>
-                        FrequencyMultiplication<'a, S, T, &'a ComplexFrequencyResponse<T>>
+                        FrequencyMultiplication<'a, S, T, &'a dyn ComplexFrequencyResponse<T>>
                     for $matrix<V, S, T>
-                    where V: FrequencyMultiplication<'a, S, T, &'a ComplexFrequencyResponse<T>> {
+                    where V: FrequencyMultiplication<'a, S, T, &'a dyn ComplexFrequencyResponse<T>> {
 				fn multiply_frequency_response(
 						&mut self,
-						frequency_response: &'a ComplexFrequencyResponse<T>,
+						frequency_response: &'a dyn ComplexFrequencyResponse<T>,
 						ratio: T) {
                     for v in self.rows_mut() {
                         v.multiply_frequency_response(frequency_response, ratio);
@@ -560,7 +560,7 @@ mod tests {
             let mut buffer = SingleBuffer::new();
             mat.convolve(
                 &mut buffer,
-                &sinc as &RealImpulseResponse<f32>,
+                &sinc as &dyn RealImpulseResponse<f32>,
                 0.5,
                 len / 2,
             );

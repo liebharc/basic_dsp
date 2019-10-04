@@ -66,7 +66,7 @@ where
 
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
     /// into a time domain vector and removes the FFT window.
-    fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::TimeResult
+    fn windowed_ifft<B>(self, buffer: &mut B, window: &dyn WindowFunction<T>) -> Self::TimeResult
     where
         B: for<'a> Buffer<'a, S, T>;
 }
@@ -118,7 +118,7 @@ where
     fn windowed_sifft<B>(
         self,
         buffer: &mut B,
-        window: &WindowFunction<T>,
+        window: &dyn WindowFunction<T>,
     ) -> TransRes<Self::RealTimeResult>
     where
         B: for<'a> Buffer<'a, S, T>;
@@ -166,7 +166,7 @@ where
         self.plain_ifft(buffer)
     }
 
-    fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::TimeResult
+    fn windowed_ifft<B>(self, buffer: &mut B, window: &dyn WindowFunction<T>) -> Self::TimeResult
     where
         B: for<'a> Buffer<'a, S, T>,
     {
@@ -235,7 +235,7 @@ where
     fn windowed_sifft<B>(
         self,
         buffer: &mut B,
-        window: &WindowFunction<T>,
+        window: &dyn WindowFunction<T>,
     ) -> TransRes<Self::RealTimeResult>
     where
         B: for<'a> Buffer<'a, S, T>,

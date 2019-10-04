@@ -123,7 +123,7 @@ fn calc_points<T: RealNumber>(imp_len: usize, ratio: T, is_complex: bool) -> usi
     step * (2 * imp_len + 1) * ratio_usize
 }
 
-impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVec<S, T, N, D>
+impl<'a, S, T, N, D> Convolution<'a, S, T, &'a dyn RealImpulseResponse<T>> for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
     T: RealNumber,
@@ -136,7 +136,7 @@ where
     fn convolve<B>(
         &mut self,
         buffer: &mut B,
-        function: &RealImpulseResponse<T>,
+        function: &dyn RealImpulseResponse<T>,
         ratio: T,
         len: usize,
     ) where
@@ -192,7 +192,7 @@ where
     }
 }
 
-impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for DspVec<S, T, N, D>
+impl<'a, S, T, N, D> Convolution<'a, S, T, &'a dyn ComplexImpulseResponse<T>> for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
     T: RealNumber,
@@ -205,7 +205,7 @@ where
     fn convolve<B>(
         &mut self,
         buffer: &mut B,
-        function: &ComplexImpulseResponse<T>,
+        function: &dyn ComplexImpulseResponse<T>,
         ratio: T,
         len: usize,
     ) where
@@ -547,7 +547,7 @@ where
     }
 }
 
-impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, &'a ComplexFrequencyResponse<T>>
+impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, &'a dyn ComplexFrequencyResponse<T>>
     for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
@@ -557,7 +557,7 @@ where
 {
     fn multiply_frequency_response(
         &mut self,
-        frequency_response: &ComplexFrequencyResponse<T>,
+        frequency_response: &dyn ComplexFrequencyResponse<T>,
         ratio: T,
     ) {
         if !self.is_complex() || self.domain() != DataDomain::Frequency {
@@ -575,7 +575,7 @@ where
     }
 }
 
-impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, &'a RealFrequencyResponse<T>>
+impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, &'a dyn RealFrequencyResponse<T>>
     for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
@@ -585,7 +585,7 @@ where
 {
     fn multiply_frequency_response(
         &mut self,
-        frequency_response: &RealFrequencyResponse<T>,
+        frequency_response: &dyn RealFrequencyResponse<T>,
         ratio: T,
     ) {
         if self.domain() != DataDomain::Frequency {
@@ -638,7 +638,7 @@ mod tests {
     fn convolve_complex_freq_and_freq32() {
         let mut vector = vec![1.0; 10].to_complex_freq_vec();
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
-        vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0);
+        vector.multiply_frequency_response(&rc as &dyn RealFrequencyResponse<f32>, 2.0);
         let expected = [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.0, 0.0];
         assert_eq_tol(vector.data(..), &expected, 1e-4);
     }
@@ -647,7 +647,7 @@ mod tests {
     fn convolve_complex_freq_and_freq_even32() {
         let mut vector = vec![1.0; 12].to_complex_freq_vec();
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
-        vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0);
+        vector.multiply_frequency_response(&rc as &dyn RealFrequencyResponse<f32>, 2.0);
         let expected = [0.0, 0.0, 0.5, 0.5, 1.5, 1.5, 2.0, 2.0, 1.5, 1.5, 0.5, 0.5];
         assert_eq_tol(vector.data(..), &expected, 1e-4);
     }
@@ -683,7 +683,7 @@ mod tests {
             let mut buffer = SingleBuffer::new();
             time.convolve(
                 &mut buffer,
-                &sinc as &RealImpulseResponse<f32>,
+                &sinc as &dyn RealImpulseResponse<f32>,
                 0.5,
                 len / 2,
             );
@@ -715,8 +715,8 @@ mod tests {
         let mut freq = time.clone().fft(&mut buffer);
         let sinc: SincFunction<f32> = SincFunction::new();
         let ratio = 0.5;
-        freq.multiply_frequency_response(&sinc as &RealFrequencyResponse<f32>, 1.0 / ratio);
-        time.convolve(&mut buffer, &sinc as &RealImpulseResponse<f32>, 0.5, len);
+        freq.multiply_frequency_response(&sinc as &dyn RealFrequencyResponse<f32>, 1.0 / ratio);
+        time.convolve(&mut buffer, &sinc as &dyn RealImpulseResponse<f32>, 0.5, len);
         let ifft = freq.ifft(&mut buffer).magnitude();
         let time = time.magnitude();
         assert_eq!(ifft.is_complex(), time.is_complex());
@@ -732,7 +732,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         time.convolve(
             &mut buffer,
-            &sinc as &RealImpulseResponse<f32>,
+            &sinc as &dyn RealImpulseResponse<f32>,
             0.5,
             10 * len,
         );
@@ -749,7 +749,7 @@ mod tests {
         {
             let mut v = -5.0;
             for a in &mut real {
-                *a = (&sinc as &RealImpulseResponse<f32>).calc(v * 0.5);
+                *a = (&sinc as &dyn RealImpulseResponse<f32>).calc(v * 0.5);
                 v += 1.0;
             }
         }
@@ -909,7 +909,7 @@ mod tests {
         let mut vec = data.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         let sinc = SincFunction::new();
-        vec.convolve(&mut buffer, &sinc as &RealImpulseResponse<f32>, 1.0, 12);
+        vec.convolve(&mut buffer, &sinc as &dyn RealImpulseResponse<f32>, 1.0, 12);
         assert_eq_tol(&data[..], vec.data(..), 1e-4);
     }
 }
