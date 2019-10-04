@@ -54,13 +54,13 @@ sub parse_trait_definition {
 }
 
 sub parse_facade {
-    my ($type, $file) = @_;
+    my ($file) = @_;
     open FACADE32, "<", "$file" or die $!;
     my @methods = ();
     while (<FACADE32>) {
         my $line = $_;
         chomp $line;
-        if ($line =~ /^(\/\/)?\s*pub extern "C" fn (\w+)32.*$type/) {
+        if ($line =~ /^(\/\/)?\s*pub extern "C" fn (\w+)32.*/) {
            push @methods, $2;
         }
     }
@@ -89,7 +89,7 @@ push @definitions, parse_trait_definition("$root/time_freq/interpolation.rs", "I
 push @definitions, parse_trait_definition("$root/time_freq/real_interpolation.rs", "RealInterpolationOps");
 push @definitions, parse_trait_definition("$root/time_freq/time.rs", "TimeDomainOperations");
 push @definitions, parse_trait_definition("$root/time_freq/time_to_freq.rs", "TimeToFrequencyDomainOperations", "SymmetricTimeToFrequencyDomainOperations");
-my @impl = parse_facade("VecBuf", "facade32.rs");
+my @impl = parse_facade("facade32.rs");
 my $found = 0;
 my $missing = 0;
 for my $def (@definitions) {
