@@ -1,6 +1,10 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.8.1
+
+- Updated `lazy_static` and `arrayvec` dependencies.
+
 ## Version 0.8.0
 This release aims to improve the conversions from Rust standard library types to/from DSP vectors.
 
