@@ -6,5 +6,4 @@ implementors["basic_dsp_matrix"] = [{text:"impl&lt;V, S, T, N, D&gt; <a class=\"
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

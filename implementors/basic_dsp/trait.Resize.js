@@ -6,5 +6,4 @@ implementors["basic_dsp"] = [];
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

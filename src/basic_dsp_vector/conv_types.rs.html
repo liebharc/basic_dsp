@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\conv_types.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>conv_types.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../basic_dsp_vector/index.html'><img src='../../rust-logo.png' alt='logo' width='100'></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\conv_types.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>conv_types.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../basic_dsp_vector/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -709,11 +709,11 @@
 <span class="doccomment">//! which is the analog operation to a convolution in time domain.</span>
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">FixedLenBuffer</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
-<span class="kw">use</span> <span class="ident">num_complex</span>::{<span class="ident">Complex32</span>, <span class="ident">Complex64</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vector_types</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">num_complex</span>::{<span class="ident">Complex32</span>, <span class="ident">Complex64</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vector_types</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// A convolution function in time domain and real number space</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">Sync</span>
@@ -722,10 +722,10 @@
 {
     <span class="doccomment">/// Indicates whether this function is symmetric around 0 or not.</span>
     <span class="doccomment">/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
-    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
 
     <span class="doccomment">/// Calculates the convolution for a data point</span>
-    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span>;
+    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>;
 }
 
 <span class="doccomment">/// A convolution function in frequency domain and real number space</span>
@@ -735,10 +735,10 @@
 {
     <span class="doccomment">/// Indicates whether this function is symmetric around 0 or not.</span>
     <span class="doccomment">/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
-    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
 
     <span class="doccomment">/// Calculates the convolution for a data point</span>
-    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span>;
+    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>;
 }
 
 <span class="doccomment">/// A convolution function in time domain and complex number space</span>
@@ -748,10 +748,10 @@
 {
     <span class="doccomment">/// Indicates whether this function is symmetric around 0 or not.</span>
     <span class="doccomment">/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
-    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
 
     <span class="doccomment">/// Calculates the convolution for a data point</span>
-    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// A convolution function in frequency domain and complex number space</span>
@@ -761,14 +761,14 @@
 {
     <span class="doccomment">/// Indicates whether this function is symmetric around 0 or not.</span>
     <span class="doccomment">/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
-    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
 
     <span class="doccomment">/// Calculates the convolution for a data point</span>
-    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">define_real_lookup_table</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>);<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>);<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
         $(
             <span class="doccomment">/// Allows to create a lookup table with linear interpolation between table points.</span>
             <span class="doccomment">/// This usually speeds up a convolution and sacrifices accuracy.</span>
@@ -783,12 +783,12 @@
                 <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span> {
 
                 <span class="doccomment">/// Allows to inspect the generated lookup table</span>
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>] {
+                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>] {
                     <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">table</span>[..]
                 }
 
                 <span class="doccomment">/// Gets the delta value which determines the resolution</span>
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delta</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delta</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
                     <span class="self">self</span>.<span class="ident">delta</span>
                 }
             }
@@ -798,13 +798,13 @@
 <span class="macro">define_real_lookup_table</span><span class="macro">!</span>(<span class="ident">RealTimeLinearTableLookup</span>; <span class="ident">RealFrequencyLinearTableLookup</span>);
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">define_complex_lookup_table</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>);<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>);<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
         $(
             <span class="doccomment">/// Allows to create a lookup table with linear interpolation between table points.</span>
             <span class="doccomment">/// This usually speeds up a convolution and sacrifices accuracy.</span>
             <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
                 <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span> {
-                <span class="ident">table</span>: <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
+                <span class="ident">table</span>: <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
                 <span class="ident">delta</span>: <span class="ident">T</span>,
                 <span class="ident">is_symmetric</span>: <span class="ident">bool</span>
             }
@@ -813,12 +813,12 @@
                 <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span> {
 
                 <span class="doccomment">/// Allows to inspect the generated lookup table</span>
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>] {
+                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>] {
                     <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">table</span>[..]
                 }
 
                 <span class="doccomment">/// Gets the delta value which determines the resolution</span>
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delta</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delta</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
                     <span class="self">self</span>.<span class="ident">delta</span>
                 }
             }
@@ -828,7 +828,7 @@
 <span class="macro">define_complex_lookup_table</span><span class="macro">!</span>(<span class="ident">ComplexTimeLinearTableLookup</span>; <span class="ident">ComplexFrequencyLinearTableLookup</span>);
 
 <span class="doccomment">/// Linear interpolation between two points.</span>
-<span class="kw">fn</span> <span class="ident">linear_interpolation_between_bins</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RealNumber</span>, <span class="ident">C</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>, <span class="ident">round</span>: <span class="ident">usize</span>, <span class="ident">table</span>: <span class="kw-2">&amp;</span>[<span class="ident">C</span>]) <span class="op">-&gt;</span> <span class="ident">C</span>
+<span class="kw">fn</span> <span class="ident">linear_interpolation_between_bins</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RealNumber</span>, <span class="ident">C</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>, <span class="ident">round</span>: <span class="ident">usize</span>, <span class="ident">table</span>: <span class="kw-2">&amp;</span>[<span class="ident">C</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">C</span>
 <span class="kw">where</span>
     <span class="ident">C</span>: <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">C</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">C</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Sub</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">C</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">C</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Copy</span>,
 {
@@ -836,7 +836,7 @@
     <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">table</span>.<span class="ident">len</span>();
     <span class="kw">if</span> <span class="ident">x</span> <span class="op">&gt;</span> <span class="ident">round_float</span> {
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">round</span> <span class="op">+</span> <span class="number">1</span>;
-        <span class="kw">if</span> <span class="ident">other</span> <span class="op">&gt;=</span> <span class="ident">len</span> {
+        <span class="kw">if</span> <span class="ident">other</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> {
             <span class="kw">return</span> <span class="ident">table</span>[<span class="ident">round</span>];
         }
         <span class="kw">let</span> <span class="ident">y0</span> <span class="op">=</span> <span class="ident">table</span>[<span class="ident">round</span>];
@@ -844,7 +844,7 @@
         <span class="kw">let</span> <span class="ident">y1</span> <span class="op">=</span> <span class="ident">table</span>[<span class="ident">other</span>];
         <span class="ident">y0</span> <span class="op">+</span> (<span class="ident">y1</span> <span class="op">-</span> <span class="ident">y0</span>) <span class="op">*</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">x0</span>)
     } <span class="kw">else</span> {
-        <span class="kw">if</span> <span class="ident">round</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">round</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="ident">table</span>[<span class="ident">round</span>];
         }
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">round</span> <span class="op">-</span> <span class="number">1</span>;
@@ -856,22 +856,22 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">add_linear_table_lookup_impl</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">conv_type</span>: <span class="ident">ident</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result_type</span>:<span class="ident">ident</span>),<span class="kw-2">*</span>);<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">conv_type</span>: <span class="ident">ident</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result_type</span>:<span class="ident">ident</span>),<span class="kw-2">*</span>);<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
         $(
             $(
                 <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">conv_type</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
-                    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+                    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
                         <span class="self">self</span>.<span class="ident">is_symmetric</span>
                     }
 
-                    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>) <span class="op">-&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result_type</span> {
+                    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result_type</span> {
                         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">len</span>();
                         <span class="kw">let</span> <span class="ident">center</span> <span class="op">=</span> <span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>;
                         <span class="kw">let</span> <span class="ident">center_float</span> <span class="op">=</span> <span class="ident">center</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>;
                         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">/</span> <span class="self">self</span>.<span class="ident">delta</span> <span class="op">+</span> <span class="ident">center_float</span>;
                         <span class="kw">let</span> <span class="ident">round_float</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">round</span>();
                         <span class="kw">let</span> <span class="ident">round</span> <span class="op">=</span> <span class="ident">round_float</span> <span class="kw">as</span> <span class="ident">usize</span>;
-                        <span class="kw">if</span> <span class="ident">round</span> <span class="op">&gt;=</span> <span class="ident">len</span> {
+                        <span class="kw">if</span> <span class="ident">round</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> {
                             <span class="kw">return</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result_type</span>::<span class="ident">zero</span>();
                         }
 
@@ -889,7 +889,7 @@
                     <span class="doccomment">/// Creates a lookup table by putting the pieces together.</span>
                     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_raw_parts</span>(<span class="ident">table</span>: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">result_type</span>],
                                           <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>,
-                                          <span class="ident">is_symmetric</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+                                          <span class="ident">is_symmetric</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">owned_table</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">with_capacity</span>(<span class="ident">table</span>.<span class="ident">len</span>());
                         <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">table</span>[..] {
                             <span class="ident">owned_table</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">n</span>);
@@ -899,9 +899,9 @@
 
                     <span class="doccomment">/// Creates a lookup table from another convolution function. The `delta` argument</span>
                     <span class="doccomment">/// can be used to balance performance vs. accuracy.</span>
-                    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_conv_function</span>(<span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">conv_type</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span>,
+                    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_conv_function</span>(<span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">conv_type</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span>,
                                               <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>,
-                                              <span class="ident">len</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+                                              <span class="ident">len</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
                         <span class="kw">let</span> <span class="ident">center</span> <span class="op">=</span> <span class="ident">len</span> <span class="kw">as</span> <span class="ident">isize</span>;
                         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="number">2</span> <span class="op">*</span> <span class="ident">len</span> <span class="op">+</span> <span class="number">1</span>;
                         <span class="kw">let</span> <span class="ident">is_symmetric</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">is_symmetric</span>();
@@ -909,7 +909,7 @@
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="op">-</span><span class="ident">center</span>;
                         <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">table</span>[..] {
                             <span class="kw-2">*</span><span class="ident">n</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">calc</span>((<span class="ident">i</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>) <span class="op">*</span> <span class="ident">delta</span>);
-                            <span class="ident">i</span> <span class="op">+=</span> <span class="number">1</span>;
+                            <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                         }
                         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> { <span class="ident">table</span>: <span class="ident">table</span>, <span class="ident">delta</span>: <span class="ident">delta</span>, <span class="ident">is_symmetric</span>: <span class="ident">is_symmetric</span> }
                     }
@@ -925,12 +925,12 @@
     <span class="ident">ComplexFrequencyLinearTableLookup</span>: <span class="ident">ComplexFrequencyResponse</span>, <span class="ident">f32</span>, <span class="ident">Complex32</span>, <span class="ident">f64</span>, <span class="ident">Complex64</span>);
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">add_real_linear_table_impl</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">complex</span>: <span class="ident">ident</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>);<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">complex</span>: <span class="ident">ident</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>);<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
         $(
             $(
                 <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                     <span class="doccomment">/// Convert the lookup table into complex number space</span>
-                    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_complex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">complex</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
+                    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_complex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">complex</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">len</span>();
                         <span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">of_size</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>::<span class="ident">zero</span>(), <span class="number">2</span> <span class="op">*</span> <span class="ident">len</span>);
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">to_real_time_vec</span>();
@@ -957,12 +957,12 @@
     <span class="ident">RealFrequencyLinearTableLookup</span>, <span class="ident">ComplexFrequencyLinearTableLookup</span>, <span class="ident">f32</span>, <span class="ident">f64</span>);
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">add_complex_linear_table_impl</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">real</span>: <span class="ident">ident</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>);<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">real</span>: <span class="ident">ident</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>);<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
         $(
             $(
                 <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                     <span class="doccomment">/// Convert the lookup table into real number space</span>
-                    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_real</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">real</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
+                    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_real</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">real</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                         <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">table</span>[..];
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interleaved</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">with_capacity</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">complex</span>.<span class="ident">len</span>());
                         <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">complex</span> {
@@ -991,11 +991,11 @@
     <span class="ident">ComplexFrequencyLinearTableLookup</span>, <span class="ident">RealFrequencyLinearTableLookup</span>, <span class="ident">f32</span>, <span class="ident">f64</span>);
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">add_complex_time_linear_table_impl</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
         $(
             <span class="kw">impl</span> <span class="ident">ComplexTimeLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                 <span class="doccomment">/// Convert the lookup table into frequency domain</span>
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fft</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ComplexFrequencyLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
+                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fft</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ComplexFrequencyLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">table</span>[..];
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interleaved</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">with_capacity</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">complex</span>.<span class="ident">len</span>());
                     <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">complex</span> {
@@ -1025,11 +1025,11 @@
 <span class="macro">add_complex_time_linear_table_impl</span><span class="macro">!</span>(<span class="ident">f32</span>, <span class="ident">f64</span>);
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">add_real_time_linear_table_impl</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
         $(
             <span class="kw">impl</span> <span class="ident">RealTimeLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                 <span class="doccomment">/// Convert the lookup table into a magnitude spectrum</span>
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fft</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RealFrequencyLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
+                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fft</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RealFrequencyLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">len</span>();
                     <span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">of_size</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>::<span class="ident">zero</span>(), <span class="number">2</span> <span class="op">*</span> <span class="ident">len</span>);
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">to_real_time_vec</span>();
@@ -1058,11 +1058,11 @@
 <span class="macro">add_real_time_linear_table_impl</span><span class="macro">!</span>(<span class="ident">f32</span>, <span class="ident">f64</span>);
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">add_complex_frequency_linear_table_impl</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span>: <span class="ident">ident</span>),<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
         $(
             <span class="kw">impl</span> <span class="ident">ComplexFrequencyLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                 <span class="doccomment">/// Convert the lookup table into time domain</span>
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ifft</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ComplexTimeLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
+                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ifft</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ComplexTimeLinearTableLookup</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">data_type</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">table</span>[..];
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interleaved</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">with_capacity</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">complex</span>.<span class="ident">len</span>());
                     <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">complex</span> {
@@ -1103,12 +1103,12 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">==</span> <span class="ident">T</span>::<span class="ident">zero</span>() {
+    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+        <span class="kw">if</span> <span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="ident">T</span>::<span class="ident">zero</span>() {
             <span class="kw">return</span> <span class="ident">T</span>::<span class="ident">one</span>();
         }
 
@@ -1116,7 +1116,7 @@
         <span class="kw">let</span> <span class="ident">two</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">2.0</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">pi</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">PI</span>();
         <span class="kw">let</span> <span class="ident">four</span> <span class="op">=</span> <span class="ident">two</span> <span class="op">*</span> <span class="ident">two</span>;
-        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">==</span> <span class="ident">one</span> <span class="op">/</span> (<span class="ident">two</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">rolloff</span>) {
+        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">one</span> <span class="op">/</span> (<span class="ident">two</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">rolloff</span>) {
             <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="ident">pi</span> <span class="op">/</span> <span class="ident">two</span> <span class="op">/</span> <span class="self">self</span>.<span class="ident">rolloff</span>;
             <span class="kw">return</span> (<span class="ident">arg</span>).<span class="ident">sin</span>() <span class="op">/</span> <span class="ident">arg</span> <span class="op">*</span> <span class="ident">pi</span> <span class="op">/</span> <span class="ident">four</span>;
         }
@@ -1131,20 +1131,20 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
         <span class="comment">// assume x_delta = 1.0</span>
         <span class="kw">let</span> <span class="ident">one</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">one</span>();
         <span class="kw">let</span> <span class="ident">two</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">2.0</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">pi</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">PI</span>();
-        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">&lt;=</span> (<span class="ident">one</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">rolloff</span>) {
+        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> (<span class="ident">one</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">rolloff</span>) {
             <span class="kw">return</span> <span class="ident">one</span>;
         }
 
-        <span class="kw">if</span> ((<span class="ident">one</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">rolloff</span>) <span class="op">&lt;</span> <span class="ident">x</span>.<span class="ident">abs</span>()) <span class="op">&amp;&amp;</span> (<span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">&lt;=</span> (<span class="ident">one</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">rolloff</span>)) {
+        <span class="kw">if</span> ((<span class="ident">one</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">rolloff</span>) <span class="op">&lt;</span> <span class="ident">x</span>.<span class="ident">abs</span>()) <span class="kw-2">&amp;</span><span class="op">&amp;</span> (<span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> (<span class="ident">one</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">rolloff</span>)) {
             <span class="kw">return</span> <span class="ident">one</span> <span class="op">/</span> <span class="ident">two</span>
                 <span class="op">*</span> (<span class="ident">one</span> <span class="op">+</span> (<span class="ident">pi</span> <span class="op">/</span> <span class="self">self</span>.<span class="ident">rolloff</span> <span class="op">*</span> (<span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">-</span> (<span class="ident">one</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">rolloff</span>)) <span class="op">/</span> <span class="ident">two</span>).<span class="ident">cos</span>());
         }
@@ -1158,7 +1158,7 @@
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
     <span class="doccomment">/// Creates a raised cosine function.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">rolloff</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">rolloff</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">RaisedCosineFunction</span> { <span class="ident">rolloff</span> }
     }
 }
@@ -1176,12 +1176,12 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">==</span> <span class="ident">T</span>::<span class="ident">zero</span>() {
+    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+        <span class="kw">if</span> <span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="ident">T</span>::<span class="ident">zero</span>() {
             <span class="kw">return</span> <span class="ident">T</span>::<span class="ident">one</span>();
         }
 
@@ -1195,13 +1195,13 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_symmetric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+    <span class="kw">fn</span> <span class="ident">calc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
         <span class="kw">let</span> <span class="ident">one</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">one</span>();
-        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">&lt;=</span> <span class="ident">one</span> {
+        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">one</span> {
             <span class="kw">return</span> <span class="ident">one</span>;
         }
 
@@ -1214,7 +1214,7 @@
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
     <span class="doccomment">/// Creates a sinc function.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">SincFunction</span> {
             <span class="ident">_ghost</span>: <span class="ident">PhantomData</span>,
         }
@@ -1235,7 +1235,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="op">-</span>(<span class="ident">expected</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span> <span class="op">/</span> <span class="number">2</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">result</span>.<span class="ident">len</span>() {
             <span class="ident">result</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">conv</span>.<span class="ident">calc</span>(<span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">j</span>).<span class="ident">unwrap</span>() <span class="op">*</span> <span class="ident">step</span>);
-            <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">j</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         }
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">result</span>.<span class="ident">len</span>() {
@@ -1254,7 +1254,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="op">-</span>(<span class="ident">expected</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span> <span class="op">/</span> <span class="number">2</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">result</span>.<span class="ident">len</span>() {
             <span class="ident">result</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">conv</span>.<span class="ident">calc</span>(<span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">j</span>).<span class="ident">unwrap</span>() <span class="op">*</span> <span class="ident">step</span>);
-            <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">j</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         }
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">result</span>.<span class="ident">len</span>() {
@@ -1273,7 +1273,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="op">-</span>(<span class="ident">expected</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span> <span class="op">/</span> <span class="number">2</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">result</span>.<span class="ident">len</span>() {
             <span class="ident">result</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">conv</span>.<span class="ident">calc</span>(<span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">j</span>).<span class="ident">unwrap</span>() <span class="op">*</span> <span class="ident">step</span>);
-            <span class="ident">j</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">j</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         }
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">result</span>.<span class="ident">len</span>() {

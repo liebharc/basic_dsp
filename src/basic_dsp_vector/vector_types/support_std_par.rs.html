@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\support_std_par.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>support_std_par.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../basic_dsp_vector/index.html'><img src='../../../rust-logo.png' alt='logo' width='100'></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\support_std_par.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>support_std_par.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../basic_dsp_vector/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -180,14 +180,14 @@
     <span class="doccomment">/// For complex vectors with an odd length the resulting value will have a zero length.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The resulting vector may use multi-threading for its processing.</span>
-    <span class="kw">fn</span> <span class="ident">to_gen_dsp_vec_par</span>(<span class="self">self</span>, <span class="ident">is_complex</span>: <span class="ident">bool</span>, <span class="ident">domain</span>: <span class="ident">DataDomain</span>) <span class="op">-&gt;</span> <span class="ident">GenDspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">to_gen_dsp_vec_par</span>(<span class="self">self</span>, <span class="ident">is_complex</span>: <span class="ident">bool</span>, <span class="ident">domain</span>: <span class="ident">DataDomain</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GenDspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Create a new vector from the given meta data. The meta data can be</span>
     <span class="doccomment">/// retrieved from an existing vector. If no existing vector is available</span>
     <span class="doccomment">/// then one of the other constructor methods should be used.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The resulting vector may use multi-threading for its processing.</span>
-    <span class="kw">fn</span> <span class="ident">to_dsp_vec_par</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">meta_data</span>: <span class="kw-2">&amp;</span><span class="ident">TypeMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">fn</span> <span class="ident">to_dsp_vec_par</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">meta_data</span>: <span class="kw-2">&amp;</span><span class="ident">TypeMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
         <span class="ident">D</span>: <span class="ident">Domain</span>;
@@ -204,13 +204,13 @@
     <span class="doccomment">/// `delta` can be changed after construction with a call of `set_delta`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The resulting vector may use multi-threading for its processing.</span>
-    <span class="kw">fn</span> <span class="ident">to_real_time_vec_par</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RealTimeVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">to_real_time_vec_par</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RealTimeVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Create a new vector in real number space and frequency domain.</span>
     <span class="doccomment">/// `delta` can be changed after construction with a call of `set_delta`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The resulting vector may use multi-threading for its processing.</span>
-    <span class="kw">fn</span> <span class="ident">to_real_freq_vec_par</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RealFreqVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">to_real_freq_vec_par</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RealFreqVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Conversion from a generic data type into a dsp vector with complex data.</span>
@@ -225,13 +225,13 @@
     <span class="doccomment">/// `delta` can be changed after construction with a call of `set_delta`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// For complex vectors with an odd length the resulting value will have a zero length.</span>
-    <span class="kw">fn</span> <span class="ident">to_complex_time_vec_par</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ComplexTimeVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">to_complex_time_vec_par</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ComplexTimeVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Create a new vector in complex number space and frequency domain.</span>
     <span class="doccomment">/// `delta` can be changed after construction with a call of `set_delta`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// For complex vectors with an odd length the resulting value will have a zero length.</span>
-    <span class="kw">fn</span> <span class="ident">to_complex_freq_vec_par</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ComplexFreqVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">to_complex_freq_vec_par</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ComplexFreqVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Type</span>: <span class="ident">ToDspVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">ToDspVectorPar</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Type</span> {
@@ -239,13 +239,13 @@
         <span class="self">self</span>,
         <span class="ident">is_complex</span>: <span class="ident">bool</span>,
         <span class="ident">domain</span>: <span class="ident">DataDomain</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">RealOrComplex</span>, <span class="ident">meta</span>::<span class="ident">TimeOrFreq</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">RealOrComplex</span>, <span class="ident">meta</span>::<span class="ident">TimeOrFreq</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_gen_dsp_vec</span>(<span class="ident">is_complex</span>, <span class="ident">domain</span>);
         <span class="ident">vec</span>.<span class="ident">set_multicore_settings</span>(<span class="ident">MultiCoreSettings</span>::<span class="ident">parallel</span>());
         <span class="ident">vec</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">to_dsp_vec_par</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">meta_data</span>: <span class="kw-2">&amp;</span><span class="ident">TypeMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">fn</span> <span class="ident">to_dsp_vec_par</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">meta_data</span>: <span class="kw-2">&amp;</span><span class="ident">TypeMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
         <span class="ident">D</span>: <span class="ident">Domain</span>,
@@ -257,13 +257,13 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Type</span>: <span class="ident">ToRealVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">ToRealVectorPar</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Type</span> {
-    <span class="kw">fn</span> <span class="ident">to_real_time_vec_par</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Real</span>, <span class="ident">meta</span>::<span class="ident">Time</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_real_time_vec_par</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Real</span>, <span class="ident">meta</span>::<span class="ident">Time</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_real_time_vec</span>();
         <span class="ident">vec</span>.<span class="ident">set_multicore_settings</span>(<span class="ident">MultiCoreSettings</span>::<span class="ident">parallel</span>());
         <span class="ident">vec</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">to_real_freq_vec_par</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Real</span>, <span class="ident">meta</span>::<span class="ident">Freq</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_real_freq_vec_par</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Real</span>, <span class="ident">meta</span>::<span class="ident">Freq</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_real_freq_vec</span>();
         <span class="ident">vec</span>.<span class="ident">set_multicore_settings</span>(<span class="ident">MultiCoreSettings</span>::<span class="ident">parallel</span>());
         <span class="ident">vec</span>
@@ -273,13 +273,13 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Type</span>: <span class="ident">ToComplexVector</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">S</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span>
     <span class="ident">ToComplexVectorPar</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Type</span>
 {
-    <span class="kw">fn</span> <span class="ident">to_complex_time_vec_par</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Complex</span>, <span class="ident">meta</span>::<span class="ident">Time</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_complex_time_vec_par</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Complex</span>, <span class="ident">meta</span>::<span class="ident">Time</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_complex_time_vec</span>();
         <span class="ident">vec</span>.<span class="ident">set_multicore_settings</span>(<span class="ident">MultiCoreSettings</span>::<span class="ident">parallel</span>());
         <span class="ident">vec</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">to_complex_freq_vec_par</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Complex</span>, <span class="ident">meta</span>::<span class="ident">Freq</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_complex_freq_vec_par</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">Complex</span>, <span class="ident">meta</span>::<span class="ident">Freq</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_complex_freq_vec</span>();
         <span class="ident">vec</span>.<span class="ident">set_multicore_settings</span>(<span class="ident">MultiCoreSettings</span>::<span class="ident">parallel</span>());
         <span class="ident">vec</span>
@@ -288,8 +288,8 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident">num_cpus</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vector_types</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="ident">num_cpus</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">single_threaded_vector</span>() {
@@ -302,7 +302,7 @@
     <span class="kw">fn</span> <span class="ident">parallel_vector</span>() {
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="number">6</span>];
         <span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">to_complex_time_vec_par</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">vector</span>.<span class="ident">get_multicore_settings</span>().<span class="ident">core_limit</span> <span class="op">&gt;</span> <span class="number">1</span> <span class="op">||</span> <span class="ident">num_cpus</span>::<span class="ident">get</span>() <span class="op">==</span> <span class="number">1</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">vector</span>.<span class="ident">get_multicore_settings</span>().<span class="ident">core_limit</span> <span class="op">&gt;</span> <span class="number">1</span> <span class="op">|</span><span class="op">|</span> <span class="ident">num_cpus</span>::<span class="ident">get</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span>);
     }
 }
 </pre></div>
