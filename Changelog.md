@@ -1,6 +1,12 @@
 # `basic_dsp`
 Changes:
 
+
+## Version 0.8.2
+
+- Disabled AVX512 as it right now requires an unstable Rust feature
+- 
+
 ## Version 0.8.1
 
 - Updated `lazy_static` and `arrayvec` dependencies.
