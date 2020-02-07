@@ -2,7 +2,6 @@ extern crate basic_dsp;
 use basic_dsp::conv_types::*;
 use basic_dsp::*;
 
-use std::f64::consts::PI;
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
@@ -30,7 +29,6 @@ fn main() {
             .expect("Failed to create baseband time file");
         complex_vector_to_file(&complex, &mut file).expect("Failed to write baseband time file");
 
-        complex.multiply_complex_exponential(0.25 * PI, 0.0);
 
         let real = complex.to_real();
 
@@ -54,7 +52,7 @@ impl Prbs15 {
     fn next(&mut self) -> f64 {
         let bit = (self.lfsr ^ self.lfsr >> 14) & 0x1;
         self.lfsr = (self.lfsr >> 1) | (bit << 14);
-        (bit as f64 - 0.5)
+        bit as f64 - 0.5
     }
 }
 

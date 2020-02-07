@@ -113,7 +113,7 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
     let ono_thread = proportional_regression(&sizes, &ono_thread);
     let two_threads = linear_regression::<f64, f64, f64>(&sizes, &two_threads);
     let max_threads = linear_regression::<f64, f64, f64>(&sizes, &max_threads);
-    if two_threads.is_none() || max_threads.is_none() {
+    if two_threads.is_err() || max_threads.is_err() {
         return Err(3); // If curve fitting fails then work with defaults
     }
 
