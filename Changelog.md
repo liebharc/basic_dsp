@@ -6,6 +6,7 @@ Changes:
 
 - Disabled AVX512 as it right now requires an unstable Rust feature
 - Updated `time` and `linreg` dependencies
+- Fixed "UB due to misuse of mem::uninitialized (will soon lead to panic) #44"
 
 ## Version 0.8.1
 

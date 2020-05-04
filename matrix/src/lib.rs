@@ -8,7 +8,7 @@ extern crate basic_dsp_vector;
 
 use basic_dsp_vector::numbers::*;
 use basic_dsp_vector::*;
-use std::mem;
+use std::{mem, ptr};
 
 mod mat_impl;
 pub use self::mat_impl::*;
@@ -226,31 +226,29 @@ impl<S, D> TransformContent<S, D> for Vec<S> {
 impl<S, D> TransformContent<S, D> for [S; 2] {
     type Output = [D; 2];
 
-    fn transform<F>(mut self, mut conversion: F) -> Self::Output
+    fn transform<F>(self, mut conversion: F) -> Self::Output
     where
         F: FnMut(S) -> D,
     {
         unsafe {
-            let first = mem::replace(&mut self[0], mem::MaybeUninit::uninit().assume_init());
-            let second = mem::replace(&mut self[1], mem::MaybeUninit::uninit().assume_init());
-            mem::forget(self); // TODO possible memory leak
-            let first = conversion(first);
-            let second = conversion(second);
-            [first, second]
+            let result = [
+                conversion(ptr::read(&self[0])),
+                conversion(ptr::read(&self[1])),
+            ];
+            mem::forget(self);
+            result
         }
     }
 
-    fn transform_res<F>(mut self, mut conversion: F) -> TransRes<Self::Output>
+    fn transform_res<F>(self, mut conversion: F) -> TransRes<Self::Output>
     where
         F: FnMut(S) -> TransRes<D>,
     {
         unsafe {
             let mut error = None;
-            let first = mem::replace(&mut self[0], mem::MaybeUninit::uninit().assume_init());
-            let second = mem::replace(&mut self[1], mem::MaybeUninit::uninit().assume_init());
-            mem::forget(self); // TODO possible memory leak
-            let first = try_conv!(conversion(first), error);
-            let second = try_conv!(conversion(second), error);
+            let first = try_conv!(conversion(ptr::read(&self[0])), error);
+            let second = try_conv!(conversion(ptr::read(&self[1])), error);
+            mem::forget(self);
 
             match error {
                 None => Ok([first, second]),
@@ -263,35 +261,31 @@ impl<S, D> TransformContent<S, D> for [S; 2] {
 impl<S, D> TransformContent<S, D> for [S; 3] {
     type Output = [D; 3];
 
-    fn transform<F>(mut self, mut conversion: F) -> Self::Output
+    fn transform<F>(self, mut conversion: F) -> Self::Output
     where
         F: FnMut(S) -> D,
     {
         unsafe {
-            let first = mem::replace(&mut self[0], mem::MaybeUninit::uninit().assume_init());
-            let second = mem::replace(&mut self[1], mem::MaybeUninit::uninit().assume_init());
-            let third = mem::replace(&mut self[2], mem::MaybeUninit::uninit().assume_init());
-            mem::forget(self); // TODO possible memory leak
-            let first = conversion(first);
-            let second = conversion(second);
-            let third = conversion(third);
-            [first, second, third]
+            let result = [
+                conversion(ptr::read(&self[0])),
+                conversion(ptr::read(&self[1])),
+                conversion(ptr::read(&self[2])),
+            ];
+            mem::forget(self);
+            result
         }
     }
 
-    fn transform_res<F>(mut self, mut conversion: F) -> TransRes<Self::Output>
+    fn transform_res<F>(self, mut conversion: F) -> TransRes<Self::Output>
     where
         F: FnMut(S) -> TransRes<D>,
     {
         unsafe {
             let mut error = None;
-            let first = mem::replace(&mut self[0], mem::MaybeUninit::uninit().assume_init());
-            let second = mem::replace(&mut self[1], mem::MaybeUninit::uninit().assume_init());
-            let third = mem::replace(&mut self[2], mem::MaybeUninit::uninit().assume_init());
-            mem::forget(self); // TODO possible memory leak
-            let first = try_conv!(conversion(first), error);
-            let second = try_conv!(conversion(second), error);
-            let third = try_conv!(conversion(third), error);
+            let first = try_conv!(conversion(ptr::read(&self[0])), error);
+            let second = try_conv!(conversion(ptr::read(&self[1])), error);
+            let third = try_conv!(conversion(ptr::read(&self[2])), error);
+            mem::forget(self);
 
             match error {
                 None => Ok([first, second, third]),
@@ -304,39 +298,33 @@ impl<S, D> TransformContent<S, D> for [S; 3] {
 impl<S, D> TransformContent<S, D> for [S; 4] {
     type Output = [D; 4];
 
-    fn transform<F>(mut self, mut conversion: F) -> Self::Output
+    fn transform<F>(self, mut conversion: F) -> Self::Output
     where
         F: FnMut(S) -> D,
     {
         unsafe {
-            let first = mem::replace(&mut self[0], mem::MaybeUninit::uninit().assume_init());
-            let second = mem::replace(&mut self[1], mem::MaybeUninit::uninit().assume_init());
-            let third = mem::replace(&mut self[2], mem::MaybeUninit::uninit().assume_init());
-            let fourth = mem::replace(&mut self[3], mem::MaybeUninit::uninit().assume_init());
-            mem::forget(self); // TODO possible memory leak
-            let first = conversion(first);
-            let second = conversion(second);
-            let third = conversion(third);
-            let fourth = conversion(fourth);
-            [first, second, third, fourth]
+            let result = [
+                conversion(ptr::read(&self[0])),
+                conversion(ptr::read(&self[1])),
+                conversion(ptr::read(&self[2])),
+                conversion(ptr::read(&self[3])),
+            ];
+            mem::forget(self);
+            result
         }
     }
 
-    fn transform_res<F>(mut self, mut conversion: F) -> TransRes<Self::Output>
+    fn transform_res<F>(self, mut conversion: F) -> TransRes<Self::Output>
     where
         F: FnMut(S) -> TransRes<D>,
     {
         unsafe {
             let mut error = None;
-            let first = mem::replace(&mut self[0], mem::MaybeUninit::uninit().assume_init());
-            let second = mem::replace(&mut self[1], mem::MaybeUninit::uninit().assume_init());
-            let third = mem::replace(&mut self[2], mem::MaybeUninit::uninit().assume_init());
-            let fourth = mem::replace(&mut self[3], mem::MaybeUninit::uninit().assume_init());
-            mem::forget(self); // TODO possible memory leak
-            let first = try_conv!(conversion(first), error);
-            let second = try_conv!(conversion(second), error);
-            let third = try_conv!(conversion(third), error);
-            let fourth = try_conv!(conversion(fourth), error);
+            let first = try_conv!(conversion(ptr::read(&self[0])), error);
+            let second = try_conv!(conversion(ptr::read(&self[1])), error);
+            let third = try_conv!(conversion(ptr::read(&self[2])), error);
+            let fourth = try_conv!(conversion(ptr::read(&self[3])), error);
+            mem::forget(self);
 
             match error {
                 None => Ok([first, second, third, fourth]),
