@@ -1,0 +1,38 @@
+name: Rust
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTC: "./rustc.sh"
+  RUST_BACKTRACE: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - beta
+          - nightly
+          - 1.36.0 
+
+    steps:
+    - uses: actions/checkout@v2   
+
+    - name: Install stable toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: ${{ matrix.rust }}
+        override: true
+      
+    - name: Run tests
+      run: make test
+    - name: Run benchmarks
+      run: make bench
+    - name: Run LINTs
+      run: make clippy
+    - name: Make docs
+      run: cargo doc -p basic_dsp -p basic_dsp_vector -p basic_dsp_matrix --no-deps --no-default-features --features std,matrix
