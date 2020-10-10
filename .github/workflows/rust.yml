@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 env:
   CARGO_TERM_COLOR: always
-  RUSTC: rustc.sh
+  RUSTC: "$GITHUB_WORKSPACE/rustc.sh"
   RUST_BACKTRACE: 1
 
 jobs:
