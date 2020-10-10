@@ -1,7 +1,10 @@
 # `basic_dsp`
 
-[![Build Status](https://travis-ci.org/liebharc/basic_dsp.svg?branch=master)](https://travis-ci.org/liebharc/basic_dsp)
+[![CI](https://github.com/liebharc/basic_dsp/workflows/Rust/badge.svg?branch=master)](https://github.com/liebharc/basic_dsp/actions)
 [![Crates.io](https://img.shields.io/crates/v/basic_dsp.svg)](https://crates.io/crates/basic_dsp)
+[![Crates.io](https://img.shields.io/crates/l/basic_dsp.svg)](https://crates.io/crates/basic_dsp)
+[![Docs.rs](https://docs.rs/basic_dsp/badge.svg)](https://docs.rs/basic_dsp)
+![minimum rustc 1.36](https://img.shields.io/badge/rustc-1.36+-red.svg)
 
 Digital signal processing based on real or complex vectors in time or frequency domain. Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations.
 
