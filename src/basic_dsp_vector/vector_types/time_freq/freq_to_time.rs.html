@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\time_freq\freq_to_time.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>freq_to_time.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../basic_dsp_vector/index.html'><div class='logo-container'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\time_freq\freq_to_time.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>freq_to_time.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../basic_dsp_vector/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -256,117 +259,117 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">window_functions</span>::<span class="kw-2">*</span>;
 
-<span class="doccomment">/// Defines all operations which are valid on `DataVecs` containing frequency domain data.</span>
-<span class="doccomment">/// # Failures</span>
-<span class="doccomment">/// All operations in this trait set `self.len()` to `0`</span>
-<span class="doccomment">/// if the vector isn&#39;t in frequency domain and complex number space.</span>
+<span class="doccomment">/// Defines all operations which are valid on `DataVecs` containing frequency domain data.</span>
+<span class="doccomment">/// # Failures</span>
+<span class="doccomment">/// All operations in this trait set `self.len()` to `0`</span>
+<span class="doccomment">/// if the vector isn&#39;t in frequency domain and complex number space.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FrequencyToTimeDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">ToTimeResult</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="doccomment">/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
-    <span class="doccomment">/// into a time domain vector.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This version of the IFFT neither applies a window nor does it scale the</span>
-    <span class="doccomment">/// vector.</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use std::f32;</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// # use num_complex::Complex;</span>
-    <span class="doccomment">/// let vector = vec!(Complex::new(0.0, 0.0), Complex::new(1.0, 0.0), Complex::new(0.0, 0.0)).to_complex_freq_vec();</span>
-    <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
-    <span class="doccomment">/// let result = vector.plain_ifft(&amp;mut buffer);</span>
-    <span class="doccomment">/// let actual = &amp;result[..];</span>
-    <span class="doccomment">/// let expected = &amp;[Complex::new(1.0, 0.0), Complex::new(-0.5, 0.8660254), Complex::new(-0.5, -0.8660254)];</span>
-    <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
-    <span class="doccomment">/// for i in 0..actual.len() {</span>
-    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
-    <span class="doccomment">/// }</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
+    <span class="doccomment">/// into a time domain vector.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This version of the IFFT neither applies a window nor does it scale the</span>
+    <span class="doccomment">/// vector.</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use std::f32;</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
+    <span class="doccomment">/// let vector = vec!(Complex::new(0.0, 0.0), Complex::new(1.0, 0.0), Complex::new(0.0, 0.0)).to_complex_freq_vec();</span>
+    <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
+    <span class="doccomment">/// let result = vector.plain_ifft(&amp;mut buffer);</span>
+    <span class="doccomment">/// let actual = &amp;result[..];</span>
+    <span class="doccomment">/// let expected = &amp;[Complex::new(1.0, 0.0), Complex::new(-0.5, 0.8660254), Complex::new(-0.5, -0.8660254)];</span>
+    <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
+    <span class="doccomment">/// for i in 0..actual.len() {</span>
+    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">plain_ifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">TimeResult</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="doccomment">/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
-    <span class="doccomment">/// into a time domain vector.</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use std::f32;</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// # use num_complex::Complex;</span>
-    <span class="doccomment">/// let vector = vec!(Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(3.0, 0.0)).to_complex_freq_vec();</span>
-    <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
-    <span class="doccomment">/// let result = vector.ifft(&amp;mut buffer);</span>
-    <span class="doccomment">/// let actual = &amp;result[..];</span>
-    <span class="doccomment">/// let expected = &amp;[Complex::new(1.0, 0.0), Complex::new(-0.5, 0.8660254), Complex::new(-0.5, -0.8660254)];</span>
-    <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
-    <span class="doccomment">/// for i in 0..actual.len() {</span>
-    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
-    <span class="doccomment">/// }</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
+    <span class="doccomment">/// into a time domain vector.</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use std::f32;</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
+    <span class="doccomment">/// let vector = vec!(Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(3.0, 0.0)).to_complex_freq_vec();</span>
+    <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
+    <span class="doccomment">/// let result = vector.ifft(&amp;mut buffer);</span>
+    <span class="doccomment">/// let actual = &amp;result[..];</span>
+    <span class="doccomment">/// let expected = &amp;[Complex::new(1.0, 0.0), Complex::new(-0.5, 0.8660254), Complex::new(-0.5, -0.8660254)];</span>
+    <span class="doccomment">/// assert_eq!(actual.len(), expected.len());</span>
+    <span class="doccomment">/// for i in 0..actual.len() {</span>
+    <span class="doccomment">///        assert!((actual[i] - expected[i]).norm() &lt; 1e-4);</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">ifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">TimeResult</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="doccomment">/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
-    <span class="doccomment">/// into a time domain vector and removes the FFT window.</span>
-    <span class="kw">fn</span> <span class="ident">windowed_ifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">window</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">WindowFunction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">TimeResult</span>
+    <span class="doccomment">/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
+    <span class="doccomment">/// into a time domain vector and removes the FFT window.</span>
+    <span class="kw">fn</span> <span class="ident">windowed_ifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">window</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">WindowFunction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">TimeResult</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// Defines all operations which are valid on `DataVecs` containing frequency domain data and</span>
-<span class="doccomment">/// the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where</span>
-<span class="doccomment">/// the 0 Hz element itself is real.</span>
-<span class="doccomment">/// # Failures</span>
-<span class="doccomment">/// All operations in this trait set `self.len()` to `0` if the first element (0Hz)</span>
-<span class="doccomment">/// isn&#39;t real.</span>
+<span class="doccomment">/// Defines all operations which are valid on `DataVecs` containing frequency domain data and</span>
+<span class="doccomment">/// the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where</span>
+<span class="doccomment">/// the 0 Hz element itself is real.</span>
+<span class="doccomment">/// # Failures</span>
+<span class="doccomment">/// All operations in this trait set `self.len()` to `0` if the first element (0Hz)</span>
+<span class="doccomment">/// isn&#39;t real.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SymmetricFrequencyToTimeDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">ToRealTimeResult</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="doccomment">/// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`</span>
-    <span class="doccomment">/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
-    <span class="doccomment">/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
-    <span class="doccomment">/// for this is that there is no robust verification possible.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The argument indicates whether the resulting real vector should have `2*N`</span>
-    <span class="doccomment">/// or `2*N-1` points.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This version of the IFFT neither applies a window nor does it scale the</span>
-    <span class="doccomment">/// vector.</span>
+    <span class="doccomment">/// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`</span>
+    <span class="doccomment">/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
+    <span class="doccomment">/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
+    <span class="doccomment">/// for this is that there is no robust verification possible.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The argument indicates whether the resulting real vector should have `2*N`</span>
+    <span class="doccomment">/// or `2*N-1` points.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This version of the IFFT neither applies a window nor does it scale the</span>
+    <span class="doccomment">/// vector.</span>
     <span class="kw">fn</span> <span class="ident">plain_sifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">RealTimeResult</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="doccomment">/// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`</span>
-    <span class="doccomment">/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
-    <span class="doccomment">/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
-    <span class="doccomment">/// for this is that there is no robust verification possible.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The argument indicates whether the resulting real vector should have `2*N` or</span>
-    <span class="doccomment">/// `2*N-1` points.</span>
+    <span class="doccomment">/// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`</span>
+    <span class="doccomment">/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
+    <span class="doccomment">/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
+    <span class="doccomment">/// for this is that there is no robust verification possible.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The argument indicates whether the resulting real vector should have `2*N` or</span>
+    <span class="doccomment">/// `2*N-1` points.</span>
     <span class="kw">fn</span> <span class="ident">sifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">RealTimeResult</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="doccomment">/// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT</span>
-    <span class="doccomment">/// window. The SIFFT is performed under the assumption that `self`</span>
-    <span class="doccomment">/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
-    <span class="doccomment">/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
-    <span class="doccomment">/// for this is that there is no robust verification possible.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1`</span>
-    <span class="doccomment">/// points.</span>
+    <span class="doccomment">/// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT</span>
+    <span class="doccomment">/// window. The SIFFT is performed under the assumption that `self`</span>
+    <span class="doccomment">/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
+    <span class="doccomment">/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
+    <span class="doccomment">/// for this is that there is no robust verification possible.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1`</span>
+    <span class="doccomment">/// points.</span>
     <span class="kw">fn</span> <span class="ident">windowed_sifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(
         <span class="self">self</span>,
         <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>,
-        <span class="ident">window</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">WindowFunction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">window</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">WindowFunction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">RealTimeResult</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
@@ -414,7 +417,7 @@
         <span class="self">self</span>.<span class="ident">plain_ifft</span>(<span class="ident">buffer</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">windowed_ifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">window</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">WindowFunction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">TimeResult</span>
+    <span class="kw">fn</span> <span class="ident">windowed_ifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">window</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">WindowFunction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">TimeResult</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>,
     {
@@ -448,7 +451,7 @@
             ));
         }
 
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">points</span>() <span class="op">&gt;</span> <span class="number">0</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">data</span>(<span class="number">1</span>).<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">1e-10</span>).<span class="ident">unwrap</span>() {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">points</span>() <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">data</span>(<span class="number">1</span>).<span class="ident">abs</span>() <span class="op">&gt;</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">1e-10</span>).<span class="ident">unwrap</span>() {
             <span class="self">self</span>.<span class="ident">mark_vector_as_invalid</span>();
             <span class="self">self</span>.<span class="ident">number_space</span>.<span class="ident">to_complex</span>();
             <span class="self">self</span>.<span class="ident">domain</span>.<span class="ident">to_freq</span>();
@@ -483,7 +486,7 @@
     <span class="kw">fn</span> <span class="ident">windowed_sifft</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(
         <span class="self">self</span>,
         <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>,
-        <span class="ident">window</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">WindowFunction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">window</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">WindowFunction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">RealTimeResult</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>,
@@ -494,4 +497,4 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

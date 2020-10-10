@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\general\data_reorganization.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>data_reorganization.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../basic_dsp_vector/index.html'><div class='logo-container'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\general\data_reorganization.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>data_reorganization.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../basic_dsp_vector/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -797,209 +800,209 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
 
-<span class="doccomment">/// This trait allows to reorganize the data by changing positions of the individual elements.</span>
+<span class="doccomment">/// This trait allows to reorganize the data by changing positions of the individual elements.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ReorganizeDataOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="doccomment">/// Reverses the data inside the vector.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();</span>
-    <span class="doccomment">/// vector.reverse();</span>
-    <span class="doccomment">/// assert_eq!([8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0], vector[..]);</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Reverses the data inside the vector.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();</span>
+    <span class="doccomment">/// vector.reverse();</span>
+    <span class="doccomment">/// assert_eq!([8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0], vector[..]);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">reverse</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
 
-    <span class="doccomment">/// This function swaps both halves of the vector. This operation is also called FFT shift</span>
-    <span class="doccomment">/// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// `swap_halvesb` requires a buffer but performs faster.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();</span>
-    <span class="doccomment">/// vector.swap_halves();</span>
-    <span class="doccomment">/// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], vector[..]);</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// This function swaps both halves of the vector. This operation is also called FFT shift</span>
+    <span class="doccomment">/// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// `swap_halvesb` requires a buffer but performs faster.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();</span>
+    <span class="doccomment">/// vector.swap_halves();</span>
+    <span class="doccomment">/// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], vector[..]);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">swap_halves</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
 }
 
-<span class="doccomment">/// An option which defines how a vector should be padded</span>
+<span class="doccomment">/// An option which defines how a vector should be padded</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PaddingOption</span> {
-    <span class="doccomment">/// Appends zeros to the end of the vector.</span>
+    <span class="doccomment">/// Appends zeros to the end of the vector.</span>
     <span class="ident">End</span>,
-    <span class="doccomment">/// Surrounds the vector with zeros at the beginning and at the end.</span>
+    <span class="doccomment">/// Surrounds the vector with zeros at the beginning and at the end.</span>
     <span class="ident">Surround</span>,
 
-    <span class="doccomment">/// Inserts zeros in the center of the vector</span>
+    <span class="doccomment">/// Inserts zeros in the center of the vector</span>
     <span class="ident">Center</span>,
 }
 
-<span class="doccomment">/// A trait to insert zeros into the data at some specified positions.</span>
+<span class="doccomment">/// A trait to insert zeros into the data at some specified positions.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">InsertZerosOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="doccomment">/// Appends zeros add the end of the vector until the vector has the size given</span>
-    <span class="doccomment">/// in the points argument.</span>
-    <span class="doccomment">/// If `points` smaller than the `self.len()` then this operation won&#39;t do anything, however</span>
-    <span class="doccomment">/// in future it will raise an error.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Note: Each point is two floating point numbers if the vector is complex.</span>
-    <span class="doccomment">/// Note2: Adding zeros to the signal changes its power. If this function is used to</span>
-    <span class="doccomment">/// zero pad to a power</span>
-    <span class="doccomment">/// of 2 in order to speed up FFT calculation then it might be necessary to multiply it</span>
-    <span class="doccomment">/// with `len_after/len_before`\</span>
-    <span class="doccomment">/// so that the spectrum shows the expected power. Of course this is depending</span>
-    <span class="doccomment">/// on the application.</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// # use num_complex::Complex;</span>
-    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();</span>
-    <span class="doccomment">/// vector.zero_pad(4, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);</span>
-    <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0)).to_complex_time_vec();</span>
-    <span class="doccomment">/// vector.zero_pad(2, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
-    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0)], vector[..]);</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Appends zeros add the end of the vector until the vector has the size given</span>
+    <span class="doccomment">/// in the points argument.</span>
+    <span class="doccomment">/// If `points` smaller than the `self.len()` then this operation won&#39;t do anything, however</span>
+    <span class="doccomment">/// in future it will raise an error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note: Each point is two floating point numbers if the vector is complex.</span>
+    <span class="doccomment">/// Note2: Adding zeros to the signal changes its power. If this function is used to</span>
+    <span class="doccomment">/// zero pad to a power</span>
+    <span class="doccomment">/// of 2 in order to speed up FFT calculation then it might be necessary to multiply it</span>
+    <span class="doccomment">/// with `len_after/len_before`\</span>
+    <span class="doccomment">/// so that the spectrum shows the expected power. Of course this is depending</span>
+    <span class="doccomment">/// on the application.</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
+    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();</span>
+    <span class="doccomment">/// vector.zero_pad(4, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
+    <span class="doccomment">/// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);</span>
+    <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0)).to_complex_time_vec();</span>
+    <span class="doccomment">/// vector.zero_pad(2, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0)], vector[..]);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">zero_pad</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">points</span>: <span class="ident">usize</span>, <span class="ident">option</span>: <span class="ident">PaddingOption</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VoidResult</span>;
 
-    <span class="doccomment">/// Interleaves zeros `factor - 1`times after every vector element, so that the resulting</span>
-    <span class="doccomment">/// vector will have a length of `self.len() * factor`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Note: Remember that each complex number consists of two floating points and interleaving</span>
-    <span class="doccomment">/// will take that into account.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// If factor is 0 (zero) then `self` will be returned.</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// # use num_complex::Complex;</span>
-    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();</span>
-    <span class="doccomment">/// vector.zero_interleave(2);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);</span>
-    <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();</span>
-    <span class="doccomment">/// vector.zero_interleave(2).expect(&quot;Ignoring error handling in examples&quot;);</span>
-    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0), Complex::new(3.0, 4.0), Complex::new(0.0, 0.0)], vector[..]);</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Interleaves zeros `factor - 1`times after every vector element, so that the resulting</span>
+    <span class="doccomment">/// vector will have a length of `self.len() * factor`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note: Remember that each complex number consists of two floating points and interleaving</span>
+    <span class="doccomment">/// will take that into account.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If factor is 0 (zero) then `self` will be returned.</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
+    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();</span>
+    <span class="doccomment">/// vector.zero_interleave(2);</span>
+    <span class="doccomment">/// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);</span>
+    <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();</span>
+    <span class="doccomment">/// vector.zero_interleave(2).expect(&quot;Ignoring error handling in examples&quot;);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0), Complex::new(3.0, 4.0), Complex::new(0.0, 0.0)], vector[..]);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">zero_interleave</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">factor</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VoidResult</span>;
 }
 
-<span class="doccomment">/// A trait to insert zeros into the data at some specified positions. A buffer is used</span>
-<span class="doccomment">/// for types which can&#39;t be resized and/or to speed up the calculation.</span>
+<span class="doccomment">/// A trait to insert zeros into the data at some specified positions. A buffer is used</span>
+<span class="doccomment">/// for types which can&#39;t be resized and/or to speed up the calculation.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">InsertZerosOpsBuffered</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
-    <span class="doccomment">/// Appends zeros add the end of the vector until the vector has the size given in the</span>
-    <span class="doccomment">/// points argument.</span>
-    <span class="doccomment">/// If `points` smaller than the `self.len()` then this operation will return an error.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Note: Each point is two floating point numbers if the vector is complex.</span>
-    <span class="doccomment">/// Note2: Adding zeros to the signal changes its power. If this function is used to</span>
-    <span class="doccomment">/// zero pad to a power</span>
-    <span class="doccomment">/// of 2 in order to speed up FFT calculation then it might be necessary to multiply it</span>
-    <span class="doccomment">/// with `len_after/len_before`\</span>
-    <span class="doccomment">/// so that the spectrum shows the expected power. Of course this is depending on the</span>
-    <span class="doccomment">/// application.</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// # use num_complex::Complex;</span>
-    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();</span>
-    <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
-    <span class="doccomment">/// vector.zero_pad_b(&amp;mut buffer, 4, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);</span>
-    <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0)).to_complex_time_vec();</span>
-    <span class="doccomment">/// vector.zero_pad_b(&amp;mut buffer, 2, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
-    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0)], vector[..]);</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Appends zeros add the end of the vector until the vector has the size given in the</span>
+    <span class="doccomment">/// points argument.</span>
+    <span class="doccomment">/// If `points` smaller than the `self.len()` then this operation will return an error.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note: Each point is two floating point numbers if the vector is complex.</span>
+    <span class="doccomment">/// Note2: Adding zeros to the signal changes its power. If this function is used to</span>
+    <span class="doccomment">/// zero pad to a power</span>
+    <span class="doccomment">/// of 2 in order to speed up FFT calculation then it might be necessary to multiply it</span>
+    <span class="doccomment">/// with `len_after/len_before`\</span>
+    <span class="doccomment">/// so that the spectrum shows the expected power. Of course this is depending on the</span>
+    <span class="doccomment">/// application.</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
+    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();</span>
+    <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
+    <span class="doccomment">/// vector.zero_pad_b(&amp;mut buffer, 4, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
+    <span class="doccomment">/// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);</span>
+    <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0)).to_complex_time_vec();</span>
+    <span class="doccomment">/// vector.zero_pad_b(&amp;mut buffer, 2, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0)], vector[..]);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">zero_pad_b</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">points</span>: <span class="ident">usize</span>, <span class="ident">option</span>: <span class="ident">PaddingOption</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VoidResult</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="doccomment">/// Interleaves zeros `factor - 1`times after every vector element, so that the resulting</span>
-    <span class="doccomment">/// vector will have a length of `self.len() * factor`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Note: Remember that each complex number consists of two floating points and interleaving</span>
-    <span class="doccomment">/// will take that into account.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// If factor is 0 (zero) then `self` will be returned.</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// # use num_complex::Complex;</span>
-    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();</span>
-    <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
-    <span class="doccomment">/// vector.zero_interleave_b(&amp;mut buffer, 2);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);</span>
-    <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();</span>
-    <span class="doccomment">/// vector.zero_interleave_b(&amp;mut buffer, 2);</span>
-    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0), Complex::new(3.0, 4.0), Complex::new(0.0, 0.0)], vector[..]);</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Interleaves zeros `factor - 1`times after every vector element, so that the resulting</span>
+    <span class="doccomment">/// vector will have a length of `self.len() * factor`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note: Remember that each complex number consists of two floating points and interleaving</span>
+    <span class="doccomment">/// will take that into account.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If factor is 0 (zero) then `self` will be returned.</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// # use num_complex::Complex;</span>
+    <span class="doccomment">/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();</span>
+    <span class="doccomment">/// let mut buffer = SingleBuffer::new();</span>
+    <span class="doccomment">/// vector.zero_interleave_b(&amp;mut buffer, 2);</span>
+    <span class="doccomment">/// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);</span>
+    <span class="doccomment">/// let mut vector = vec!(Complex::new(1.0, 2.0), Complex::new(3.0, 4.0)).to_complex_time_vec();</span>
+    <span class="doccomment">/// vector.zero_interleave_b(&amp;mut buffer, 2);</span>
+    <span class="doccomment">/// assert_eq!([Complex::new(1.0, 2.0), Complex::new(0.0, 0.0), Complex::new(3.0, 4.0), Complex::new(0.0, 0.0)], vector[..]);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">zero_interleave_b</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">factor</span>: <span class="ident">u32</span>)
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// Splits the data into several smaller pieces of equal size.</span>
+<span class="doccomment">/// Splits the data into several smaller pieces of equal size.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SplitOps</span> {
-    <span class="doccomment">/// Splits the vector into several smaller vectors. `self.len()` must be dividable by</span>
-    <span class="doccomment">/// `targets.len()` without a remainder and this condition must be true too</span>
-    <span class="doccomment">/// `targets.len() &gt; 0`.</span>
-    <span class="doccomment">/// # Failures</span>
-    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// 1. `InvalidArgumentLength`: `self.points()` isn&#39;t dividable by `targets.len()`</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// let mut vector =</span>
-    <span class="doccomment">///     vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_real_time_vec();</span>
-    <span class="doccomment">/// let mut split = &amp;mut</span>
-    <span class="doccomment">///     [&amp;mut Vec::new().to_real_time_vec(),</span>
-    <span class="doccomment">///      &amp;mut Vec::new().to_real_time_vec()];</span>
-    <span class="doccomment">/// vector.split_into(split).expect(&quot;Ignoring error handling in examples&quot;);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0][..]);</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Splits the vector into several smaller vectors. `self.len()` must be dividable by</span>
+    <span class="doccomment">/// `targets.len()` without a remainder and this condition must be true too</span>
+    <span class="doccomment">/// `targets.len() &gt; 0`.</span>
+    <span class="doccomment">/// # Failures</span>
+    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// 1. `InvalidArgumentLength`: `self.points()` isn&#39;t dividable by `targets.len()`</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// let mut vector =</span>
+    <span class="doccomment">///     vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_real_time_vec();</span>
+    <span class="doccomment">/// let mut split = &amp;mut</span>
+    <span class="doccomment">///     [&amp;mut Vec::new().to_real_time_vec(),</span>
+    <span class="doccomment">///      &amp;mut Vec::new().to_real_time_vec()];</span>
+    <span class="doccomment">/// vector.split_into(split).expect(&quot;Ignoring error handling in examples&quot;);</span>
+    <span class="doccomment">/// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0][..]);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">split_into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">targets</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VoidResult</span>;
 }
 
-<span class="doccomment">/// Merges several pieces of equal size into one data chunk.</span>
+<span class="doccomment">/// Merges several pieces of equal size into one data chunk.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MergeOps</span> {
-    <span class="doccomment">/// Merges several vectors into `self`. All vectors must have the same size and</span>
-    <span class="doccomment">/// at least one vector must be provided.</span>
-    <span class="doccomment">/// # Failures</span>
-    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// 1. `InvalidArgumentLength`: if `sources.len() == 0`</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">/// use basic_dsp_vector::*;</span>
-    <span class="doccomment">/// let mut parts = &amp;mut</span>
-    <span class="doccomment">///     [&amp;vec!(1.0, 2.0).to_real_time_vec(),</span>
-    <span class="doccomment">///      &amp;vec!(1.0, 2.0).to_real_time_vec()];</span>
-    <span class="doccomment">/// let mut vector = Vec::new().to_real_time_vec();</span>
-    <span class="doccomment">/// vector.merge(parts).expect(&quot;Ignoring error handling in examples&quot;);</span>
-    <span class="doccomment">/// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// Merges several vectors into `self`. All vectors must have the same size and</span>
+    <span class="doccomment">/// at least one vector must be provided.</span>
+    <span class="doccomment">/// # Failures</span>
+    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// 1. `InvalidArgumentLength`: if `sources.len() == 0`</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use basic_dsp_vector::*;</span>
+    <span class="doccomment">/// let mut parts = &amp;mut</span>
+    <span class="doccomment">///     [&amp;vec!(1.0, 2.0).to_real_time_vec(),</span>
+    <span class="doccomment">///      &amp;vec!(1.0, 2.0).to_real_time_vec()];</span>
+    <span class="doccomment">/// let mut vector = Vec::new().to_real_time_vec();</span>
+    <span class="doccomment">/// vector.merge(parts).expect(&quot;Ignoring error handling in examples&quot;);</span>
+    <span class="doccomment">/// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">sources</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="self">Self</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VoidResult</span>;
 }
 
@@ -1008,8 +1011,8 @@
     <span class="ident">T</span>: <span class="ident">Copy</span>,
 {
     <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">len</span>();
-    <span class="comment">// +1 makes sure that for odd numbers the first `lo` gets the extra item</span>
-    <span class="comment">// (which is later on ignored)</span>
+    <span class="comment">// +1 makes sure that for odd numbers the first `lo` gets the extra item</span>
+    <span class="comment">// (which is later on ignored)</span>
     <span class="kw">let</span> (<span class="ident">lo</span>, <span class="ident">up</span>) <span class="op">=</span> <span class="ident">data</span>.<span class="ident">split_at_mut</span>((<span class="ident">len</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">/</span> <span class="number">2</span>);
     <span class="kw">for</span> (<span class="ident">lo</span>, <span class="ident">up</span>) <span class="kw">in</span> <span class="ident">lo</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">up</span>.<span class="ident">iter_mut</span>().<span class="ident">rev</span>()) {
         <span class="ident">mem</span>::<span class="ident">swap</span>(<span class="ident">lo</span>, <span class="ident">up</span>);
@@ -1063,7 +1066,7 @@
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">tuple</span> <span class="op">*</span> <span class="ident">step</span>,
                 (),
                 <span class="kw">move</span> <span class="op">|</span><span class="ident">original</span>, <span class="ident">range</span>, <span class="ident">target</span>, <span class="ident">_arg</span><span class="op">|</span> {
-                    <span class="comment">// Zero target</span>
+                    <span class="comment">// Zero target</span>
                     <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>[<span class="number">0</span>] <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>;
                     <span class="kw">unsafe</span> {
                         <span class="ident">ptr</span>::<span class="ident">write_bytes</span>(<span class="ident">ptr</span>, <span class="number">0</span>, <span class="ident">new_len</span>);
@@ -1109,7 +1112,7 @@
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice_mut</span>();
         <span class="kw">match</span> <span class="ident">option</span> {
             <span class="ident">PaddingOption</span>::<span class="ident">End</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="comment">// Zero target</span>
+                <span class="comment">// Zero target</span>
                 <span class="ident">memzero</span>(<span class="ident">data</span>, <span class="ident">len_before</span>..<span class="ident">len</span>);
                 <span class="prelude-val">Ok</span>(())
             }
@@ -1211,7 +1214,7 @@
             <span class="self">self</span>.<span class="ident">valid_len</span> <span class="op">=</span> <span class="ident">len</span>;
             <span class="kw">match</span> <span class="ident">option</span> {
                 <span class="ident">PaddingOption</span>::<span class="ident">End</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="comment">// Zero target</span>
+                    <span class="comment">// Zero target</span>
                     <span class="ident">target</span>[<span class="number">0</span>..<span class="ident">len_before</span>].<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>[<span class="number">0</span>..<span class="ident">len_before</span>]);
                     <span class="ident">memzero</span>(<span class="ident">target</span>, <span class="ident">len_before</span>..<span class="ident">len</span>);
                 }
@@ -1436,8 +1439,8 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span>
             <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>, <span class="number">7.0</span>, <span class="number">8.0</span>, <span class="number">9.0</span>, <span class="number">10.0</span>, <span class="number">11.0</span>].<span class="ident">to_real_time_vec</span>();
         <span class="ident">v</span>.<span class="ident">zero_pad</span>(<span class="number">20</span>, <span class="ident">PaddingOption</span>::<span class="ident">Surround</span>).<span class="ident">unwrap</span>();
-        <span class="comment">// The expected result is required so that the convolution theorem holds true</span>
-        <span class="comment">// (mul in freq is the same as conv)</span>
+        <span class="comment">// The expected result is required so that the convolution theorem holds true</span>
+        <span class="comment">// (mul in freq is the same as conv)</span>
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> [
             <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>, <span class="number">7.0</span>, <span class="number">8.0</span>, <span class="number">9.0</span>, <span class="number">10.0</span>, <span class="number">11.0</span>, <span class="number">0.0</span>,
             <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>,
@@ -1576,4 +1579,4 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

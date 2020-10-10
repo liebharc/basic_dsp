@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\checks_and_results.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>checks_and_results.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../basic_dsp_vector/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\checks_and_results.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>checks_and_results.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../basic_dsp_vector/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -64,70 +67,70 @@
 <span id="64">64</span>
 <span id="65">65</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="doccomment">/// Enumeration of all error reasons</span>
+<span class="doccomment">/// Enumeration of all error reasons</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ErrorReason</span> {
-    <span class="doccomment">/// The operations requires all inputs to have the same size,</span>
-    <span class="doccomment">/// in most cases this means that the following must be true:</span>
-    <span class="doccomment">/// `self.len()` == `argument.len()`</span>
+    <span class="doccomment">/// The operations requires all inputs to have the same size,</span>
+    <span class="doccomment">/// in most cases this means that the following must be true:</span>
+    <span class="doccomment">/// `self.len()` == `argument.len()`</span>
     <span class="ident">InputMustHaveTheSameSize</span>,
 
-    <span class="doccomment">/// The operations requires all inputs to have the same meta data.</span>
-    <span class="doccomment">/// For a vector this means that the following must be true:</span>
-    <span class="doccomment">/// `self.is_complex()` == `argument.is_complex()` &amp;&amp;</span>
-    <span class="doccomment">/// `self.domain()` == `argument.domain()` &amp;&amp;</span>
-    <span class="doccomment">/// `self.delta()`== `argument.domain()`;</span>
-    <span class="doccomment">/// Consider to convert one of the inputs so that this condition is true.</span>
-    <span class="doccomment">/// The necessary operations may include FFT/IFFT, complex/real conversion and resampling.</span>
+    <span class="doccomment">/// The operations requires all inputs to have the same meta data.</span>
+    <span class="doccomment">/// For a vector this means that the following must be true:</span>
+    <span class="doccomment">/// `self.is_complex()` == `argument.is_complex()` &amp;&amp;</span>
+    <span class="doccomment">/// `self.domain()` == `argument.domain()` &amp;&amp;</span>
+    <span class="doccomment">/// `self.delta()`== `argument.domain()`;</span>
+    <span class="doccomment">/// Consider to convert one of the inputs so that this condition is true.</span>
+    <span class="doccomment">/// The necessary operations may include FFT/IFFT, complex/real conversion and resampling.</span>
     <span class="ident">InputMetaDataMustAgree</span>,
 
-    <span class="doccomment">/// The operation requires the input to be complex.</span>
+    <span class="doccomment">/// The operation requires the input to be complex.</span>
     <span class="ident">InputMustBeComplex</span>,
 
-    <span class="doccomment">/// The operation requires the input to be real.</span>
+    <span class="doccomment">/// The operation requires the input to be real.</span>
     <span class="ident">InputMustBeReal</span>,
 
-    <span class="doccomment">/// The operation requires the input to be in time domain.</span>
+    <span class="doccomment">/// The operation requires the input to be in time domain.</span>
     <span class="ident">InputMustBeInTimeDomain</span>,
 
-    <span class="doccomment">/// The operation requires the input to be in frequency domain.</span>
+    <span class="doccomment">/// The operation requires the input to be in frequency domain.</span>
     <span class="ident">InputMustBeInFrequencyDomain</span>,
 
-    <span class="doccomment">/// The arguments have an invalid length to perform the operation. The</span>
-    <span class="doccomment">/// operations documentation should have more information about the requirements.</span>
-    <span class="doccomment">/// Please open a defect if this isn&#39;t the case.</span>
+    <span class="doccomment">/// The arguments have an invalid length to perform the operation. The</span>
+    <span class="doccomment">/// operations documentation should have more information about the requirements.</span>
+    <span class="doccomment">/// Please open a defect if this isn&#39;t the case.</span>
     <span class="ident">InvalidArgumentLength</span>,
 
-    <span class="doccomment">/// The operations is only valid if the data input contains half of a symmetric spectrum.</span>
-    <span class="doccomment">/// The symmetry definition follows soon however more important is that the element at 0 Hz</span>
-    <span class="doccomment">/// which happens to be the first vector element must be real. The error message is raised</span>
-    <span class="doccomment">/// if this</span>
-    <span class="doccomment">/// is violated, the rest of the definition is only listed here for completeness snce it can&#39;t</span>
-    <span class="doccomment">/// be checked.</span>
-    <span class="doccomment">/// The required symmetry for a vector is that for every point</span>
-    <span class="doccomment">/// `vector[x].conj() == vector[-x]`(pseudocode)</span>
-    <span class="doccomment">/// where `x` is the x-axis position relative to 0 Hz and `conj` is the complex conjugate.</span>
+    <span class="doccomment">/// The operations is only valid if the data input contains half of a symmetric spectrum.</span>
+    <span class="doccomment">/// The symmetry definition follows soon however more important is that the element at 0 Hz</span>
+    <span class="doccomment">/// which happens to be the first vector element must be real. The error message is raised</span>
+    <span class="doccomment">/// if this</span>
+    <span class="doccomment">/// is violated, the rest of the definition is only listed here for completeness snce it can&#39;t</span>
+    <span class="doccomment">/// be checked.</span>
+    <span class="doccomment">/// The required symmetry for a vector is that for every point</span>
+    <span class="doccomment">/// `vector[x].conj() == vector[-x]`(pseudocode)</span>
+    <span class="doccomment">/// where `x` is the x-axis position relative to 0 Hz and `conj` is the complex conjugate.</span>
     <span class="ident">InputMustBeConjSymmetric</span>,
 
-    <span class="doccomment">/// `self.points()` must be an odd number.</span>
+    <span class="doccomment">/// `self.points()` must be an odd number.</span>
     <span class="ident">InputMustHaveAnOddLength</span>,
 
-    <span class="doccomment">/// The function passed as argument must be symmetric</span>
+    <span class="doccomment">/// The function passed as argument must be symmetric</span>
     <span class="ident">ArgumentFunctionMustBeSymmetric</span>,
 
-    <span class="doccomment">/// The number of arguments passed into a combined operation methods doesn&#39;t match</span>
-    <span class="doccomment">/// with the number of arguments specified previously via the `add_op` methods.</span>
+    <span class="doccomment">/// The number of arguments passed into a combined operation methods doesn&#39;t match</span>
+    <span class="doccomment">/// with the number of arguments specified previously via the `add_op` methods.</span>
     <span class="ident">InvalidNumberOfArgumentsForCombinedOp</span>,
 
-    <span class="doccomment">/// The operation isn&#39;t specified for an empty vector.</span>
+    <span class="doccomment">/// The operation isn&#39;t specified for an empty vector.</span>
     <span class="ident">InputMustNotBeEmpty</span>,
 
-    <span class="doccomment">/// Given input must have an even length.</span>
+    <span class="doccomment">/// Given input must have an even length.</span>
     <span class="ident">InputMustHaveAnEvenLength</span>,
 
-    <span class="doccomment">/// The arguments would require that the type allocates larger memory. But the</span>
-    <span class="doccomment">/// type can&#39;t do that.</span>
+    <span class="doccomment">/// The arguments would require that the type allocates larger memory. But the</span>
+    <span class="doccomment">/// type can&#39;t do that.</span>
     <span class="ident">TypeCanNotResize</span>,
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

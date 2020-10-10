@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../basic_dsp_vector/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../basic_dsp_vector/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -739,87 +742,87 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">buffer</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">meta</span>;
 
-<span class="doccomment">/// Result for operations which transform a type (most commonly the type is a vector).</span>
-<span class="doccomment">/// On success the transformed type is returned.</span>
-<span class="doccomment">/// On failure it contains an error reason and the original type with with invalid data</span>
-<span class="doccomment">/// which still can be used in order to avoid memory allocation.</span>
+<span class="doccomment">/// Result for operations which transform a type (most commonly the type is a vector).</span>
+<span class="doccomment">/// On success the transformed type is returned.</span>
+<span class="doccomment">/// On failure it contains an error reason and the original type with with invalid data</span>
+<span class="doccomment">/// which still can be used in order to avoid memory allocation.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, (<span class="ident">ErrorReason</span>, <span class="ident">T</span>)<span class="op">&gt;</span>;
 
-<span class="doccomment">/// Void/nothing in case of success or a reason in case of an error.</span>
+<span class="doccomment">/// Void/nothing in case of success or a reason in case of an error.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">VoidResult</span> <span class="op">=</span> <span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ErrorReason</span><span class="op">&gt;</span>;
 
-<span class="doccomment">/// Scalar result or a reason in case of an error.</span>
+<span class="doccomment">/// Scalar result or a reason in case of an error.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">ErrorReason</span><span class="op">&gt;</span>;
 
-<span class="doccomment">/// The domain of a data vector</span>
+<span class="doccomment">/// The domain of a data vector</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DataDomain</span> {
-    <span class="doccomment">/// Time domain, the x-axis is in \[s\].</span>
+    <span class="doccomment">/// Time domain, the x-axis is in \[s\].</span>
     <span class="ident">Time</span>,
-    <span class="doccomment">/// Frequency domain, the x-axis is in \[Hz\].</span>
+    <span class="doccomment">/// Frequency domain, the x-axis is in \[Hz\].</span>
     <span class="ident">Frequency</span>,
 }
 
-<span class="doccomment">/// Number space (real or complex) information.</span>
+<span class="doccomment">/// Number space (real or complex) information.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NumberSpace</span>: <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">cmp</span>::<span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Clone</span> {
     <span class="kw">fn</span> <span class="ident">is_complex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
 
-    <span class="doccomment">/// For implementations which track meta data</span>
-    <span class="doccomment">/// at runtime this method may be implemented to transition</span>
-    <span class="doccomment">/// between different states. For all other implementations</span>
-    <span class="doccomment">/// they may leave this empty.</span>
+    <span class="doccomment">/// For implementations which track meta data</span>
+    <span class="doccomment">/// at runtime this method may be implemented to transition</span>
+    <span class="doccomment">/// between different states. For all other implementations</span>
+    <span class="doccomment">/// they may leave this empty.</span>
     <span class="kw">fn</span> <span class="ident">to_complex</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
 
-    <span class="doccomment">/// See `to_complex` for more details.</span>
+    <span class="doccomment">/// See `to_complex` for more details.</span>
     <span class="kw">fn</span> <span class="ident">to_real</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
 }
 
-<span class="doccomment">/// Domain (time or frequency) information.</span>
+<span class="doccomment">/// Domain (time or frequency) information.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Domain</span>: <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">cmp</span>::<span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Clone</span> {
     <span class="kw">fn</span> <span class="ident">domain</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DataDomain</span>;
 
-    <span class="doccomment">/// See `to_complex` for some details.</span>
+    <span class="doccomment">/// See `to_complex` for some details.</span>
     <span class="kw">fn</span> <span class="ident">to_freq</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
 
-    <span class="doccomment">/// See `to_complex` for some details.</span>
+    <span class="doccomment">/// See `to_complex` for some details.</span>
     <span class="kw">fn</span> <span class="ident">to_time</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
 }
 
-<span class="doccomment">/// Trait for types containing real data.</span>
+<span class="doccomment">/// Trait for types containing real data.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RealNumberSpace</span>: <span class="ident">NumberSpace</span> {}
 
-<span class="doccomment">/// Trait for types containing complex data.</span>
+<span class="doccomment">/// Trait for types containing complex data.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ComplexNumberSpace</span>: <span class="ident">NumberSpace</span> {}
 
-<span class="doccomment">/// Trait for types containing time domain data.</span>
+<span class="doccomment">/// Trait for types containing time domain data.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TimeDomain</span>: <span class="ident">Domain</span> {}
 
-<span class="doccomment">/// Trait for types containing frequency domain data.</span>
+<span class="doccomment">/// Trait for types containing frequency domain data.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FrequencyDomain</span>: <span class="ident">Domain</span> {}
 
-<span class="doccomment">/// Expresses at compile time that two classes could potentially represent the same number space or domain.</span>
+<span class="doccomment">/// Expresses at compile time that two classes could potentially represent the same number space or domain.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> {}
 
-<span class="doccomment">/// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing</span>
-<span class="doccomment">/// (DSP) operations.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Vectors come in different flavors:</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// 1. Time or Frequency domain</span>
-<span class="doccomment">/// 2. Real or Complex numbers</span>
-<span class="doccomment">/// 3. 32bit or 64bit floating point numbers</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The first two flavors define meta information about the vector and provide compile time</span>
-<span class="doccomment">/// information what operations are available with the given vector and how this will transform</span>
-<span class="doccomment">/// the vector. This makes sure that some invalid operations are already discovered at compile</span>
-<span class="doccomment">/// time. In case that this isn&#39;t desired or the information about the vector isn&#39;t known at</span>
-<span class="doccomment">/// compile time there are the generic [`DataVec32`](type.DataVec32.html) and</span>
-<span class="doccomment">/// [`DataVec64`](type.DataVec64.html) vectors available.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// 32bit and 64bit flavors trade performance and memory consumption against accuracy.</span>
-<span class="doccomment">/// 32bit vectors are roughly two times faster than 64bit vectors for most operations.</span>
-<span class="doccomment">/// But remember that you should benchmark first before you give away accuracy for performance</span>
-<span class="doccomment">/// unless however you are sure that 32bit accuracy is certainly good enough.</span>
+<span class="doccomment">/// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing</span>
+<span class="doccomment">/// (DSP) operations.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Vectors come in different flavors:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// 1. Time or Frequency domain</span>
+<span class="doccomment">/// 2. Real or Complex numbers</span>
+<span class="doccomment">/// 3. 32bit or 64bit floating point numbers</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The first two flavors define meta information about the vector and provide compile time</span>
+<span class="doccomment">/// information what operations are available with the given vector and how this will transform</span>
+<span class="doccomment">/// the vector. This makes sure that some invalid operations are already discovered at compile</span>
+<span class="doccomment">/// time. In case that this isn&#39;t desired or the information about the vector isn&#39;t known at</span>
+<span class="doccomment">/// compile time there are the generic [`DataVec32`](type.DataVec32.html) and</span>
+<span class="doccomment">/// [`DataVec64`](type.DataVec64.html) vectors available.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// 32bit and 64bit flavors trade performance and memory consumption against accuracy.</span>
+<span class="doccomment">/// 32bit vectors are roughly two times faster than 64bit vectors for most operations.</span>
+<span class="doccomment">/// But remember that you should benchmark first before you give away accuracy for performance</span>
+<span class="doccomment">/// unless however you are sure that 32bit accuracy is certainly good enough.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -827,8 +830,8 @@
     <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
     <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
-    <span class="doccomment">/// The underlying storage. `self.len()` should be called to find out how many</span>
-    <span class="doccomment">/// elements in `data` contain valid data.</span>
+    <span class="doccomment">/// The underlying storage. `self.len()` should be called to find out how many</span>
+    <span class="doccomment">/// elements in `data` contain valid data.</span>
     <span class="kw">pub</span> <span class="ident">data</span>: <span class="ident">S</span>,
     <span class="ident">delta</span>: <span class="ident">T</span>,
     <span class="ident">domain</span>: <span class="ident">D</span>,
@@ -837,7 +840,7 @@
     <span class="ident">multicore_settings</span>: <span class="ident">MultiCoreSettings</span>,
 }
 
-<span class="doccomment">/// Holds meta data about a type.</span>
+<span class="doccomment">/// Holds meta data about a type.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TypeMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> {
     <span class="ident">delta</span>: <span class="ident">T</span>,
@@ -862,10 +865,10 @@
     }
 }
 
-<span class="doccomment">/// Swaps the halves of two arrays. The `forward` paremeter</span>
-<span class="doccomment">/// specifies what should happen then the `data.len()` is odd.</span>
-<span class="doccomment">/// The function should always produce the same results as `fft_shift`</span>
-<span class="doccomment">/// and `ifft_shift` in GNU Octave.</span>
+<span class="doccomment">/// Swaps the halves of two arrays. The `forward` paremeter</span>
+<span class="doccomment">/// specifies what should happen then the `data.len()` is odd.</span>
+<span class="doccomment">/// The function should always produce the same results as `fft_shift`</span>
+<span class="doccomment">/// and `ifft_shift` in GNU Octave.</span>
 <span class="kw">fn</span> <span class="ident">swap_array_halves</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>], <span class="ident">forward</span>: <span class="ident">bool</span>)
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Copy</span>,
@@ -888,7 +891,7 @@
     }
 }
 
-<span class="doccomment">/// Creates an interleaved array slice from a complex array.</span>
+<span class="doccomment">/// Creates an interleaved array slice from a complex array.</span>
 <span class="kw">fn</span> <span class="ident">complex_to_array</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">complex</span>: <span class="kw-2">&amp;</span>[<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>]
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
@@ -896,7 +899,7 @@
     <span class="kw">super</span>::<span class="ident">transmute_slice</span>(<span class="ident">complex</span>)
 }
 
-<span class="doccomment">/// Creates an interleaved array slice from a complex array.</span>
+<span class="doccomment">/// Creates an interleaved array slice from a complex array.</span>
 <span class="kw">fn</span> <span class="ident">complex_to_array_mut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">complex</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>]
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
@@ -905,11 +908,11 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">meta</span>::<span class="ident">RealOrComplex</span>, <span class="ident">meta</span>::<span class="ident">TimeOrFreq</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Indicates whether or not the operations on this vector have been successful.</span>
-    <span class="doccomment">/// Consider using the statically typed vector versions so that this check doesn&#39;t need to be</span>
-    <span class="doccomment">/// performed.</span>
+    <span class="doccomment">/// Indicates whether or not the operations on this vector have been successful.</span>
+    <span class="doccomment">/// Consider using the statically typed vector versions so that this check doesn&#39;t need to be</span>
+    <span class="doccomment">/// performed.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_erroneous</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">valid_len</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">delta</span>.<span class="ident">is_nan</span>()
+        <span class="self">self</span>.<span class="ident">valid_len</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">delta</span>.<span class="ident">is_nan</span>()
     }
 }
 
@@ -920,13 +923,13 @@
     <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
     <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
-    <span class="doccomment">/// Marks the data of the vector as erroneous</span>
+    <span class="doccomment">/// Marks the data of the vector as erroneous</span>
     <span class="kw">fn</span> <span class="ident">mark_vector_as_invalid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">valid_len</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="self">self</span>.<span class="ident">delta</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">nan</span>();
     }
 
-    <span class="doccomment">/// Executes a real function.</span>
+    <span class="doccomment">/// Executes a real function.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">pure_real_operation</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">op</span>: <span class="ident">F</span>, <span class="ident">argument</span>: <span class="ident">A</span>, <span class="ident">complexity</span>: <span class="ident">Complexity</span>)
     <span class="kw">where</span>
@@ -951,7 +954,7 @@
         }
     }
 
-    <span class="doccomment">/// Executes a complex function.</span>
+    <span class="doccomment">/// Executes a complex function.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">pure_complex_operation</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">op</span>: <span class="ident">F</span>, <span class="ident">argument</span>: <span class="ident">A</span>, <span class="ident">complexity</span>: <span class="ident">Complexity</span>)
     <span class="kw">where</span>
@@ -992,7 +995,7 @@
         <span class="self">self</span>.<span class="ident">simd_real_operation</span>(<span class="ident">reg</span>, <span class="ident">simd_op</span>, <span class="ident">scalar_op</span>, <span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">argument</span>), <span class="ident">complexity</span>);
     }
 
-    <span class="doccomment">/// Executes a real function with SIMD optimization.</span>
+    <span class="doccomment">/// Executes a real function with SIMD optimization.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">simd_real_operation</span><span class="op">&lt;</span><span class="ident">Reg</span>: <span class="ident">SimdGeneric</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">A</span>, <span class="ident">F</span>, <span class="ident">G</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
@@ -1051,7 +1054,7 @@
         )
     }
 
-    <span class="doccomment">/// Executes a complex function with SIMD optimization.</span>
+    <span class="doccomment">/// Executes a complex function with SIMD optimization.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">simd_complex_operation</span><span class="op">&lt;</span><span class="ident">Reg</span>: <span class="ident">SimdGeneric</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">A</span>, <span class="ident">F</span>, <span class="ident">G</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
@@ -1089,7 +1092,7 @@
         }
     }
 
-    <span class="doccomment">/// Executes a function which converts a complex array into a real array.</span>
+    <span class="doccomment">/// Executes a function which converts a complex array into a real array.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">pure_complex_to_real_operation</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">F</span>, <span class="ident">B</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
@@ -1130,7 +1133,7 @@
         }
     }
 
-    <span class="doccomment">/// Executes a function which converts a complex array into a real array. Conversion is applied in-place.</span>
+    <span class="doccomment">/// Executes a function which converts a complex array into a real array. Conversion is applied in-place.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">pure_complex_to_real_operation_inplace</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">op</span>: <span class="ident">F</span>, <span class="ident">argument</span>: <span class="ident">A</span>)
     <span class="kw">where</span>
@@ -1149,7 +1152,7 @@
         }
     }
 
-    <span class="doccomment">/// Executes a function which converts a complex array into a real array.</span>
+    <span class="doccomment">/// Executes a function which converts a complex array into a real array.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">simd_complex_to_real_operation</span><span class="op">&lt;</span><span class="ident">Reg</span>: <span class="ident">SimdGeneric</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">A</span>, <span class="ident">F</span>, <span class="ident">G</span>, <span class="ident">B</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
@@ -1203,7 +1206,7 @@
         <span class="ident">result</span>.<span class="ident">trade</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">data</span>);
     }
 
-    <span class="doccomment">/// Forwards calls to `swap_array_halves`.</span>
+    <span class="doccomment">/// Forwards calls to `swap_array_halves`.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">swap_halves_priv</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">forward</span>: <span class="ident">bool</span>) {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
@@ -1221,7 +1224,7 @@
         }
     }
 
-    <span class="doccomment">/// Multiplies the vector with a window function.</span>
+    <span class="doccomment">/// Multiplies the vector with a window function.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">multiply_window_priv</span><span class="op">&lt;</span><span class="ident">TT</span>, <span class="ident">CMut</span>, <span class="ident">FA</span>, <span class="ident">F</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
@@ -1295,7 +1298,7 @@
     }
 }
 
-<span class="doccomment">/// Buffer borrow type for `NoTradeBufferBurrow`.</span>
+<span class="doccomment">/// Buffer borrow type for `NoTradeBufferBurrow`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NoTradeBufferBurrow</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">T</span>],
 }
@@ -1316,12 +1319,12 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span> <span class="ident">BufferBorrow</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NoTradeBufferBurrow</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">trade</span>(<span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">S</span>) {
-        <span class="comment">// No trade</span>
+        <span class="comment">// No trade</span>
     }
 }
 
-<span class="doccomment">/// For internal use only. A buffer which doesn&#39;t implement the `swap` routine. Swapping is a no-op in this</span>
-<span class="doccomment">/// implementation. This can be useful in cases where an implementation will do the swap step on its own.</span>
+<span class="doccomment">/// For internal use only. A buffer which doesn&#39;t implement the `swap` routine. Swapping is a no-op in this</span>
+<span class="doccomment">/// implementation. This can be useful in cases where an implementation will do the swap step on its own.</span>
 <span class="kw">struct</span> <span class="ident">NoTradeBuffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1336,8 +1339,8 @@
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="doccomment">/// Creates a new buffer from a storage type. The buffer will internally hold</span>
-    <span class="doccomment">/// its storage for it&#39;s complete life time.</span>
+    <span class="doccomment">/// Creates a new buffer from a storage type. The buffer will internally hold</span>
+    <span class="doccomment">/// its storage for it&#39;s complete life time.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">storage</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NoTradeBuffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
         <span class="ident">NoTradeBuffer</span> {
             <span class="ident">data</span>: <span class="ident">storage</span>,
@@ -1394,4 +1397,4 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

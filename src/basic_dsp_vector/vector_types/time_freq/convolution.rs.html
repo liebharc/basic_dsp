@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\time_freq\convolution.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>convolution.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../basic_dsp_vector/index.html'><div class='logo-container'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\time_freq\convolution.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>convolution.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../basic_dsp_vector/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -929,31 +932,31 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">array_to_complex</span>, <span class="ident">array_to_complex_mut</span>};
 <span class="kw">use</span> <span class="ident">rustfft</span>::<span class="ident">FFTplanner</span>;
 
-<span class="doccomment">/// Provides a convolution operations.</span>
+<span class="doccomment">/// Provides a convolution operations.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Convolution</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">C</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="doccomment">/// Convolves `self` with the convolution function `impulse_response`.</span>
-    <span class="doccomment">/// For performance consider to</span>
-    <span class="doccomment">/// to use `FrequencyMultiplication` instead of this operation depending on `len`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// An optimized convolution algorithm is used if  `1.0 / ratio`</span>
-    <span class="doccomment">/// is an integer (inside a `1e-6` tolerance)</span>
-    <span class="doccomment">/// and `len` is smaller than a threshold (`202` right now).</span>
-    <span class="doccomment">/// # Failures</span>
-    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// 1. `VectorMustBeComplex`: if `self` is in real number space overlap_discard</span>
-    <span class="doccomment">///    `impulse_response` is in complex number space.</span>
-    <span class="doccomment">/// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.</span>
+    <span class="doccomment">/// Convolves `self` with the convolution function `impulse_response`.</span>
+    <span class="doccomment">/// For performance consider to</span>
+    <span class="doccomment">/// to use `FrequencyMultiplication` instead of this operation depending on `len`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// An optimized convolution algorithm is used if  `1.0 / ratio`</span>
+    <span class="doccomment">/// is an integer (inside a `1e-6` tolerance)</span>
+    <span class="doccomment">/// and `len` is smaller than a threshold (`202` right now).</span>
+    <span class="doccomment">/// # Failures</span>
+    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// 1. `VectorMustBeComplex`: if `self` is in real number space overlap_discard</span>
+    <span class="doccomment">///    `impulse_response` is in complex number space.</span>
+    <span class="doccomment">/// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.</span>
     <span class="kw">fn</span> <span class="ident">convolve</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">impulse_response</span>: <span class="ident">C</span>, <span class="ident">ratio</span>: <span class="ident">T</span>, <span class="ident">len</span>: <span class="ident">usize</span>)
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// Provides a convolution operation for types which at some point are slice based.</span>
+<span class="doccomment">/// Provides a convolution operation for types which at some point are slice based.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ConvolutionOps</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -961,41 +964,41 @@
     <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
     <span class="ident">D</span>: <span class="ident">Domain</span>,
 {
-    <span class="doccomment">/// Convolves `self` with the convolution function `impulse_response`.</span>
-    <span class="doccomment">/// For performance it&#39;s recommended</span>
-    <span class="doccomment">/// to use multiply both vectors in frequency domain instead of this operation.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Failures</span>
-    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// 1. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.</span>
-    <span class="doccomment">/// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response`</span>
-    <span class="doccomment">///    are not in the same number space and same domain.</span>
-    <span class="doccomment">/// 3. `InvalidArgumentLength`: if `self.points() &lt; impulse_response.points()`.</span>
+    <span class="doccomment">/// Convolves `self` with the convolution function `impulse_response`.</span>
+    <span class="doccomment">/// For performance it&#39;s recommended</span>
+    <span class="doccomment">/// to use multiply both vectors in frequency domain instead of this operation.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Failures</span>
+    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// 1. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.</span>
+    <span class="doccomment">/// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response`</span>
+    <span class="doccomment">///    are not in the same number space and same domain.</span>
+    <span class="doccomment">/// 3. `InvalidArgumentLength`: if `self.points() &lt; impulse_response.points()`.</span>
     <span class="kw">fn</span> <span class="ident">convolve_signal</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">impulse_response</span>: <span class="kw-2">&amp;</span><span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VoidResult</span>
     <span class="kw">where</span>
         <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// Provides a frequency response multiplication operations.</span>
+<span class="doccomment">/// Provides a frequency response multiplication operations.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FrequencyMultiplication</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">C</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 {
-    <span class="doccomment">/// Multiplies `self` with the frequency response function `frequency_response`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// In order to multiply a vector with another vector in frequency response use `mul`.</span>
-    <span class="doccomment">/// # Assumptions</span>
-    <span class="doccomment">/// The operation assumes that the vector contains a full spectrum centered at 0 Hz.</span>
-    <span class="doccomment">/// If half a spectrum</span>
-    <span class="doccomment">/// or a FFT shifted spectrum is provided the operation will come back with invalid results.</span>
-    <span class="doccomment">/// # Failures</span>
-    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response`</span>
-    <span class="doccomment">///    is in complex number space.</span>
-    <span class="doccomment">/// 2. `VectorMustBeInFreqDomain`: if `self` is in time domain.</span>
+    <span class="doccomment">/// Multiplies `self` with the frequency response function `frequency_response`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// In order to multiply a vector with another vector in frequency response use `mul`.</span>
+    <span class="doccomment">/// # Assumptions</span>
+    <span class="doccomment">/// The operation assumes that the vector contains a full spectrum centered at 0 Hz.</span>
+    <span class="doccomment">/// If half a spectrum</span>
+    <span class="doccomment">/// or a FFT shifted spectrum is provided the operation will come back with invalid results.</span>
+    <span class="doccomment">/// # Failures</span>
+    <span class="doccomment">/// TransRes may report the following `ErrorReason` members:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response`</span>
+    <span class="doccomment">///    is in complex number space.</span>
+    <span class="doccomment">/// 2. `VectorMustBeInFreqDomain`: if `self` is in time domain.</span>
     <span class="kw">fn</span> <span class="ident">multiply_frequency_response</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">frequency_response</span>: <span class="ident">C</span>, <span class="ident">ratio</span>: <span class="ident">T</span>);
 }
 
@@ -1020,9 +1023,9 @@
 <span class="kw">fn</span> <span class="ident">would_benefit_from_simd</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span>(<span class="ident">vec_len</span>: <span class="ident">usize</span>, <span class="ident">imp_len</span>: <span class="ident">usize</span>, <span class="ident">ratio</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="kw">let</span> <span class="ident">ratio_inv</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">one</span>() <span class="op">/</span> <span class="ident">ratio</span>;
     <span class="ident">imp_len</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">202</span>
-        <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">vec_len</span> <span class="op">&gt;</span> <span class="number">2000</span>
-        <span class="kw-2">&amp;</span><span class="op">&amp;</span> (<span class="ident">ratio_inv</span>.<span class="ident">round</span>() <span class="op">-</span> <span class="ident">ratio_inv</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">1e-6</span>).<span class="ident">unwrap</span>()
-        <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">ratio</span> <span class="op">&gt;</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">0.5</span>).<span class="ident">unwrap</span>()
+        <span class="op">&amp;&amp;</span> <span class="ident">vec_len</span> <span class="op">&gt;</span> <span class="number">2000</span>
+        <span class="op">&amp;&amp;</span> (<span class="ident">ratio_inv</span>.<span class="ident">round</span>() <span class="op">-</span> <span class="ident">ratio_inv</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">1e-6</span>).<span class="ident">unwrap</span>()
+        <span class="op">&amp;&amp;</span> <span class="ident">ratio</span> <span class="op">&gt;</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="number">0.5</span>).<span class="ident">unwrap</span>()
 }
 
 <span class="kw">fn</span> <span class="ident">can_use_simd</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RealNumber</span><span class="op">&gt;</span>(<span class="ident">points</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1039,7 +1042,7 @@
     <span class="ident">step</span> <span class="op">*</span> (<span class="number">2</span> <span class="op">*</span> <span class="ident">imp_len</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">*</span> <span class="ident">ratio_usize</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">Convolution</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">Convolution</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
@@ -1052,7 +1055,7 @@
     <span class="kw">fn</span> <span class="ident">convolve</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>,
-        <span class="ident">function</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">function</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
         <span class="ident">ratio</span>: <span class="ident">T</span>,
         <span class="ident">len</span>: <span class="ident">usize</span>,
     ) <span class="kw">where</span>
@@ -1061,9 +1064,9 @@
         <span class="macro">assert_time</span><span class="macro">!</span>(<span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">ratio_inv</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">one</span>() <span class="op">/</span> <span class="ident">ratio</span>;
         <span class="kw">let</span> <span class="ident">points</span> <span class="op">=</span> <span class="ident">calc_points</span>(<span class="ident">len</span>, <span class="ident">ratio</span>, <span class="self">self</span>.<span class="ident">is_complex</span>());
-        <span class="kw">if</span> <span class="ident">would_benefit_from_simd</span>(<span class="self">self</span>.<span class="ident">len</span>(), <span class="ident">len</span>, <span class="ident">ratio</span>) <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">can_use_simd</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">points</span>) {
-            <span class="comment">// Create a vector from the impulse response and use `convolve_signal` to get</span>
-            <span class="comment">// SIMD support</span>
+        <span class="kw">if</span> <span class="ident">would_benefit_from_simd</span>(<span class="self">self</span>.<span class="ident">len</span>(), <span class="ident">len</span>, <span class="ident">ratio</span>) <span class="op">&amp;&amp;</span> <span class="ident">can_use_simd</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">points</span>) {
+            <span class="comment">// Create a vector from the impulse response and use `convolve_signal` to get</span>
+            <span class="comment">// SIMD support</span>
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">imp_resp</span> <span class="op">=</span> <span class="ident">DspVec</span> {
                 <span class="ident">data</span>: <span class="ident">InlineVector</span>::<span class="ident">of_size</span>(<span class="ident">T</span>::<span class="ident">zero</span>(), <span class="ident">points</span>),
                 <span class="ident">delta</span>: <span class="self">self</span>.<span class="ident">delta</span>(),
@@ -1108,7 +1111,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">Convolution</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">ComplexImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">Convolution</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">dyn</span> <span class="ident">ComplexImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="ident">T</span>: <span class="ident">RealNumber</span>,
@@ -1121,7 +1124,7 @@
     <span class="kw">fn</span> <span class="ident">convolve</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>,
-        <span class="ident">function</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">ComplexImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">function</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">ComplexImpulseResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
         <span class="ident">ratio</span>: <span class="ident">T</span>,
         <span class="ident">len</span>: <span class="ident">usize</span>,
     ) <span class="kw">where</span>
@@ -1132,7 +1135,7 @@
 
         <span class="kw">let</span> <span class="ident">ratio_inv</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">one</span>() <span class="op">/</span> <span class="ident">ratio</span>;
         <span class="kw">let</span> <span class="ident">points</span> <span class="op">=</span> <span class="ident">calc_points</span>(<span class="ident">len</span>, <span class="ident">ratio</span>, <span class="self">self</span>.<span class="ident">is_complex</span>());
-        <span class="kw">if</span> <span class="ident">would_benefit_from_simd</span>(<span class="self">self</span>.<span class="ident">len</span>(), <span class="ident">len</span>, <span class="ident">ratio</span>) <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">can_use_simd</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">points</span>) {
+        <span class="kw">if</span> <span class="ident">would_benefit_from_simd</span>(<span class="self">self</span>.<span class="ident">len</span>(), <span class="ident">len</span>, <span class="ident">ratio</span>) <span class="op">&amp;&amp;</span> <span class="ident">can_use_simd</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">points</span>) {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">imp_resp</span> <span class="op">=</span> <span class="ident">DspVec</span> {
                 <span class="ident">data</span>: <span class="ident">InlineVector</span>::<span class="ident">of_size</span>(<span class="ident">T</span>::<span class="ident">zero</span>(), <span class="number">2</span> <span class="op">*</span> <span class="ident">points</span>),
                 <span class="ident">delta</span>: <span class="self">self</span>.<span class="ident">delta</span>(),
@@ -1186,7 +1189,7 @@
 <span class="kw">fn</span> <span class="ident">next_power_of_two</span>(<span class="ident">value</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">count</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">value</span>;
-    <span class="kw">if</span> <span class="ident">n</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> (<span class="ident">n</span> <span class="op">&amp;</span> (<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">n</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> (<span class="ident">n</span> <span class="op">&amp;</span> (<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>)) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
         <span class="kw">return</span> <span class="ident">n</span>;
     }
     <span class="kw">while</span> <span class="ident">n</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
@@ -1213,10 +1216,10 @@
     <span class="ident">D</span>: <span class="ident">TimeDomain</span>,
     <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>: <span class="ident">TimeToFrequencyDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
 {
-    <span class="doccomment">/// Overlap-discard or overlap-save implementation:</span>
-    <span class="doccomment">/// https://en.wikipedia.org/wiki/Overlap%E2%80%93save_method</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// With this method the convolution is performed in freq domain</span>
+    <span class="doccomment">/// Overlap-discard or overlap-save implementation:</span>
+    <span class="doccomment">/// https://en.wikipedia.org/wiki/Overlap%E2%80%93save_method</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// With this method the convolution is performed in freq domain</span>
     <span class="kw">fn</span> <span class="ident">overlap_discard</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">SO</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>,
@@ -1293,7 +1296,7 @@
             <span class="ident">fft</span>.<span class="ident">process</span>(<span class="ident">h_time_padded</span>, <span class="ident">h_freq</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">position</span> <span class="op">=</span> <span class="number">0</span>;
             {
-                <span class="comment">// (1) Scalar convolution of the beginning</span>
+                <span class="comment">// (1) Scalar convolution of the beginning</span>
                 <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp</span>[<span class="number">0</span>..<span class="ident">imp_len</span> <span class="op">/</span> <span class="number">2</span>] {
                     <span class="kw-2">*</span><span class="ident">num</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">convolve_iteration</span>(
                         <span class="ident">x_time</span>,
@@ -1304,7 +1307,7 @@
                     );
                     <span class="ident">position</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                 }
-                <span class="comment">// (2) Scalar convolution of the end/tail</span>
+                <span class="comment">// (2) Scalar convolution of the end/tail</span>
                 <span class="ident">position</span> <span class="op">=</span> (<span class="ident">x_time</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">end</span>.<span class="ident">len</span>()) <span class="kw">as</span> <span class="ident">isize</span>;
                 <span class="kw">for</span> <span class="ident">num</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">end</span>[<span class="number">0</span>..<span class="ident">remainder_len</span> <span class="op">/</span> <span class="number">2</span>] {
                     <span class="kw-2">*</span><span class="ident">num</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">convolve_iteration</span>(
@@ -1319,9 +1322,9 @@
             }
 
             <span class="kw">let</span> <span class="ident">position</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">T</span>::<span class="ident">has_gpu_support</span>() {
-                <span class="comment">// GPU implementation of overlap_discard `thinks` in interleaved arrays</span>
-                <span class="comment">// while this implementation `thinks` in complex arrays. Therefore a factor</span>
-                <span class="comment">// of 2 needs to be taken into account in the method call.</span>
+                <span class="comment">// GPU implementation of overlap_discard `thinks` in interleaved arrays</span>
+                <span class="comment">// while this implementation `thinks` in complex arrays. Therefore a factor</span>
+                <span class="comment">// of 2 needs to be taken into account in the method call.</span>
                 <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">overlap_discard</span>(
                     <span class="ident">array_to_real_mut</span>(<span class="ident">x_time</span>),
                     <span class="ident">array_to_real_mut</span>(<span class="ident">tmp</span>),
@@ -1332,18 +1335,18 @@
                 ) <span class="op">/</span> <span class="number">2</span>;
                 <span class="ident">position</span> <span class="kw">as</span> <span class="ident">usize</span>
             } <span class="kw">else</span> {
-                <span class="comment">// `fft.process` will invalidate `x_time` we therefore need to remember the overlap region</span>
-                <span class="comment">// and restore it.</span>
+                <span class="comment">// `fft.process` will invalidate `x_time` we therefore need to remember the overlap region</span>
+                <span class="comment">// and restore it.</span>
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">overlap_buffer</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">of_size</span>(<span class="ident">Complex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">zero</span>(), <span class="ident">overlap</span>);
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">position</span> <span class="op">=</span> <span class="number">0</span>;
                 <span class="kw">let</span> <span class="ident">scaling</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">fft_len</span>).<span class="ident">unwrap</span>();
                 {
                     <span class="kw">let</span> <span class="ident">range</span> <span class="op">=</span> <span class="ident">position</span>..<span class="ident">fft_len</span> <span class="op">+</span> <span class="ident">position</span>;
-                    <span class="comment">// (3) The first iteration is different since it copies over the results which have been calculated for the beginning</span>
+                    <span class="comment">// (3) The first iteration is different since it copies over the results which have been calculated for the beginning</span>
                     (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">overlap_buffer</span>[..])
                         .<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">x_time</span>[<span class="ident">position</span> <span class="op">+</span> <span class="ident">step_size</span>..<span class="ident">position</span> <span class="op">+</span> <span class="ident">fft_len</span>]);
                     <span class="ident">fft</span>.<span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x_time</span>[<span class="ident">range</span>], <span class="ident">x_freq</span>);
-                    <span class="comment">// Copy over the results of the scalar convolution (1)</span>
+                    <span class="comment">// Copy over the results of the scalar convolution (1)</span>
                     (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x_time</span>[<span class="number">0</span>..<span class="ident">imp_len</span> <span class="op">/</span> <span class="number">2</span>]).<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">tmp</span>[<span class="number">0</span>..<span class="ident">imp_len</span> <span class="op">/</span> <span class="number">2</span>]);
                     <span class="kw">for</span> (<span class="ident">n</span>, <span class="ident">v</span>) <span class="kw">in</span> (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x_freq</span>[..]).<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">h_freq</span>.<span class="ident">iter</span>()) {
                         <span class="kw-2">*</span><span class="ident">n</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">n</span> <span class="op">*</span> <span class="kw-2">*</span><span class="ident">v</span> <span class="op">/</span> <span class="ident">scaling</span>;
@@ -1359,7 +1362,7 @@
                     (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">overlap_buffer</span>[..])
                         .<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">x_time</span>[<span class="ident">position</span> <span class="op">+</span> <span class="ident">step_size</span>..<span class="ident">position</span> <span class="op">+</span> <span class="ident">fft_len</span>]);
                     <span class="ident">fft</span>.<span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x_time</span>[<span class="ident">range</span>], <span class="ident">x_freq</span>);
-                    <span class="comment">// (4) Same as (3) except that the results of the previous iteration gets copied over</span>
+                    <span class="comment">// (4) Same as (3) except that the results of the previous iteration gets copied over</span>
                     (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x_time</span>[<span class="ident">position</span> <span class="op">-</span> <span class="ident">step_size</span> <span class="op">+</span> <span class="ident">imp_len</span> <span class="op">/</span> <span class="number">2</span>..<span class="ident">position</span> <span class="op">+</span> <span class="ident">imp_len</span> <span class="op">/</span> <span class="number">2</span>])
                         .<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">tmp</span>[<span class="ident">imp_len</span> <span class="op">-</span> <span class="number">1</span>..<span class="ident">fft_len</span>]);
                     <span class="kw">for</span> (<span class="ident">n</span>, <span class="ident">v</span>) <span class="kw">in</span> (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x_freq</span>[..]).<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">h_freq</span>.<span class="ident">iter</span>()) {
@@ -1371,11 +1374,11 @@
                 <span class="ident">position</span>
             };
 
-            <span class="comment">// (5) now store the result of the last iteration</span>
+            <span class="comment">// (5) now store the result of the last iteration</span>
             (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x_time</span>[<span class="ident">position</span> <span class="op">-</span> <span class="ident">step_size</span> <span class="op">+</span> <span class="ident">imp_len</span> <span class="op">/</span> <span class="number">2</span>..<span class="ident">position</span> <span class="op">+</span> <span class="ident">imp_len</span> <span class="op">/</span> <span class="number">2</span>])
                 .<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">tmp</span>[<span class="ident">imp_len</span> <span class="op">-</span> <span class="number">1</span>..<span class="ident">fft_len</span>]);
 
-            <span class="comment">// (6) Copy over the end result which was calculated at the beginning (2)</span>
+            <span class="comment">// (6) Copy over the end result which was calculated at the beginning (2)</span>
             (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">x_time</span>[<span class="ident">x_len</span> <span class="op">-</span> <span class="ident">remainder_len</span> <span class="op">/</span> <span class="number">2</span>..]).<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">end</span>[..]);
         }
         <span class="prelude-val">Ok</span>(())
@@ -1412,17 +1415,17 @@
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InvalidArgumentLength</span>);
         }
 
-        <span class="comment">// The values in this condition are nothing more than a guess.</span>
-        <span class="comment">// The reasoning is basically this:</span>
-        <span class="comment">// For the SIMD operation we need to clone `vector` several</span>
-        <span class="comment">// times and this only is worthwhile if `vector.len() &lt;&lt; self.len()`</span>
-        <span class="comment">// where `&lt;&lt;` means &quot;significant smaller&quot;.</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1000</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">202</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">11</span> {
+        <span class="comment">// The values in this condition are nothing more than a guess.</span>
+        <span class="comment">// The reasoning is basically this:</span>
+        <span class="comment">// For the SIMD operation we need to clone `vector` several</span>
+        <span class="comment">// times and this only is worthwhile if `vector.len() &lt;&lt; self.len()`</span>
+        <span class="comment">// where `&lt;&lt;` means &quot;significant smaller&quot;.</span>
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1000</span> <span class="op">&amp;&amp;</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">202</span> <span class="op">&amp;&amp;</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">11</span> {
             <span class="macro">sel_reg</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">convolve_signal_simd</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">buffer</span>, <span class="ident">impulse_response</span>));
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }
 
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">10000</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">T</span>::<span class="ident">has_gpu_support</span>() {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">10000</span> <span class="op">&amp;&amp;</span> <span class="ident">T</span>::<span class="ident">has_gpu_support</span>() {
             <span class="kw">let</span> <span class="ident">is_complex</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">is_complex</span>();
             <span class="kw">let</span> <span class="ident">source_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
             <span class="kw">let</span> <span class="ident">imp_resp_len</span> <span class="op">=</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>();
@@ -1439,7 +1442,7 @@
                 )
             };
             <span class="kw">match</span> <span class="ident">range_done</span> {
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (), <span class="comment">// The GPU code can&#39;t handle this go to the next cases</span>
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (), <span class="comment">// The GPU code can&#39;t handle this go to the next cases</span>
                 <span class="prelude-val">Some</span>(<span class="ident">range</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="self">self</span>.<span class="ident">convolve_vector_range</span>(<span class="ident">target</span>.<span class="ident">to_slice_mut</span>(), <span class="ident">impulse_response</span>, <span class="ident">range</span>);
                     <span class="ident">target</span>.<span class="ident">trade</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">data</span>);
@@ -1449,10 +1452,10 @@
         }
 
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">10000</span>
-            <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">15</span>
-            <span class="comment">// Overlap-discard creates a lot of copies of the size of impulse_response</span>
-            <span class="comment">// and that only seems to be worthwhile if the vector is long enough</span>
-            <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">10</span> <span class="op">*</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">is_complex</span>()
+            <span class="op">&amp;&amp;</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">15</span>
+            <span class="comment">// Overlap-discard creates a lot of copies of the size of impulse_response</span>
+            <span class="comment">// and that only seems to be worthwhile if the vector is long enough</span>
+            <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">10</span> <span class="op">*</span> <span class="ident">impulse_response</span>.<span class="ident">len</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">is_complex</span>()
         {
             <span class="kw">let</span> <span class="ident">fft_len</span> <span class="op">=</span> <span class="ident">next_power_of_two</span>(<span class="ident">impulse_response</span>.<span class="ident">len</span>());
             <span class="kw">return</span> <span class="self">self</span>.<span class="ident">overlap_discard</span>(<span class="ident">buffer</span>, <span class="ident">impulse_response</span>, <span class="ident">fft_len</span>);
@@ -1463,7 +1466,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">FrequencyMultiplication</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">ComplexFrequencyResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">FrequencyMultiplication</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">dyn</span> <span class="ident">ComplexFrequencyResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
     <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1473,7 +1476,7 @@
 {
     <span class="kw">fn</span> <span class="ident">multiply_frequency_response</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">frequency_response</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">ComplexFrequencyResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">frequency_response</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">ComplexFrequencyResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
         <span class="ident">ratio</span>: <span class="ident">T</span>,
     ) {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_complex</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">domain</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">DataDomain</span>::<span class="ident">Frequency</span> {
@@ -1491,7 +1494,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">FrequencyMultiplication</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">FrequencyMultiplication</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
     <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1501,7 +1504,7 @@
 {
     <span class="kw">fn</span> <span class="ident">multiply_frequency_response</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">frequency_response</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">frequency_response</span>: <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
         <span class="ident">ratio</span>: <span class="ident">T</span>,
     ) {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">domain</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">DataDomain</span>::<span class="ident">Frequency</span> {
@@ -1554,7 +1557,7 @@
     <span class="kw">fn</span> <span class="ident">convolve_complex_freq_and_freq32</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>; <span class="number">10</span>].<span class="ident">to_complex_freq_vec</span>();
         <span class="kw">let</span> <span class="ident">rc</span>: <span class="ident">RaisedCosineFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">RaisedCosineFunction</span>::<span class="ident">new</span>(<span class="number">1.0</span>);
-        <span class="ident">vector</span>.<span class="ident">multiply_frequency_response</span>(<span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">2.0</span>);
+        <span class="ident">vector</span>.<span class="ident">multiply_frequency_response</span>(<span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">2.0</span>);
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> [<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">2.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>];
         <span class="ident">assert_eq_tol</span>(<span class="ident">vector</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
     }
@@ -1563,7 +1566,7 @@
     <span class="kw">fn</span> <span class="ident">convolve_complex_freq_and_freq_even32</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>; <span class="number">12</span>].<span class="ident">to_complex_freq_vec</span>();
         <span class="kw">let</span> <span class="ident">rc</span>: <span class="ident">RaisedCosineFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">RaisedCosineFunction</span>::<span class="ident">new</span>(<span class="number">1.0</span>);
-        <span class="ident">vector</span>.<span class="ident">multiply_frequency_response</span>(<span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">2.0</span>);
+        <span class="ident">vector</span>.<span class="ident">multiply_frequency_response</span>(<span class="kw-2">&amp;</span><span class="ident">rc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">2.0</span>);
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> [<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">1.5</span>, <span class="number">1.5</span>, <span class="number">2.0</span>, <span class="number">2.0</span>, <span class="number">1.5</span>, <span class="number">1.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>];
         <span class="ident">assert_eq_tol</span>(<span class="ident">vector</span>.<span class="ident">data</span>(..), <span class="kw-2">&amp;</span><span class="ident">expected</span>, <span class="number">1e-4</span>);
     }
@@ -1599,7 +1602,7 @@
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
             <span class="ident">time</span>.<span class="ident">convolve</span>(
                 <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>,
-                <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+                <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
                 <span class="number">0.5</span>,
                 <span class="ident">len</span> <span class="op">/</span> <span class="number">2</span>,
             );
@@ -1631,8 +1634,8 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">freq</span> <span class="op">=</span> <span class="ident">time</span>.<span class="ident">clone</span>().<span class="ident">fft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>);
         <span class="kw">let</span> <span class="ident">sinc</span>: <span class="ident">SincFunction</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="ident">ratio</span> <span class="op">=</span> <span class="number">0.5</span>;
-        <span class="ident">freq</span>.<span class="ident">multiply_frequency_response</span>(<span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">1.0</span> <span class="op">/</span> <span class="ident">ratio</span>);
-        <span class="ident">time</span>.<span class="ident">convolve</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">0.5</span>, <span class="ident">len</span>);
+        <span class="ident">freq</span>.<span class="ident">multiply_frequency_response</span>(<span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealFrequencyResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">1.0</span> <span class="op">/</span> <span class="ident">ratio</span>);
+        <span class="ident">time</span>.<span class="ident">convolve</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">0.5</span>, <span class="ident">len</span>);
         <span class="kw">let</span> <span class="ident">ifft</span> <span class="op">=</span> <span class="ident">freq</span>.<span class="ident">ifft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>).<span class="ident">magnitude</span>();
         <span class="kw">let</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident">time</span>.<span class="ident">magnitude</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">ifft</span>.<span class="ident">is_complex</span>(), <span class="ident">time</span>.<span class="ident">is_complex</span>());
@@ -1648,11 +1651,11 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
         <span class="ident">time</span>.<span class="ident">convolve</span>(
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>,
-            <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+            <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
             <span class="number">0.5</span>,
             <span class="number">10</span> <span class="op">*</span> <span class="ident">len</span>,
         );
-        <span class="comment">// As long as we don&#39;t panic we are happy with the error handling here</span>
+        <span class="comment">// As long as we don&#39;t panic we are happy with the error handling here</span>
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1665,13 +1668,13 @@
         {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="op">-</span><span class="number">5.0</span>;
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">real</span> {
-                <span class="kw-2">*</span><span class="ident">a</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>).<span class="ident">calc</span>(<span class="ident">v</span> <span class="op">*</span> <span class="number">0.5</span>);
+                <span class="kw-2">*</span><span class="ident">a</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>).<span class="ident">calc</span>(<span class="ident">v</span> <span class="op">*</span> <span class="number">0.5</span>);
                 <span class="ident">v</span> <span class="op">+</span><span class="op">=</span> <span class="number">1.0</span>;
             }
         }
         <span class="kw">let</span> <span class="ident">imag</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="number">0.0</span>; <span class="ident">LEN</span>];
         <span class="kw">let</span> <span class="ident">argument</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">real</span>[..])
-            .<span class="ident">interleave_to_complex_time_vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">&amp;</span><span class="ident">imag</span>[..])
+            .<span class="ident">interleave_to_complex_time_vec</span>(<span class="op">&amp;&amp;</span><span class="ident">imag</span>[..])
             .<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">time</span>.<span class="ident">points</span>(), <span class="ident">argument</span>.<span class="ident">points</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
@@ -1818,16 +1821,16 @@
         <span class="ident">assert_eq_tol</span>(<span class="ident">overlap_discard</span>.<span class="ident">data</span>(..), <span class="ident">conv</span>.<span class="ident">data</span>(..), <span class="number">1e-4</span>);
     }
 
-    <span class="doccomment">/// This test triggered an index out of range error in the past</span>
+    <span class="doccomment">/// This test triggered an index out of range error in the past</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">index_out_of_range_error_test</span>() {
         <span class="kw">let</span> <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0.0</span>; <span class="number">5000</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">clone</span>().<span class="ident">to_real_time_vec</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="ident">sinc</span> <span class="op">=</span> <span class="ident">SincFunction</span>::<span class="ident">new</span>();
-        <span class="ident">vec</span>.<span class="ident">convolve</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">1.0</span>, <span class="number">12</span>);
+        <span class="ident">vec</span>.<span class="ident">convolve</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="kw-2">&amp;</span><span class="ident">sinc</span> <span class="kw">as</span> <span class="kw-2">&amp;</span><span class="ident">dyn</span> <span class="ident">RealImpulseResponse</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="number">1.0</span>, <span class="number">12</span>);
         <span class="ident">assert_eq_tol</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>[..], <span class="ident">vec</span>.<span class="ident">data</span>(..), <span class="number">1e-4</span>);
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
