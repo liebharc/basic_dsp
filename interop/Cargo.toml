@@ -8,12 +8,8 @@ repository = "https://github.com/liebharc/basic_dsp"
 documentation = "https://liebharc.github.io/basic_dsp/basic_dsp/"
 keywords = ["dsp", "vector", "interpolation", "convolution", "matrix"]
 edition="2018"
-description = """
-This lib offers a C compatible interface for `basic_dsp_vector`, so that it can be used from programs written in languages other than Rust.
-
-`basic_dsp_vector` provides digital signal processing based on real or complex vectors in time or frequency domain.
-Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations. The vectors are optimized for sizes of a couple of thousand elements or more.
-"""
+description = "Digital signal processing based on real or complex vectors in time or frequency domain."
+readme = "../README.md"
 
 [profile.dev]
 codegen-units = 4
