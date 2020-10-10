@@ -26,18 +26,6 @@ if ($changelog_matches -eq 0) {
     $Host.UI.WriteErrorLine("Version $current_version isn't mentioned in Changelog.md")
 }
 
-# Documentation needs to be up to date
-$last_doc_update = $(git show --format="%ci" "origin/gh-pages" | Select -First 1)
-$last_doc_update = $(Get-Date $last_doc_update)
-
-$age_difference_days = ($last_master_update - $last_doc_update).TotalDays
-
-if ($age_difference_days -gt 3.0) {
-    $Host.UI.WriteErrorLine("Documentation hasn't been updated $age_difference_days days since the last master commit.")
-	$Host.UI.WriteErrorLine("# cargo doc -p basic_dsp -p basic_dsp_vector -p basic_dsp_matrix --no-deps")
-    $all_okay = $false
-}
-
 # Interop facade32 (which is the "master") needs to be complete
 $cwd = $(Get-Location)
 cd interop/src
