@@ -57,6 +57,3 @@ The main design goals are:
 
 ## Contributions
 Welcome!
-
-## Stability
-This project started as small pet project to learn more about DSP, CPU architecture and Rust. Since learning involves making mistakes, don't expect things to be flawless or even close to flawless. In fact issues are expected in all areas (including correctness, stability, performance) and while the crate should be useful already all results should be treated with caution at the same time.
