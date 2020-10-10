@@ -1,7 +1,7 @@
 use super::{Simd, SimdFrom};
 use crate::numbers::*;
-pub use packed_simd::{f32x8, f64x4};
-use packed_simd::{i32x8, i64x4, FromCast};
+pub use packed_simd_2::{f32x8, f64x4};
+use packed_simd_2::{i32x8, i64x4, FromCast};
 use std::arch::x86_64::*;
 use std::mem;
 

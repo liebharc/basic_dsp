@@ -73,7 +73,7 @@ extern crate num_traits;
 #[cfg(feature = "use_gpu")]
 extern crate ocl;
 #[cfg(feature = "use_simd")]
-extern crate packed_simd;
+extern crate packed_simd_2;
 extern crate rustfft;
 #[cfg(feature = "std")]
 extern crate time;
