@@ -759,7 +759,7 @@ where
             let phase = phase.data(0..phase.len());
             let mut i = 0;
             while i < data_length {
-                let c = Complex::<T>::from_polar(&mag[i / 2], &phase[i / 2]);
+                let c = Complex::<T>::from_polar(mag[i / 2], phase[i / 2]);
                 data[i] = c.re;
                 data[i + 1] = c.im;
                 i += 2;

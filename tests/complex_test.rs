@@ -407,8 +407,8 @@ mod complex_test {
     fn complex_exponential(vec: &Vec<f32>, a: f32, b: f32, delta: f32) -> Vec<f32> {
         let a = a * delta;
         let b = b * delta;
-        let mut exponential = Complex32::from_polar(&1.0, &b);
-        let increment = Complex32::from_polar(&1.0, &a);
+        let mut exponential = Complex32::from_polar(1.0, b);
+        let increment = Complex32::from_polar(1.0, a);
         let mut result = to_complex(vec);
         for complex in &mut result {
             *complex = (*complex) * exponential;
