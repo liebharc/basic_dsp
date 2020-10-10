@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["basic_dsp_vector"] = [{"text":"impl Copy for MultiCoreSettings","synthetic":false,"types":[]},{"text":"impl Copy for ErrorReason","synthetic":false,"types":[]},{"text":"impl Copy for PaddingOption","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;Copy&gt; Copy for Statistics&lt;T&gt;","synthetic":false,"types":[]},{"text":"impl Copy for DataDomain","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;Copy, N:&nbsp;Copy, D:&nbsp;Copy&gt; Copy for TypeMetaData&lt;T, N, D&gt;","synthetic":false,"types":[]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

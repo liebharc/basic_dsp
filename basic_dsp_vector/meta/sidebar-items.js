@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Complex","Marker for types containing complex data."],["Freq","Marker for types containing frequency data."],["Real","Marker for types containing real data."],["RealOrComplex","Marker for types containing real or complex data."],["Time","Marker for types containing time data."],["TimeOrFreq","Marker for types containing time or frequency data."]]});

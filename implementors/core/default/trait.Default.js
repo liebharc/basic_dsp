@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["basic_dsp_vector"] = [{"text":"impl&lt;T:&nbsp;Default&gt; Default for SincFunction&lt;T&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: RealNumber,&nbsp;</span>","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;Default&gt; Default for SingleBuffer&lt;T&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: RealNumber,&nbsp;</span>","synthetic":false,"types":[]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
