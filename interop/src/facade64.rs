@@ -156,8 +156,13 @@ pub extern "C" fn get_delta64(vector: &VecBuf) -> f64 {
 }
 
 #[no_mangle]
-pub extern "C" fn complex_data64(vector: &VecBuf) -> &[Complex64] {
-    vector.vec.datac(..)
+pub extern "C" fn data64(vector: &VecBuf) -> *const f64 {
+    vector.vec.data(..).as_ptr()
+}
+
+#[no_mangle]
+pub extern "C" fn complex_data64(vector: &VecBuf) -> *const Complex64 {
+    vector.vec.datac(..).as_ptr()
 }
 
 #[no_mangle]
@@ -611,7 +616,7 @@ pub extern "C" fn map_aggregate_real64(
     vector: &VecBuf,
     map: extern "C" fn(f64, usize) -> *const c_void,
     aggregate: extern "C" fn(*const c_void, *const c_void) -> *const c_void,
-) -> ScalarResult<*const c_void> {
+) -> ScalarInteropResult<*const c_void> {
     unsafe {
         let map = move |v, i, _| mem::transmute(map(v, i));
         let aggr = move |a: usize, b: usize| {
@@ -631,7 +636,7 @@ pub extern "C" fn map_aggregate_complex64(
     vector: &VecBuf,
     map: extern "C" fn(Complex64, usize) -> *const c_void,
     aggregate: extern "C" fn(*const c_void, *const c_void) -> *const c_void,
-) -> ScalarResult<*const c_void> {
+) -> ScalarInteropResult<*const c_void> {
     unsafe {
         let map = move |v, i, _| mem::transmute(map(v, i));
         let aggr = move |a: usize, b: usize| {

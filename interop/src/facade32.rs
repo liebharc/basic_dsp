@@ -155,8 +155,13 @@ pub extern "C" fn get_delta32(vector: &VecBuf) -> f32 {
 }
 
 #[no_mangle]
-pub extern "C" fn complex_data32(vector: &VecBuf) -> &[Complex32] {
-    vector.vec.datac(..)
+pub extern "C" fn data32(vector: &VecBuf) -> *const f32 {
+    vector.vec.data(..).as_ptr()
+}
+
+#[no_mangle]
+pub extern "C" fn complex_data32(vector: &VecBuf) -> *const Complex32 {
+    vector.vec.datac(..).as_ptr()
 }
 
 #[no_mangle]
@@ -610,7 +615,7 @@ pub extern "C" fn map_aggregate_real32(
     vector: &VecBuf,
     map: extern "C" fn(f32, usize) -> *const c_void,
     aggregate: extern "C" fn(*const c_void, *const c_void) -> *const c_void,
-) -> ScalarResult<*const c_void> {
+) -> ScalarInteropResult<*const c_void> {
     unsafe {
         let map = move |v, i, _| mem::transmute(map(v, i));
         let aggr = move |a: usize, b: usize| {
@@ -630,7 +635,7 @@ pub extern "C" fn map_aggregate_complex32(
     vector: &VecBuf,
     map: extern "C" fn(Complex32, usize) -> *const c_void,
     aggregate: extern "C" fn(*const c_void, *const c_void) -> *const c_void,
-) -> ScalarResult<*const c_void> {
+) -> ScalarInteropResult<*const c_void> {
     unsafe {
         let map = move |v, i, _| mem::transmute(map(v, i));
         let aggr = move |a: usize, b: usize| {

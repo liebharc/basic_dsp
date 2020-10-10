@@ -5,6 +5,8 @@ Changes:
 ## Version 0.9.0
 
 - Updated `rustfft` and `num-complex` dependencies
+- Switched from `packed_simd` to `packed_simd_2` to avoid build failures for now
+- Fixed warnings in `interop` crate
 
 ## Version 0.8.2
 
