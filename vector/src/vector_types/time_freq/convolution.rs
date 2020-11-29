@@ -298,7 +298,7 @@ where
     DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone,
 {
     /// Overlap-discard or overlap-save implementation:
-    /// https://en.wikipedia.org/wiki/Overlap%E2%80%93save_method
+    /// <https://en.wikipedia.org/wiki/Overlap%E2%80%93save_method>
     ///
     /// With this method the convolution is performed in freq domain
     fn overlap_discard<B, SO, NO, DO>(

@@ -119,7 +119,7 @@ where
 /// uncertainty has less impact on the final results.
 pub trait PreciseStats<T>: Sized {
     /// Adds a new values to the statistics using the Kahan summation algorithm
-    /// described here: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+    /// described here: <https://en.wikipedia.org/wiki/Kahan_summation_algorithm>
     fn add_prec(&mut self, elem: T, index: usize, sumc: &mut T, rmsc: &mut T);
 }
 

@@ -74,7 +74,8 @@ where
     type Output;
 
     /// Gets the underlying storage and the number of elements which
-    /// contain valid data. In case of complex vectors the values are returned real-imag pairs. Refer to `FromVector`
+    /// contain valid data. In case of complex vectors the values are returned real-imag pairs. 
+    /// Refer to [`Into`](https://doc.rust-lang.org/std/convert/trait.Into.html) or [`FromVector`](trait.FromVector.html#)
     /// for a method which returns the data of complex vectors in a different manner.
     /// # Example
     ///
@@ -93,6 +94,10 @@ where
 }
 
 /// Retrieves the underlying storage from a vector.
+///
+/// If you are working with `std::vec::Vec` then it's recommended to use  
+/// [`Into`](https://doc.rust-lang.org/std/convert/trait.Into.html#tymethod.into) instead of this one, as
+/// it's more straightforward to use.
 pub trait FromVector<T>
 where
     T: RealNumber,
@@ -100,8 +105,14 @@ where
     /// Type of the underlying storage of a vector.
     type Output;
 
+    /// If you are working with `std::vec::Vec` then it's recommended to use  
+    /// [`Into`](https://doc.rust-lang.org/std/convert/trait.Into.html#tymethod.into) instead of this one, as
+    /// it's more straightforward to use.
+    ///
     /// Gets the underlying storage and the number of elements which
-    /// contain valid data.
+    /// contain valid data. Therefore a caller should only use the first `valid data` elements from the storage. 
+    /// The remaining elements (if there are any) might have been allocated during the calculations but contain 
+    /// no useful information.
     /// # Example
     ///
     /// ```

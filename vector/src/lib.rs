@@ -22,6 +22,19 @@
 //! indicates that a conversation is missing and that this might be a programming mistake. This lib uses
 //! the Rust type system to catch such errors.
 //!
+//! DSP vectors are meant to integrate well with other types and so they can for example be converted from and to a Rust standard vector:
+//!
+//! ```
+//! # use std::f32;
+//! # use basic_dsp_vector::*;
+//! # use basic_dsp_vector::conv_types::*;
+//! let mut dsp_vec = vec![0.0; 1000].to_real_time_vec();
+//! let mut buffer = SingleBuffer::new();
+//! dsp_vec.interpolatei(&mut buffer, &RaisedCosineFunction::new(0.35), 2).unwrap();
+//! let vec: Vec<f64> = dsp_vec.into();
+//! assert_eq!(vec.len(), 2000);
+//! ```` 
+//!
 //! DSP algorithms are often executed in loops. If you work with large vectors you typically try to avoid
 //! allocating buffers in every iteration. Preallocating buffers is a common practice to safe a little time
 //! with every iteration later on, but also to avoid heap fragmentation. At the same time it's a tedious task

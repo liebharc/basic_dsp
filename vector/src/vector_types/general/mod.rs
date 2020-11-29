@@ -19,7 +19,7 @@ use crate::numbers::*;
 use std::ops::{Add, Sub};
 
 /// Sums up the given values using a more precise
-/// summation algorithm: `https://en.wikipedia.org/wiki/Kahan_summation_algorithm`
+/// summation algorithm: <https://en.wikipedia.org/wiki/Kahan_summation_algorithm>
 fn kahan_sum<I, T>(values: I) -> T
 where
     I: Iterator<Item = T>,
@@ -37,7 +37,7 @@ where
 }
 
 /// Sums up the given values using a more precise
-/// summation algorithm: `https://en.wikipedia.org/wiki/Kahan_summation_algorithm`
+/// summation algorithm: <https://en.wikipedia.org/wiki/Kahan_summation_algorithm>
 fn kahan_sumb<'a, I, T>(values: I) -> T
 where
     I: Iterator<Item = &'a T>,

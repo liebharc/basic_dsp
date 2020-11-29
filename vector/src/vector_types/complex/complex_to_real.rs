@@ -317,7 +317,7 @@ where
     fn get_phase(&self, destination: &mut A);
 
     /// Gets the real and imaginary parts and stores them in the given vectors.
-    /// See also  [`get_phase`](trait.ComplexVectorOps.html#tymethod.get_phase) and
+    /// See also [`get_phase`](trait.ComplexVectorOps.html#tymethod.get_phase) and
     /// [`get_complex_abs`](trait.ComplexVectorOps.html#tymethod.get_complex_abs) for further
     /// information.
     fn get_real_imag(&self, real: &mut A, imag: &mut A);

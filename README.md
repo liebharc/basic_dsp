@@ -4,7 +4,7 @@
 [![Crates.io](https://img.shields.io/crates/v/basic_dsp.svg)](https://crates.io/crates/basic_dsp)
 [![Crates.io](https://img.shields.io/crates/l/basic_dsp.svg)](https://crates.io/crates/basic_dsp)
 [![Docs.rs](https://docs.rs/basic_dsp/badge.svg)](https://docs.rs/basic_dsp)
-![minimum rustc 1.40](https://img.shields.io/badge/rustc-1.40+-red.svg)
+![minimum rustc 1.43](https://img.shields.io/badge/rustc-1.43+-red.svg)
 
 Digital signal processing based on real or complex vectors in time or frequency domain. Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations.
 

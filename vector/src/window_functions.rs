@@ -23,7 +23,7 @@ where
     fn window(&self, n: usize, length: usize) -> T;
 }
 
-/// A triangular window: `https://en.wikipedia.org/wiki/Window_function#Triangular_window`
+/// A triangular window: <https://en.wikipedia.org/wiki/Window_function#Triangular_window>
 pub struct TriangularWindow;
 impl<T> WindowFunction<T> for TriangularWindow
 where
@@ -42,7 +42,7 @@ where
     }
 }
 
-/// A generalized Hamming window: `https://en.wikipedia.org/wiki/Window_function#Hamming_window`
+/// A generalized Hamming window: <https://en.wikipedia.org/wiki/Window_function#Hamming_window>
 pub struct HammingWindow<T>
 where
     T: RealNumber,
@@ -87,7 +87,7 @@ where
     }
 }
 
-/// A Blackman-Harris Window: `https://en.wikipedia.org/wiki/Window_function#Blackman-Harris_window`
+/// A Blackman-Harris Window: <https://en.wikipedia.org/wiki/Window_function#Blackman-Harris_window>
 pub struct BlackmanHarrisWindow;
 impl<T> WindowFunction<T> for BlackmanHarrisWindow
 where
@@ -115,7 +115,7 @@ where
     }
 }
 
-/// A rectangular window: `https://en.wikipedia.org/wiki/Window_function#Rectangular_window`
+/// A rectangular window: <https://en.wikipedia.org/wiki/Window_function#Rectangular_window>
 pub struct RectangularWindow;
 impl<T> WindowFunction<T> for RectangularWindow
 where

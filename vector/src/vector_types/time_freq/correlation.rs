@@ -30,7 +30,7 @@ where
         B: for<'a> Buffer<'a, S, T>;
 }
 
-/// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
+/// Cross-correlation of data vectors. See also <https://en.wikipedia.org/wiki/Cross-correlation>.
 ///
 /// The correlation is calculated in two steps. This is done to give you more control
 /// over two things:

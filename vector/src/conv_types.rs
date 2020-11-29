@@ -1,4 +1,4 @@
-//! Types around a convolution, see also https://en.wikipedia.org/wiki/Convolution.
+//! Types around a convolution, see also <https://en.wikipedia.org/wiki/Convolution>.
 //!
 //! Convolutions in this library can be defined in time or frequency domain. In
 //! frequency domain the convolution is automatically transformed into a multiplication
@@ -387,7 +387,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
 }
 add_complex_frequency_linear_table_impl!(f32, f64);
 
-/// Raised cosine function according to `https://en.wikipedia.org/wiki/Raised-cosine_filter`
+/// Raised cosine function according to <https://en.wikipedia.org/wiki/Raised-cosine_filter>
 pub struct RaisedCosineFunction<T>
 where
     T: RealNumber,
@@ -459,7 +459,7 @@ where
     }
 }
 
-/// Sinc function according to `https://en.wikipedia.org/wiki/Sinc_function`
+/// Sinc function according to <https://en.wikipedia.org/wiki/Sinc_function>
 #[derive(Default)]
 pub struct SincFunction<T>
 where
