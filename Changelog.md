@@ -1,6 +1,13 @@
 # `basic_dsp`
 Changes:
 
+- Implemented `From` and `Into`for the conversion of a `DspVec` into a `std::Vec` to address https://github.com/liebharc/basic_dsp/issues/46
+
+## Version 0.9.1
+
+- Updated `rustfft` and `num-complex` dependencies
+- Switched from `packed_simd` to `packed_simd_2` to avoid build failures for now
+- Fixed warnings in `interop` crate
 
 ## Version 0.9.0
 
