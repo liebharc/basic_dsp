@@ -581,6 +581,32 @@ where
     }
 }
 
+impl<T, D> From<DspVec<Vec<T>, T, meta::Real, D>> for Vec<T>
+where 
+    T: RealNumber,
+    D: Domain,
+    {
+
+    fn from(mut vector: DspVec<Vec<T>, T, meta::Real, D>) -> Self {
+        let len = vector.valid_len;
+        vector.data.truncate(len);
+        vector.data
+    }
+}
+
+impl<T, D> From<DspVec<Vec<T>, T, meta::Complex, D>> for Vec<Complex<T>>
+where 
+    T: RealNumber,
+    D: Domain,
+    {
+
+    fn from(mut vector: DspVec<Vec<T>, T, meta::Complex, D>) -> Self {
+        let len = vector.valid_len;
+        vector.data.truncate(len);
+        interleaved_vec_to_complex_vec(vector.data)
+    }
+}
+
 fn expand_to_full_capacity<T>(vec: &mut Vec<T>)
 where
     T: Zero,
@@ -625,6 +651,8 @@ where
 mod tests {
     use super::complex_vec_to_interleaved_vec;
     use num_complex::Complex32;
+    use super::super::*;
+    use crate::conv_types::*;
 
     #[test]
     fn complex_vec_to_interleaved_vec_test() {
@@ -637,4 +665,29 @@ mod tests {
         );
     }
 
+    #[test]
+    fn vec_into_test_real() {
+        let mut dsp_vec = vec![0.0; 100].to_real_time_vec();
+        let mut buffer = SingleBuffer::new();
+        assert_eq!(dsp_vec.points(), 100);
+        assert_eq!(dsp_vec.len(), 100);
+        dsp_vec.interpolatei(&mut buffer, &RaisedCosineFunction::new(0.35), 2).unwrap();
+        assert_eq!(dsp_vec.points(), 200);
+        assert_eq!(dsp_vec.len(), 200);
+        let vec: Vec<f64> = dsp_vec.into();
+        assert_eq!(vec.len(), 200);
+    }
+
+    #[test]
+    fn vec_into_test_complex() {
+        let mut dsp_vec = vec![0.0; 100].to_complex_time_vec();
+        let mut buffer = SingleBuffer::new();
+        assert_eq!(dsp_vec.points(), 50);
+        assert_eq!(dsp_vec.len(), 100);
+        dsp_vec.interpolatei(&mut buffer, &RaisedCosineFunction::new(0.35), 2).unwrap();
+        assert_eq!(dsp_vec.points(), 100);
+        assert_eq!(dsp_vec.len(), 200);
+        let vec: Vec<Complex<f64>> = dsp_vec.into();
+        assert_eq!(vec.len(), 100);
+    }
 }
