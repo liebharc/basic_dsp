@@ -335,7 +335,7 @@ where
         let ifft = planner.plan_fft_inverse(fft_len);
         let step_size = fft_len - overlap;
         let filter_response_padded_len = 2 * fft_len;
-        let scratch_len = 2 * fft_len;
+        let scratch_len = 2 * std::cmp::max(fft.get_inplace_scratch_len(), fft.get_outofplace_scratch_len()); // Times 2 as the fft is complex
         let signal_freq_len = 2 * fft_len;
         let tmp_len = 2 * fft_len;
         let remainder_len = x_len - x_len % fft_len;
@@ -365,7 +365,7 @@ where
             let filter_response_padded: &mut [Complex<T>] =
                 array_to_complex_mut(&mut filter_response_padded[0..2 * fft_len]);
             let signal_time: &mut [Complex<T>] = array_to_complex_mut(&mut signal_time[0..2 * x_len]);
-            let scratch: &mut [Complex<T>] = array_to_complex_mut(&mut scratch[0..2 * fft_len]);
+            let scratch: &mut [Complex<T>] = array_to_complex_mut(scratch);
             let signal_freq: &mut [Complex<T>] = array_to_complex_mut(&mut signal_freq[0..2 * fft_len]);
             let tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2 * fft_len]);
             let end: &mut [Complex<T>] = array_to_complex_mut(&mut end[0..remainder_len]);
