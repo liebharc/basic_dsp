@@ -1,14 +1,10 @@
-# `basic_dsp`
-Changes:
-
-- Implemented `From` and `Into`for the conversion of a `DspVec` into a `std::Vec` to address https://github.com/liebharc/basic_dsp/issues/46
-- Increased minimum Rust version to 1.43 as the deeper integration with standard types requires https://rust-lang.github.io/rfcs/2451-re-rebalancing-coherence.html
-
 ## Version 0.9.1
 
 - Updated `rustfft` and `num-complex` dependencies
 - Switched from `packed_simd` to `packed_simd_2` to avoid build failures for now
 - Fixed warnings in `interop` crate
+- Implemented `From` and `Into`for the conversion of a `DspVec` into a `std::Vec` to address https://github.com/liebharc/basic_dsp/issues/46
+- Increased minimum Rust version to 1.43 as the deeper integration with standard types requires https://rust-lang.github.io/rfcs/2451-re-rebalancing-coherence.html
 
 ## Version 0.9.0
 
