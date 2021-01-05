@@ -342,7 +342,7 @@ where
             }
             PaddingOption::Center => {
                 let points_before = len_before / step;
-                let mut right = (points_before - 1) / 2;
+                let mut right = points_before / 2;
                 let mut left = points_before - right;
                 if is_complex {
                     right *= 2;
@@ -784,5 +784,17 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         v.zero_interleave_b(&mut buffer, 2);
         assert_eq!(v.data(..), &[1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0]);
+    }
+
+    
+    #[test]
+    fn zero_padding_fractional_test() {
+        let v = vec![1.0, -1.0, 2.0, -2.0, 3.0, -3.0, 4.0, -4.0, 5.0, -5.0, 6.0, -6.0].to_complex_time_vec();
+        let mut buffer = SingleBuffer::new();
+        let mut zero_pad_b_res = v.clone();
+        zero_pad_b_res.zero_pad_b(&mut buffer, 13, PaddingOption::Center).unwrap();
+        let mut zero_pad_res = v;
+        zero_pad_res.zero_pad(13, PaddingOption::Center).unwrap();
+        assert_eq!(zero_pad_b_res.data(..), zero_pad_res.data(..));
     }
 }
