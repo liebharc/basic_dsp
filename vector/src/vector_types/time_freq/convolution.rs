@@ -319,8 +319,8 @@ where
 
         assert_meta_data!(self, impulse_response);
 
-        let h_time = impulse_response;
-        let imp_len = h_time.points();
+        let filter_response = impulse_response;
+        let imp_len = filter_response.points();
         let x_len = self.points();
         let overlap = imp_len - 1;
         let min_fft_len = next_power_of_two(4 * overlap);
@@ -334,49 +334,49 @@ where
         let fft = planner.plan_fft_forward(fft_len);
         let ifft = planner.plan_fft_inverse(fft_len);
         let step_size = fft_len - overlap;
-        let h_time_padded_len = 2 * fft_len;
-        let h_freq_len = 2 * fft_len;
-        let x_freq_len = 2 * fft_len;
+        let filter_response_padded_len = 2 * fft_len;
+        let scratch_len = 2 * fft_len;
+        let signal_freq_len = 2 * fft_len;
         let tmp_len = 2 * fft_len;
         let remainder_len = x_len - x_len % fft_len;
         let mut array =
-            buffer.borrow(h_time_padded_len + h_freq_len + x_freq_len + tmp_len + remainder_len);
+            buffer.borrow(filter_response_padded_len + scratch_len + signal_freq_len + tmp_len + remainder_len);
         {
             let array = array.to_slice_mut();
-            let (scratch, array) = array.split_at_mut(h_freq_len);
-            let (x_freq, array) = array.split_at_mut(x_freq_len);
+            let (scratch, array) = array.split_at_mut(scratch_len);
+            let (signal_freq, array) = array.split_at_mut(signal_freq_len);
             let (tmp, array) = array.split_at_mut(tmp_len);
-            let (h_time_padded, array) = array.split_at_mut(h_time_padded_len);
+            let (filter_response_padded, array) = array.split_at_mut(filter_response_padded_len);
             let end = array;
-            let h_time = h_time.data.to_slice();
-            (&mut h_time_padded[0..2 * imp_len]).copy_from_slice(&h_time[0..2 * imp_len]);
+            let filter_response = filter_response.data.to_slice();
+            (&mut filter_response_padded[0..2 * imp_len]).copy_from_slice(&filter_response[0..2 * imp_len]);
 
-            let mut h_time_padded = (&mut h_time_padded[..]).to_complex_time_vec();
-            h_time_padded
+            let mut filter_response_padded = (&mut filter_response_padded[..]).to_complex_time_vec();
+            filter_response_padded
                 .resize(2 * imp_len)
                 .expect("Shrinking a vector should always succeed");
-            h_time_padded
+            filter_response_padded
                 .zero_pad(fft_len, PaddingOption::End)
                 .expect("zero padding should always have enough space");
-            let (h_time_padded, _) = h_time_padded.getf();
+            let (filter_response_padded, _) = filter_response_padded.getf();
 
-            let x_time = self.data.to_slice_mut();
-            let h_time: &[Complex<T>] = array_to_complex(&h_time[..]);
-            let h_time_padded: &mut [Complex<T>] =
-                array_to_complex_mut(&mut h_time_padded[0..2 * fft_len]);
-            let x_time: &mut [Complex<T>] = array_to_complex_mut(&mut x_time[0..2 * x_len]);
+            let signal_time = self.data.to_slice_mut();
+            let filter_response: &[Complex<T>] = array_to_complex(&filter_response[..]);
+            let filter_response_padded: &mut [Complex<T>] =
+                array_to_complex_mut(&mut filter_response_padded[0..2 * fft_len]);
+            let signal_time: &mut [Complex<T>] = array_to_complex_mut(&mut signal_time[0..2 * x_len]);
             let scratch: &mut [Complex<T>] = array_to_complex_mut(&mut scratch[0..2 * fft_len]);
-            let x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2 * fft_len]);
+            let signal_freq: &mut [Complex<T>] = array_to_complex_mut(&mut signal_freq[0..2 * fft_len]);
             let tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2 * fft_len]);
             let end: &mut [Complex<T>] = array_to_complex_mut(&mut end[0..remainder_len]);
-            fft.process_with_scratch(h_time_padded, scratch);
+            fft.process_with_scratch(filter_response_padded, scratch);
             let mut position = 0;
             {
                 // (1) Scalar convolution of the beginning
                 for num in &mut tmp[0..imp_len / 2] {
                     *num = Self::convolve_iteration(
-                        x_time,
-                        h_time,
+                        signal_time,
+                        filter_response,
                         position,
                         ((imp_len + 1) / 2) as isize,
                         imp_len,
@@ -384,11 +384,11 @@ where
                     position += 1;
                 }
                 // (2) Scalar convolution of the end/tail
-                position = (x_time.len() - end.len()) as isize;
+                position = (signal_time.len() - end.len()) as isize;
                 for num in &mut end[0..remainder_len / 2] {
                     *num = Self::convolve_iteration(
-                        x_time,
-                        h_time,
+                        signal_time,
+                        filter_response,
                         position,
                         ((imp_len + 1) / 2) as isize,
                         imp_len,
@@ -402,16 +402,16 @@ where
                 // while this implementation `thinks` in complex arrays. Therefore a factor
                 // of 2 needs to be taken into account in the method call.
                 let position = T::overlap_discard(
-                    array_to_real_mut(x_time),
+                    array_to_real_mut(signal_time),
                     array_to_real_mut(tmp),
-                    array_to_real_mut(x_freq),
-                    array_to_real(h_time_padded),
+                    array_to_real_mut(signal_freq),
+                    array_to_real(filter_response_padded),
                     2 * imp_len,
                     2 * step_size,
                 ) / 2;
                 position as usize
             } else {
-                // `fft.process` will invalidate `x_time` we therefore need to remember the overlap region
+                // `fft.process` will invalidate `signal_time` we therefore need to remember the overlap region
                 // and restore it.
                 let mut overlap_buffer = InlineVector::of_size(Complex::<T>::zero(), overlap);
                 let mut position = 0;
@@ -420,42 +420,42 @@ where
                     let range = position..fft_len + position;
                     // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
                     (&mut overlap_buffer[..])
-                        .copy_from_slice(&x_time[position + step_size..position + fft_len]);
-                    fft.process_outofplace_with_scratch(&mut x_time[range], x_freq, scratch);
+                        .copy_from_slice(&signal_time[position + step_size..position + fft_len]);
+                    fft.process_outofplace_with_scratch(&mut signal_time[range], signal_freq, scratch);
                     // Copy over the results of the scalar convolution (1)
-                    (&mut x_time[0..imp_len / 2]).copy_from_slice(&tmp[0..imp_len / 2]);
-                    for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_time_padded.iter()) {
+                    (&mut signal_time[0..imp_len / 2]).copy_from_slice(&tmp[0..imp_len / 2]);
+                    for (n, v) in (&mut signal_freq[..]).iter_mut().zip(filter_response_padded.iter()) {
                         *n = *n * *v / scaling;
                     }
-                    ifft.process_outofplace_with_scratch(x_freq, tmp, scratch);
+                    ifft.process_outofplace_with_scratch(signal_freq, tmp, scratch);
                     position += step_size;
                 }
 
                 while position + fft_len < x_len {
                     let range = position..fft_len + position;
-                    (&mut x_time[position..position + overlap])
+                    (&mut signal_time[position..position + overlap])
                         .copy_from_slice(&overlap_buffer[..]);
                     (&mut overlap_buffer[..])
-                        .copy_from_slice(&x_time[position + step_size..position + fft_len]);
-                    fft.process_outofplace_with_scratch(&mut x_time[range], x_freq, scratch);
+                        .copy_from_slice(&signal_time[position + step_size..position + fft_len]);
+                    fft.process_outofplace_with_scratch(&mut signal_time[range], signal_freq, scratch);
                     // (4) Same as (3) except that the results of the previous iteration gets copied over
-                    (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])
+                    (&mut signal_time[position - step_size + imp_len / 2..position + imp_len / 2])
                         .copy_from_slice(&tmp[imp_len - 1..fft_len]);
-                    for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_time_padded.iter()) {
+                    for (n, v) in (&mut signal_freq[..]).iter_mut().zip(filter_response_padded.iter()) {
                         *n = *n * *v / scaling;
                     }
-                    ifft.process_outofplace_with_scratch(x_freq, tmp, scratch);
+                    ifft.process_outofplace_with_scratch(signal_freq, tmp, scratch);
                     position += step_size;
                 }
                 position
             };
 
             // (5) now store the result of the last iteration
-            (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])
+            (&mut signal_time[position - step_size + imp_len / 2..position + imp_len / 2])
                 .copy_from_slice(&tmp[imp_len - 1..fft_len]);
 
             // (6) Copy over the end result which was calculated at the beginning (2)
-            (&mut x_time[x_len - remainder_len / 2..]).copy_from_slice(&end[..]);
+            (&mut signal_time[x_len - remainder_len / 2..]).copy_from_slice(&end[..]);
         }
         Ok(())
     }
