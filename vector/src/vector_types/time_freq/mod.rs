@@ -25,11 +25,11 @@ use crate::multicore_support::*;
 use crate::numbers::*;
 use crate::simd_extensions::*;
 use crate::{array_to_complex, array_to_complex_mut};
-use rustfft::FFTplanner;
+use rustfft::{FftPlanner, FftDirection};
 use std::fmt::Debug;
 use std::ops::*;
 
-fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
+fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, direction: FftDirection)
 where
     S: ToSliceMut<T>,
     T: RealNumber,
@@ -38,29 +38,28 @@ where
     B: for<'a> Buffer<'a, S, T>,
 {
     let len = vec.len();
-    let mut temp = buffer.borrow(len);
-    {
-        let temp = temp.to_slice_mut();
+    let has_no_gpu_support = !T::has_gpu_support();
+    let has_small_size = len < 10000;
+    let is_unsupported_gpu_fft_len = !T::is_supported_fft_len(true, len);
+    let use_rust_fft = has_no_gpu_support || has_small_size || is_unsupported_gpu_fft_len;
+    if use_rust_fft {
+        let points = len / 2; // By two since vector is always complex
+        let fft = {
+            let mut planner = FftPlanner::new();
+            planner.plan_fft(points, direction)
+        };
+        let mut temp = buffer.borrow(2 * fft.get_inplace_scratch_len());  // By two since the FFT is done with complex numbers
+        let scratch = temp.to_slice_mut();
         let signal = vec.data.to_slice_mut();
-        if !T::has_gpu_support() || len < 10000 || !T::is_supported_fft_len(true, len) {
-            let points = len / 2; // By two since vector is always complex
-            let rbw = (T::from(points).unwrap()) * vec.delta;
-            vec.delta = rbw;
-
-            let fft = {
-                let mut planner = FFTplanner::new(reverse);
-                planner.plan_fft(points)
-            };
-            let spectrum = &mut temp[0..len];
-            let signal = array_to_complex_mut(&mut signal[0..len]);
-            let spectrum = array_to_complex_mut(spectrum);
-            fft.process(signal, spectrum);
-        } else {
-            T::fft(true, &signal[0..len], &mut temp[0..len], reverse);
-        }
+        let rbw = (T::from(points).unwrap()) * vec.delta;
+        vec.delta = rbw;
+        let signal = array_to_complex_mut(&mut signal[0..len]);
+        let scratch  = array_to_complex_mut(scratch);
+        fft.process_with_scratch(signal, scratch);
+    } else {
+        let signal = vec.data.to_slice_mut();
+        T::fft(true, &mut signal[0..len], direction);
     }
-
-    temp.trade(&mut vec.data);
 }
 
 /// Transform a value on the x-axis the same way as a fft shift transforms the

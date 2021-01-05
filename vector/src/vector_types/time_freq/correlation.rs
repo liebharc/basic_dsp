@@ -151,20 +151,13 @@ where
         let len = self.len();
         let mut temp = buffer.borrow(len);
         // The next steps: fft, mul, ifft
-        // However to keep the impl definition simpler and to avoid unnecessary copies
-        // we have to to be creative with where we store our signal and what's the buffer.
-        {
-            let complex = (self.data_mut(..)).to_complex_time_vec();
-            let mut buffer = NoTradeBuffer::new(&mut temp[..]);
-            complex.plain_fft(&mut buffer); // after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.
-        }
-        {
-            let other = (other.data(..)).to_complex_freq_vec();
-            let mut complex = (&mut temp[..]).to_complex_freq_vec();
-            complex.mul(&other)?;
-            let mut buffer = NoTradeBuffer::new(self.data_mut(..));
-            complex.plain_ifft(&mut buffer); // the result is now back in `self`.
-        }
+        let complex = (self.data_mut(..)).to_complex_time_vec();
+        let mut buffer = NoTradeBuffer::new(&mut temp[..]);
+        let mut complex = complex.plain_fft(&mut buffer);
+        let mut other = (other.data(..)).to_complex_freq_vec();
+        other.delta = complex.delta;
+        complex.mul(&other)?;
+        complex.plain_ifft(&mut buffer);
         let p = self.points();
         self.scale(T::one() / T::from(p).unwrap());
         self.swap_halves();

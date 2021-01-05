@@ -1,6 +1,6 @@
 use super::super::{
     Buffer, BufferBorrow, ComplexOps, DataDomain, Domain, DspVec, ErrorReason, FloatIndex,
-    FloatIndexMut, FrequencyToTimeDomainOperations, GenDspVec, InsertZerosOpsBuffered, MetaData,
+    FloatIndexMut, FrequencyToTimeDomainOperations, GenDspVec, InsertZerosOps, InsertZerosOpsBuffered, MetaData,
     NoTradeBuffer, NumberSpace, PaddingOption, ResizeBufferedOps, ResizeOps, ScaleOps,
     TimeToFrequencyDomainOperations, ToComplexVector, ToDspVector, ToSliceMut, Vector, VoidResult,
 };
@@ -509,27 +509,19 @@ where
         let len = self.len();
         let mut temp = buffer.borrow(len);
         // The next steps: fft, mul, ifft
-        // However to keep the impl definition simpler and to avoid uncessary copies
-        // we have to to be creative with where we store our signal and what's the buffer.
-        {
-            let complex = (self.data_mut(..)).to_complex_time_vec();
-            let mut buffer = NoTradeBuffer::new(&mut temp[..]);
-            complex.plain_fft(&mut buffer); // after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.
-        }
-        {
-            let mut complex = (&mut temp[..]).to_complex_freq_vec();
-            let interpolation_factorf = T::from(interpolation_factor).unwrap();
-            complex.multiply_function_priv(
-                function.is_symmetric(),
-                true,
-                interpolation_factorf,
-                |array| array_to_complex_mut(array),
-                function,
-                |f, x| Complex::<T>::new(f.calc(x), T::zero()),
-            );
-            let mut buffer = NoTradeBuffer::new(self.data_mut(..));
-            complex.plain_ifft(&mut buffer); // the result is now back in `self`.
-        }
+        let complex = (self.data_mut(..)).to_complex_time_vec();
+        let mut buffer = NoTradeBuffer::new(&mut temp[..]);
+        let mut complex = complex.plain_fft(&mut buffer);
+        let interpolation_factorf = T::from(interpolation_factor).unwrap();
+        complex.multiply_function_priv(
+            function.is_symmetric(),
+            true,
+            interpolation_factorf,
+            |array| array_to_complex_mut(array),
+            function,
+            |f, x| Complex::<T>::new(f.calc(x), T::zero()),
+        );
+        complex.plain_ifft(&mut buffer);
         let points = len / 2;
         self.scale(T::one() / T::from(points).unwrap());
         if !is_complex {
@@ -580,39 +572,28 @@ where
 
         let complex_orig_len = self.len();
         let complex_dest_len = 2 * dest_points;
-        let temp_len = std::cmp::max(complex_orig_len, complex_dest_len);
-        self.resize_b(buffer, temp_len)?; // allocate space
-        let mut temp = buffer.borrow(temp_len);
-        {
-            let complex = (self.data_mut(0..complex_orig_len)).to_complex_time_vec();
-            let mut buffer = NoTradeBuffer::new(&mut temp[0..temp_len]);
-            complex.plain_fft(&mut buffer); // after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.
+        let max_len = std::cmp::max(complex_orig_len, complex_dest_len);
+        self.resize_b(buffer, max_len)?; // allocate space
+        let mut temp = buffer.borrow(max_len);
+        let mut complex = (self.data_mut(0..max_len)).to_complex_time_vec();
+        complex
+            .resize(complex_orig_len)
+            .expect("Shrinking should always succeed");
+        let mut buffer = NoTradeBuffer::new(&mut temp[0..max_len]);
+        let mut complex = complex.plain_fft(&mut buffer);
+        // Add the delay, which is a linear phase in frequency domain
+        if delay != T::zero() {
+            complex.apply_linear_phase(delay / delta_t);
         }
-        {
-            let mut complex = (&mut temp[0..temp_len]).to_complex_freq_vec();
-            complex
-                .resize(complex_orig_len)
-                .expect("Shrinking should always succeed");
-            let mut buffer = NoTradeBuffer::new(self.data_mut(0..temp_len));
-            // Add the delay, which is a linear phase in frequency domain
-            if delay != T::zero() {
-                complex.apply_linear_phase(delay / delta_t);
-            }
 
-            if dest_len > orig_len {
-                complex.zero_pad_b(&mut buffer, dest_points, PaddingOption::Center)?;
-                // data is in `self` now, so we have to copy it back into `temp` so that
-                // it finally ends up at the correct destination after `plain_ifft`
-                complex
-                    .data_mut(0..complex_dest_len)
-                    .copy_from_slice(&buffer.borrow(complex_dest_len)[..]);
-                complex.interpolate_upsample(function, interpolation_factorf);
-            } else if dest_len < orig_len {
-                complex.interpolate_downsample(dest_points);
-            }
-
-            complex.plain_ifft(&mut buffer); // the result is now back in `self`.
+        if dest_len > orig_len {
+            complex.zero_pad(dest_points, PaddingOption::Center)?;
+            complex.interpolate_upsample(function, interpolation_factorf);
+        } else if dest_len < orig_len {
+            complex.interpolate_downsample(dest_points);
         }
+
+        complex.plain_ifft(&mut buffer);
         self.resize(complex_dest_len)
             .expect("Shrinking should always succeed");
         self.scale(T::one() / T::from(dest_points).unwrap());

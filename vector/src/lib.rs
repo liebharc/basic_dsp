@@ -131,7 +131,7 @@ pub mod numbers {
         + Debug
         + num_traits::Signed
         + num_traits::FromPrimitive
-        + rustfft::FFTnum
+        + rustfft::FftNum
         + 'static
     {
     }
@@ -145,7 +145,7 @@ pub mod numbers {
             + Debug
             + num_traits::Signed
             + num_traits::FromPrimitive
-            + rustfft::FFTnum
+            + rustfft::FftNum
             + 'static
     {
     }

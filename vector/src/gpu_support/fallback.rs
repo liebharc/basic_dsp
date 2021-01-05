@@ -3,6 +3,7 @@
 use super::GpuSupport;
 use crate::numbers::*;
 use std::ops::Range;
+use rustfft::FftDirection;
 
 pub type Gpu32 = f32;
 
@@ -35,7 +36,7 @@ impl<T: RealNumber> GpuSupport<T> for T {
         false
     }
 
-    fn fft(_: bool, _: &[T], _: &mut [T], _: bool) {
+    fn fft(_: bool, _: &mut [T], _: FftDirection) {
         panic!("GPU support not available, call `has_gpu_support` first.")
     }
 

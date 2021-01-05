@@ -6,6 +6,7 @@ use super::super::{
 use super::fft;
 use crate::numbers::*;
 use crate::window_functions::*;
+use rustfft::FftDirection;
 
 /// Defines all operations which are valid on `DataVecs` containing time domain data.
 /// # Failures
@@ -148,7 +149,7 @@ where
             self.number_space.to_complex();
         }
 
-        fft(&mut self, buffer, false);
+        fft(&mut self, buffer, FftDirection::Forward);
 
         self.domain.to_freq();
         Self::FreqResult::rededicate_from_force(self)

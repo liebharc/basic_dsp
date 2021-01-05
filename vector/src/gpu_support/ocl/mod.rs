@@ -14,7 +14,8 @@ use ocl::*;
 use std::cmp;
 use std::mem;
 use std::ops::Range;
-use {array_to_complex, array_to_complex_mut, RealNumber, Zero};
+use rustfft::FftDirection;
+use crate::{array_to_complex, array_to_complex_mut, RealNumber, Zero};
 
 /// This trait is required to interface between `basic_dsp` and `opencl`.
 /// Without the feature flag `use_gpu` is will default to a `num` trait so
@@ -297,7 +298,7 @@ where
         }
     }
 
-    fn fft(is_complex: bool, source: &[T], target: &mut [T], reverse: bool) {
+    fn fft(is_complex: bool, source: &mut [T], direction: FftDirection) {
         if !is_complex {
             panic!("Real fft isn't supported, call `has_gpu_support` first.")
         }
@@ -339,7 +340,7 @@ where
             .bake_out_of_place_plan(&ocl_pq)
             .unwrap();
 
-        let direction = if reverse {
+        let direction = if direction == FftDirection::Inverse {
             Direction::Backward
         } else {
             Direction::Forward
@@ -350,7 +351,7 @@ where
         // Wait for calculation to finish and read results
         res_buffer
             .cmd()
-            .read(target)
+            .read(source)
             .enq()
             .expect("Transferring result vector from the GPU back to memory failed");
     }

@@ -7,6 +7,7 @@ use super::fft;
 use crate::multicore_support::*;
 use crate::numbers::*;
 use crate::window_functions::*;
+use rustfft::FftDirection;
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
 /// # Failures
@@ -150,7 +151,7 @@ where
             self.number_space.to_complex();
         }
 
-        fft(&mut self, buffer, true);
+        fft(&mut self, buffer, FftDirection::Inverse);
 
         self.domain.to_freq();
         Self::TimeResult::rededicate_from_force(self)
@@ -212,7 +213,7 @@ where
 
         self.mirror(buffer);
 
-        fft(&mut self, buffer, true);
+        fft(&mut self, buffer, FftDirection::Inverse);
 
         self.domain.to_freq();
         self.pure_complex_to_real_operation(buffer, |x, _arg| x.re, (), Complexity::Small);

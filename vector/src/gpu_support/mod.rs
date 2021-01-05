@@ -4,14 +4,15 @@ mod ocl;
 #[cfg(feature = "use_gpu")]
 pub use self::ocl::*;
 
-#[cfg(not(eature = "use_gpu"))]
+#[cfg(not(feature = "use_gpu"))]
 mod fallback;
 
-#[cfg(not(eature = "use_gpu"))]
+#[cfg(not(feature = "use_gpu"))]
 pub use self::fallback::*;
 
 use crate::numbers::*;
 use std::ops::Range;
+use rustfft::FftDirection;
 
 /// Trait which adds GPU support to types like `f32` and `f64`.
 pub trait GpuSupport<T: RealNumber> {
@@ -31,7 +32,7 @@ pub trait GpuSupport<T: RealNumber> {
     fn is_supported_fft_len(is_complex: bool, len: usize) -> bool;
 
     /// FFT on the GPU.
-    fn fft(is_complex: bool, source: &[T], target: &mut [T], reverse: bool);
+    fn fft(is_complex: bool, signal: &mut [T], direction: FftDirection);
 
     /// Applys a frequence response to a time domain signal.
     fn overlap_discard(
