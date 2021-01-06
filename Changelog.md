@@ -1,6 +1,7 @@
 ## Version 0.9.2
 
 - Updated `rustfft` dependency
+- Memory usage: With `rustfft` version 5 FFTs might require more memory. `FixedLenBuffer`s will need to be resized. The default `SingleBuffer` will adjust itself dynamically. Refer to https://github.com/ejmahler/RustFFT/issues/45 for a more detailed disucssion.
 - Buffers now resize correctly if the underlying data type allows for it
 
 ## Version 0.9.1
