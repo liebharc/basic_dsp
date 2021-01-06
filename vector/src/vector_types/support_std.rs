@@ -45,12 +45,11 @@ where
 /// Buffer borrow type for `SingleBuffer`.
 pub struct SingleBufferBurrow<'a, T: RealNumber + 'a> {
     owner: &'a mut SingleBuffer<T>,
-    len: usize,
 }
 
 impl<'a, T: RealNumber + 'a> ToSlice<T> for SingleBufferBurrow<'a, T> {
     fn to_slice(&self) -> &[T] {
-        &self.owner.temp.to_slice()[0..self.len]
+        &self.owner.temp.to_slice()
     }
 
     fn len(&self) -> usize {
@@ -66,15 +65,13 @@ impl<'a, T: RealNumber + 'a> ToSlice<T> for SingleBufferBurrow<'a, T> {
     }
 
     fn try_resize(&mut self, len: usize) -> VoidResult {
-        self.owner.temp.try_resize(len)?;
-        self.len = len;
-        Ok(())
+        self.owner.temp.try_resize(len)
     }
 }
 
 impl<'a, T: RealNumber + 'a> ToSliceMut<T> for SingleBufferBurrow<'a, T>  {
     fn to_slice_mut(&mut self) -> &mut [T] {
-        &mut self.owner.temp.to_slice_mut()[0..self.len]
+        self.owner.temp.to_slice_mut()
     }
 }
 
@@ -117,11 +114,8 @@ where
     type Borrow = SingleBufferBurrow<'a, T>;
 
     fn borrow(&'a mut self, len: usize) -> Self::Borrow {
-        if self.temp.len() < len {
-            self.temp = vec![T::zero(); len];
-        }
-
-        SingleBufferBurrow { owner: self, len }
+        self.temp.try_resize(len).expect("Resizing a Vec must be possible");
+        SingleBufferBurrow { owner: self }
     }
 
     fn alloc_len(&self) -> usize {
