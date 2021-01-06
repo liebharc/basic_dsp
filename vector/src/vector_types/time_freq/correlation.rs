@@ -148,11 +148,9 @@ where
 
         let points = other.points();
         self.zero_pad_b(buffer, points, PaddingOption::Surround)?;
-        let len = self.len();
-        let mut temp = buffer.borrow(len);
         // The next steps: fft, mul, ifft
         let complex = (self.data_mut(..)).to_complex_time_vec();
-        let mut buffer = NoTradeBuffer::new(&mut temp[..]);
+        let mut buffer = NoTradeBuffer::new(buffer.borrow(buffer.alloc_len()));
         let mut complex = complex.plain_fft(&mut buffer);
         let mut other = (other.data(..)).to_complex_freq_vec();
         other.delta = complex.delta;

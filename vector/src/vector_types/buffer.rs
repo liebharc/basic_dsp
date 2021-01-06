@@ -3,10 +3,9 @@
 //! to what an application needs.
 use super::ToSliceMut;
 use crate::numbers::*;
-use std::ops::*;
 
 /// A "slice-like" type which also allows to
-pub trait BufferBorrow<S: ToSliceMut<T>, T: RealNumber>: DerefMut<Target = [T]> {
+pub trait BufferBorrow<S: ToSliceMut<T>, T: RealNumber>: ToSliceMut<T> {
     /// Moves the content of this slice into `storage`.
     /// This operation might just copy all contents into `storage` or
     fn trade(self, storage: &mut S);

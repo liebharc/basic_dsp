@@ -507,10 +507,9 @@ where
         }
 
         let len = self.len();
-        let mut temp = buffer.borrow(len);
         // The next steps: fft, mul, ifft
         let complex = (self.data_mut(..)).to_complex_time_vec();
-        let mut buffer = NoTradeBuffer::new(&mut temp[..]);
+        let mut buffer = NoTradeBuffer::new(buffer.borrow(buffer.alloc_len()));
         let mut complex = complex.plain_fft(&mut buffer);
         let interpolation_factorf = T::from(interpolation_factor).unwrap();
         complex.multiply_function_priv(
@@ -574,12 +573,11 @@ where
         let complex_dest_len = 2 * dest_points;
         let max_len = std::cmp::max(complex_orig_len, complex_dest_len);
         self.resize_b(buffer, max_len)?; // allocate space
-        let mut temp = buffer.borrow(max_len);
         let mut complex = (self.data_mut(0..max_len)).to_complex_time_vec();
         complex
             .resize(complex_orig_len)
             .expect("Shrinking should always succeed");
-        let mut buffer = NoTradeBuffer::new(&mut temp[0..max_len]);
+        let mut buffer = NoTradeBuffer::new(buffer.borrow(buffer.alloc_len()));
         let mut complex = complex.plain_fft(&mut buffer);
         // Add the delay, which is a linear phase in frequency domain
         if delay != T::zero() {

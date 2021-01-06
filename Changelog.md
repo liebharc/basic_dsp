@@ -1,3 +1,8 @@
+## Version 0.9.2
+
+- Updated `rustfft` dependency
+- Buffers now resize correctly if the underlying data type allows for it
+
 ## Version 0.9.1
 
 - Updated `rustfft` and `num-complex` dependencies

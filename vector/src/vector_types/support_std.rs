@@ -9,7 +9,6 @@ use crate::multicore_support::MultiCoreSettings;
 use crate::numbers::*;
 use crate::simd_extensions::*;
 use std::mem;
-use std::ops::*;
 use std::result;
 
 /// Rounds a length so that it always divides by the length of a SIMD
@@ -49,17 +48,33 @@ pub struct SingleBufferBurrow<'a, T: RealNumber + 'a> {
     len: usize,
 }
 
-impl<'a, T: RealNumber> Deref for SingleBufferBurrow<'a, T> {
-    type Target = [T];
+impl<'a, T: RealNumber + 'a> ToSlice<T> for SingleBufferBurrow<'a, T> {
+    fn to_slice(&self) -> &[T] {
+        &self.owner.temp.to_slice()[0..self.len]
+    }
 
-    fn deref(&self) -> &[T] {
-        &self.owner.temp[0..self.len]
+    fn len(&self) -> usize {
+        self.owner.temp.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.owner.temp.is_empty()
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.owner.temp.alloc_len()
+    }
+
+    fn try_resize(&mut self, len: usize) -> VoidResult {
+        self.owner.temp.try_resize(len)?;
+        self.len = len;
+        Ok(())
     }
 }
 
-impl<'a, T: RealNumber> DerefMut for SingleBufferBurrow<'a, T> {
-    fn deref_mut(&mut self) -> &mut [T] {
-        &mut self.owner.temp[0..self.len]
+impl<'a, T: RealNumber + 'a> ToSliceMut<T> for SingleBufferBurrow<'a, T>  {
+    fn to_slice_mut(&mut self) -> &mut [T] {
+        &mut self.owner.temp.to_slice_mut()[0..self.len]
     }
 }
 
@@ -122,17 +137,31 @@ pub struct NoBufferBurrow<T: RealNumber> {
     data: Vec<T>,
 }
 
-impl<T: RealNumber> Deref for NoBufferBurrow<T> {
-    type Target = [T];
+impl<T: RealNumber> ToSlice<T> for NoBufferBurrow<T> {
+    fn to_slice(&self) -> &[T] {
+        self.data.to_slice()
+    }
 
-    fn deref(&self) -> &[T] {
-        &self.data
+    fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.data.alloc_len()
+    }
+
+    fn try_resize(&mut self, len: usize) -> VoidResult {
+        self.data.try_resize(len)
     }
 }
 
-impl<T: RealNumber> DerefMut for NoBufferBurrow<T> {
-    fn deref_mut(&mut self) -> &mut [T] {
-        &mut self.data
+impl<T: RealNumber > ToSliceMut<T> for NoBufferBurrow<T>  {
+    fn to_slice_mut(&mut self) -> &mut [T] {
+        self.data.to_slice_mut()
     }
 }
 

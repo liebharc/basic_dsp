@@ -447,7 +447,7 @@ macro_rules! convolve_signal {
                 let res = DspVec::<S, T, N, D>::convolve_mat(
                     &rows,
                     i,
-                    &mut target[n * row_len..(n + 1) * row_len],
+                    &mut target.to_slice_mut()[n * row_len..(n + 1) * row_len],
                 );
                 match res {
                     Ok(()) => (),
@@ -459,7 +459,7 @@ macro_rules! convolve_signal {
         for n in 0..col_len {
             let row = &mut $self_.rows_mut()[n];
             row.data_mut(..)
-                .clone_from_slice(&target[n * row_len..(n + 1) * row_len]);
+                .clone_from_slice(&target.to_slice()[n * row_len..(n + 1) * row_len]);
         }
 
         Ok(())

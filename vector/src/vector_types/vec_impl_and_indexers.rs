@@ -240,7 +240,7 @@ where
             Err(_) => {
                 let orig_len = self.len();
                 let mut temp = buffer.borrow(len);
-                temp[0..orig_len].clone_from_slice(self.data(..));
+                temp.to_slice_mut()[0..orig_len].clone_from_slice(self.data(..));
                 temp.trade(&mut self.data);
                 self.valid_len = len;
                 Ok(())
