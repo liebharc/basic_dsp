@@ -8,7 +8,10 @@ extern crate basic_dsp_vector;
 
 use basic_dsp_vector::numbers::*;
 use basic_dsp_vector::*;
-use std::{mem, ptr};
+use std::{
+    mem::ManuallyDrop,
+    ptr
+};
 
 mod mat_impl;
 pub use self::mat_impl::*;
@@ -230,13 +233,12 @@ impl<S, D> TransformContent<S, D> for [S; 2] {
     where
         F: FnMut(S) -> D,
     {
+        let self_forget = ManuallyDrop::new(self);
         unsafe {
-            let result = [
-                conversion(ptr::read(&self[0])),
-                conversion(ptr::read(&self[1])),
-            ];
-            mem::forget(self);
-            result
+            [
+                conversion(ptr::read(&self_forget[0])),
+                conversion(ptr::read(&self_forget[1])),
+            ]
         }
     }
 
@@ -244,11 +246,11 @@ impl<S, D> TransformContent<S, D> for [S; 2] {
     where
         F: FnMut(S) -> TransRes<D>,
     {
+        let self_forget = ManuallyDrop::new(self);
         unsafe {
             let mut error = None;
-            let first = try_conv!(conversion(ptr::read(&self[0])), error);
-            let second = try_conv!(conversion(ptr::read(&self[1])), error);
-            mem::forget(self);
+            let first = try_conv!(conversion(ptr::read(&self_forget[0])), error);
+            let second = try_conv!(conversion(ptr::read(&self_forget[1])), error);
 
             match error {
                 None => Ok([first, second]),
@@ -265,14 +267,14 @@ impl<S, D> TransformContent<S, D> for [S; 3] {
     where
         F: FnMut(S) -> D,
     {
+        let self_forget = ManuallyDrop::new(self);
+        
         unsafe {
-            let result = [
-                conversion(ptr::read(&self[0])),
-                conversion(ptr::read(&self[1])),
-                conversion(ptr::read(&self[2])),
-            ];
-            mem::forget(self);
-            result
+            [
+                conversion(ptr::read(&self_forget[0])),
+                conversion(ptr::read(&self_forget[1])),
+                conversion(ptr::read(&self_forget[2])),
+            ]
         }
     }
 
@@ -280,12 +282,13 @@ impl<S, D> TransformContent<S, D> for [S; 3] {
     where
         F: FnMut(S) -> TransRes<D>,
     {
+        let self_forget = ManuallyDrop::new(self);
+
         unsafe {
             let mut error = None;
-            let first = try_conv!(conversion(ptr::read(&self[0])), error);
-            let second = try_conv!(conversion(ptr::read(&self[1])), error);
-            let third = try_conv!(conversion(ptr::read(&self[2])), error);
-            mem::forget(self);
+            let first = try_conv!(conversion(ptr::read(&self_forget[0])), error);
+            let second = try_conv!(conversion(ptr::read(&self_forget[1])), error);
+            let third = try_conv!(conversion(ptr::read(&self_forget[2])), error);
 
             match error {
                 None => Ok([first, second, third]),
@@ -302,15 +305,15 @@ impl<S, D> TransformContent<S, D> for [S; 4] {
     where
         F: FnMut(S) -> D,
     {
+        let self_forget = ManuallyDrop::new(self);
+
         unsafe {
-            let result = [
-                conversion(ptr::read(&self[0])),
-                conversion(ptr::read(&self[1])),
-                conversion(ptr::read(&self[2])),
-                conversion(ptr::read(&self[3])),
-            ];
-            mem::forget(self);
-            result
+            [
+                conversion(ptr::read(&self_forget[0])),
+                conversion(ptr::read(&self_forget[1])),
+                conversion(ptr::read(&self_forget[2])),
+                conversion(ptr::read(&self_forget[3])),
+            ]
         }
     }
 
@@ -318,13 +321,14 @@ impl<S, D> TransformContent<S, D> for [S; 4] {
     where
         F: FnMut(S) -> TransRes<D>,
     {
+        let self_forget = ManuallyDrop::new(self);
+
         unsafe {
             let mut error = None;
-            let first = try_conv!(conversion(ptr::read(&self[0])), error);
-            let second = try_conv!(conversion(ptr::read(&self[1])), error);
-            let third = try_conv!(conversion(ptr::read(&self[2])), error);
-            let fourth = try_conv!(conversion(ptr::read(&self[3])), error);
-            mem::forget(self);
+            let first = try_conv!(conversion(ptr::read(&self_forget[0])), error);
+            let second = try_conv!(conversion(ptr::read(&self_forget[1])), error);
+            let third = try_conv!(conversion(ptr::read(&self_forget[2])), error);
+            let fourth = try_conv!(conversion(ptr::read(&self_forget[3])), error);
 
             match error {
                 None => Ok([first, second, third, fourth]),
