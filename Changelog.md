@@ -3,6 +3,7 @@
 - Updated `rustfft` dependency
 - Memory usage: With `rustfft` version 5 FFTs might require more memory. `FixedLenBuffer`s will need to be resized. The default `SingleBuffer` will adjust itself dynamically. Refer to https://github.com/ejmahler/RustFFT/issues/45 for a more detailed disucssion.
 - Buffers now resize correctly if the underlying data type allows for it
+- Fixed "panic safety issue in `impl TransformContent<S, D> for [S; (2|3|4)]`" (https://github.com/liebharc/basic_dsp/issues/47). Thanks to Youngsuk Kim.
 
 ## Version 0.9.1
 
