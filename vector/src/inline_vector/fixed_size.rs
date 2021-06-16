@@ -13,7 +13,7 @@ const MAX_CAPACITY: usize = 64;
 /// without heap, and on systems with heap allocation we don't have to worry
 /// about introducing artifical limits.
 pub enum InlineVector<T> {
-    Inline(ArrayVec<[T; MAX_CAPACITY]>),
+    Inline(ArrayVec<T, MAX_CAPACITY>),
 }
 
 impl<T> InlineVector<T>
@@ -40,7 +40,7 @@ impl<T> InlineVector<T> {
 
     /// Returns a vector with a given capacity.
     pub fn with_capacity(_: usize) -> InlineVector<T> {
-        InlineVector::Inline(ArrayVec::<[T; MAX_CAPACITY]>::new())
+        InlineVector::Inline(ArrayVec::<T, MAX_CAPACITY>::new())
     }
 
     /// Returns a vector with a default capacity. The default
