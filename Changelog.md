@@ -1,3 +1,7 @@
+## Version 0.9.3
+
+- Updated `rustfft` dependency
+
 ## Version 0.9.2
 
 - Updated `rustfft` dependency

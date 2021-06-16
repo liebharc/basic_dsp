@@ -61,8 +61,7 @@ pub fn assert_vector_eq_with_reason_and_tolerance<T>(
     if differences > 0 || size_assert_failed {
         let all_errors = errors.join("\n");
         let header = "-----------------------".to_owned();
-        let full_text = format!("\n{}\n{}\n{}\n", header, all_errors, header);
-        panic!(full_text);
+        panic!("\n{}\n{}\n{}\n", header, all_errors, header);
     }
 }
 
@@ -84,14 +83,14 @@ pub fn assert_complex_close(left: Complex32, right: Complex32) {
 pub fn assert_in_tolerance(left: f32, right: f32, tol: f32) {
     let tol = tol.abs();
     if (left - right).abs() > tol {
-        panic!(format!("{} != {} (tol: {})", left, right, tol));
+        panic!("{} != {} (tol: {})", left, right, tol);
     }
 }
 
 pub fn assert_complex_in_tolerance(left: Complex32, right: Complex32, tol: f32) {
     let tol = tol.abs();
     if (left.re - right.re).abs() > tol || (left.im - right.im).abs() > tol {
-        panic!(format!("{} != {} (tol: {})", left, right, tol));
+        panic!("{} != {} (tol: {})", left, right, tol);
     }
 }
 
@@ -317,6 +316,6 @@ where
 
     if test_errors.len() > 0 {
         let error_messages = test_errors.join("\n");
-        panic!(error_messages);
+        panic!("{}", error_messages);
     }
 }

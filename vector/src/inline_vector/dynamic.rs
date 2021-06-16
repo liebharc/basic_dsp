@@ -12,7 +12,7 @@ use std::usize;
 /// without heap, and on systems with heap allocation we don't have to worry
 /// about introducing artifical limits.
 pub enum InlineVector<T> {
-    Inline(ArrayVec<[T; 64]>),
+    Inline(ArrayVec<T, 64>),
     Dynamic(Vec<T>),
 }
 
@@ -41,7 +41,7 @@ impl<T> InlineVector<T> {
     /// Returns a vector with a given capacity.
     pub fn with_capacity(n: usize) -> InlineVector<T> {
         if n <= 64 {
-            InlineVector::Inline(ArrayVec::<[T; 64]>::new())
+            InlineVector::Inline(ArrayVec::<T, 64>::new())
         } else {
             InlineVector::Dynamic(Vec::with_capacity(n))
         }

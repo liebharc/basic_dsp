@@ -9,7 +9,7 @@ use crate::multicore_support::MultiCoreSettings;
 /// ! Support for types in the Rust core
 use crate::numbers::*;
 use arrayvec;
-use arrayvec::{Array, ArrayVec};
+use arrayvec::ArrayVec;
 use std;
 
 /// Buffer borrow type for `SingleBuffer`.
@@ -225,11 +225,11 @@ impl<'a, T> ToSliceMut<T> for &'a mut [T] {
     }
 }
 
-impl<A: arrayvec::Array> ToSlice<A::Item> for arrayvec::ArrayVec<A>
+impl<A, const CAP: usize> ToSlice<A> for arrayvec::ArrayVec<A, CAP>
 where
-    A::Item: RealNumber,
+    A: RealNumber,
 {
-    fn to_slice(&self) -> &[A::Item] {
+    fn to_slice(&self) -> &[A] {
         self.as_slice()
     }
 
@@ -252,7 +252,7 @@ where
 
         if len > self.len() {
             while len > self.len() {
-                self.push(A::Item::zero());
+                self.push(A::zero());
             }
         } else {
             while len < self.len() {
@@ -263,11 +263,11 @@ where
     }
 }
 
-impl<A: arrayvec::Array> ToSliceMut<A::Item> for arrayvec::ArrayVec<A>
+impl<A, const CAP: usize> ToSliceMut<A> for arrayvec::ArrayVec<A, CAP>
 where
-    A::Item: RealNumber,
+    A: RealNumber,
 {
-    fn to_slice_mut(&mut self) -> &mut [A::Item] {
+    fn to_slice_mut(&mut self) -> &mut [A] {
         self.as_mut_slice()
     }
 }
@@ -306,18 +306,18 @@ where
     }
 }
 
-impl<A: Array> ToDspVector<A::Item> for ArrayVec<A>
+impl<A, const CAP: usize> ToDspVector<A> for ArrayVec<A, CAP>
 where
-    A::Item: RealNumber,
+    A: RealNumber,
 {
-    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, A::Item> {
+    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, A> {
         let mut len = self.len();
         if len % 2 != 0 && is_complex {
             len = 0;
         }
         GenDspVec {
             data: self,
-            delta: A::Item::one(),
+            delta: A::one(),
             domain: meta::TimeOrFreq {
                 domain_current: domain,
             },
@@ -331,8 +331,8 @@ where
 
     fn to_dsp_vec<N, D>(
         self,
-        meta_data: &TypeMetaData<A::Item, N, D>,
-    ) -> DspVec<Self, A::Item, N, D>
+        meta_data: &TypeMetaData<A, N, D>,
+    ) -> DspVec<Self, A, N, D>
     where
         N: NumberSpace,
         D: Domain,
@@ -352,15 +352,15 @@ where
     }
 }
 
-impl<A: Array> ToRealVector<A::Item> for ArrayVec<A>
+impl<A, const CAP: usize> ToRealVector<A> for ArrayVec<A, CAP>
 where
-    A::Item: RealNumber,
+    A: RealNumber,
 {
-    fn to_real_time_vec(self) -> RealTimeVec<Self, A::Item> {
+    fn to_real_time_vec(self) -> RealTimeVec<Self, A> {
         let len = self.len();
         RealTimeVec {
             data: self,
-            delta: A::Item::one(),
+            delta: A::one(),
             domain: meta::Time,
             number_space: meta::Real,
             valid_len: len,
@@ -368,11 +368,11 @@ where
         }
     }
 
-    fn to_real_freq_vec(self) -> RealFreqVec<Self, A::Item> {
+    fn to_real_freq_vec(self) -> RealFreqVec<Self, A> {
         let len = self.len();
         RealFreqVec {
             data: self,
-            delta: A::Item::one(),
+            delta: A::one(),
             domain: meta::Freq,
             number_space: meta::Real,
             valid_len: len,
@@ -381,15 +381,15 @@ where
     }
 }
 
-impl<A: Array> ToComplexVector<ArrayVec<A>, A::Item> for ArrayVec<A>
+impl<A, const CAP: usize> ToComplexVector<ArrayVec<A, CAP>, A> for ArrayVec<A, CAP>
 where
-    A::Item: RealNumber,
+    A: RealNumber,
 {
-    fn to_complex_time_vec(self) -> ComplexTimeVec<Self, A::Item> {
+    fn to_complex_time_vec(self) -> ComplexTimeVec<Self, A> {
         let len = self.len();
         ComplexTimeVec {
             data: self,
-            delta: A::Item::one(),
+            delta: A::one(),
             domain: meta::Time,
             number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
@@ -397,11 +397,11 @@ where
         }
     }
 
-    fn to_complex_freq_vec(self) -> ComplexFreqVec<Self, A::Item> {
+    fn to_complex_freq_vec(self) -> ComplexFreqVec<Self, A> {
         let len = self.len();
         ComplexFreqVec {
             data: self,
-            delta: A::Item::one(),
+            delta: A::one(),
             domain: meta::Freq,
             number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },

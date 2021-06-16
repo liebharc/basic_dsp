@@ -34,7 +34,7 @@ pub struct Statistics<T> {
 pub const STATS_VEC_CAPACTIY: usize = 16;
 
 /// Alias for a vector of any statistical information.
-pub type StatsVec<T> = ArrayVec<[T; STATS_VEC_CAPACTIY]>;
+pub type StatsVec<T> = ArrayVec<T, STATS_VEC_CAPACTIY>;
 
 /// This trait offers operations to calculate statistics about the data in a type.
 pub trait StatisticsOps<T> {
