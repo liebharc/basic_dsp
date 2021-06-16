@@ -1,3 +1,7 @@
+## Version 0.9.4
+
+- Fixed compilation error with `no_std` option
+
 ## Version 0.9.3
 
 - Updated `rustfft` dependency

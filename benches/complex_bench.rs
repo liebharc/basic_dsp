@@ -87,11 +87,11 @@ mod complex {
             vector.execute(|mut v, buffer| {
                 let sinc: SincFunction<f32> = SincFunction::new();
                 let table = RealTimeLinearTableLookup::<f32>::from_conv_function(
-                    &sinc as &RealImpulseResponse<f32>,
+                    &sinc as &dyn RealImpulseResponse<f32>,
                     0.2,
                     5,
                 );
-                v.convolve(buffer, &table as &RealImpulseResponse<f32>, 0.5, 10);
+                v.convolve(buffer, &table as &dyn RealImpulseResponse<f32>, 0.5, 10);
                 v
             })
         });
