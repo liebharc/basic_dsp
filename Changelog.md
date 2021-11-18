@@ -1,3 +1,7 @@
+## Version 0.9.5
+
+- Updated `time` dependency
+
 ## Version 0.9.4
 
 - Fixed compilation error with `no_std` option
