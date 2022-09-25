@@ -319,7 +319,7 @@ mod approximations;
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[macro_use]
-pub mod x86;
+mod x86;
 
 #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
 #[macro_use]

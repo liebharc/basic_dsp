@@ -2,7 +2,7 @@
 /// The macro tries to mimic the Rust syntax of a method call.
 macro_rules! sel_reg(
     ($self_:ident.$method: ident::<$type: ident>($($args: expr),*)) => {
-		// TODO enable AVX512 detection again as soon as stdsimd is stable
+        // TODO enable AVX512 detection again as soon as stdsimd is stable
         /*if is_x86_feature_detected!("avx512vl") && cfg!(feature="use_avx512") {
             $self_.$method(RegType::<<$type as ToSimd>::RegAvx512>::new(), $($args),*)
         } else*/ if cfg!(feature="use_avx2") && is_x86_feature_detected!("avx2") {
