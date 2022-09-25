@@ -7,7 +7,7 @@ homepage = "https://github.com/liebharc/basic_dsp"
 repository = "https://github.com/liebharc/basic_dsp"
 documentation = "https://docs.rs/basic_dsp"
 keywords = ["dsp", "vector", "interpolation", "convolution"]
-edition="2018"
+edition="2021"
 description = "Digital signal processing based on real or complex vectors in time or frequency domain."
 readme = "../README.md"
 
