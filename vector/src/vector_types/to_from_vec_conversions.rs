@@ -39,10 +39,40 @@ where
 {
     /// Create a new vector in real number space and time domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
+    ///
+    /// ```
+    /// # extern crate num_complex;
+    /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
+    /// let mut vec = Vec::with_capacity(10);
+    /// vec.push(1.0);
+    /// vec.push(2.0);
+    /// assert_eq!(2, vec.len());
+    /// assert_eq!(10, vec.capacity());
+    /// let vec = vec.to_real_time_vec();
+    /// assert_eq!(2, vec.points());
+    /// assert_eq!(2, vec.len());
+    /// assert_eq!(10, vec.alloc_len());
+    /// ```
     fn to_real_time_vec(self) -> RealTimeVec<Self, T>;
 
     /// Create a new vector in real number space and frequency domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
+    ///
+    /// ```
+    /// # extern crate num_complex;
+    /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
+    /// let mut vec = Vec::with_capacity(10);
+    /// vec.push(1.0);
+    /// vec.push(2.0);
+    /// assert_eq!(2, vec.len());
+    /// assert_eq!(10, vec.capacity());
+    /// let vec = vec.to_real_freq_vec();
+    /// assert_eq!(2, vec.points());
+    /// assert_eq!(2, vec.len());
+    /// assert_eq!(10, vec.alloc_len());
+    /// ```
     fn to_real_freq_vec(self) -> RealFreqVec<Self, T>;
 }
 
@@ -56,12 +86,44 @@ where
     /// `delta` can be changed after construction with a call of `set_delta`.
     ///
     /// For complex vectors with an odd length the resulting value will have a zero length.
+    ///
+    /// ```
+    /// # extern crate num_complex;
+    /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
+    /// let mut vec = Vec::with_capacity(10);
+    /// vec.push(Complex::new(1.0, 2.0));
+    /// vec.push(Complex::new(3.0, 4.0));
+    /// assert_eq!(2, vec.len());
+    /// assert_eq!(10, vec.capacity());
+    /// let vec = vec.to_complex_time_vec();
+    /// assert_eq!(2, vec.points());
+    /// assert_eq!(4, vec.len());
+    /// assert_eq!(20, vec.alloc_len());
+    /// ```
     fn to_complex_time_vec(self) -> ComplexTimeVec<S, T>;
 
     /// Create a new vector in complex number space and frequency domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
     ///
     /// For complex vectors with an odd length the resulting value will have a zero length.
+    ///
+    /// ```
+    /// # extern crate num_complex;
+    /// use basic_dsp_vector::*;
+    /// # use num_complex::Complex;
+    /// let mut vec = Vec::with_capacity(10);
+    /// vec.push(1.0);
+    /// vec.push(2.0);
+    /// vec.push(3.0);
+    /// vec.push(4.0);
+    /// assert_eq!(4, vec.len());
+    /// assert_eq!(10, vec.capacity());
+    /// let vec = vec.to_complex_freq_vec();
+    /// assert_eq!(2, vec.points());
+    /// assert_eq!(4, vec.len());
+    /// assert_eq!(10, vec.alloc_len());
+    /// ```
     fn to_complex_freq_vec(self) -> ComplexFreqVec<S, T>;
 }
 
