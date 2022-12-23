@@ -14,6 +14,14 @@ Digital signal processing based on real or complex vectors in time or frequency 
 
 [Changelog](https://github.com/liebharc/basic_dsp/blob/master/Changelog.md)
 
+## ⚠ no active maintenance ⚠
+
+This lib was mostly developed and supported by a single person over years. 
+This isn't sustainable anymore and I'm lacking the time and energy to continue doing this.
+Therefore I will only rarely respond to issues and won't develop further patches.
+Feel free to continue using the lib and please continue to open issues if you find something wrong.
+Possibly at some point one or more people will take over this project ☺️.
+
 ## Usage
 
 Add this to your `Cargo.toml`:
