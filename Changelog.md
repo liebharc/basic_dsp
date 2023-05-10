@@ -2,7 +2,7 @@
 
 - Fixed compilation error on ARM Neon which includes Apples M1 (https://github.com/liebharc/basic_dsp/issues/49), thanks to Andy Bailey for reporting this issue and for doing tests!
 - Update to Rust edition 2021
-- Increased minimum Rust version to 1.59 as this is required by the latest versions of our dependencies
+- Increased minimum Rust version to 1.60 as this is required by the latest versions of our dependencies
 
 ## Version 0.9.5
 

@@ -4,7 +4,7 @@
 [![Crates.io](https://img.shields.io/crates/v/basic_dsp.svg)](https://crates.io/crates/basic_dsp)
 [![Crates.io](https://img.shields.io/crates/l/basic_dsp.svg)](https://crates.io/crates/basic_dsp)
 [![Docs.rs](https://docs.rs/basic_dsp/badge.svg)](https://docs.rs/basic_dsp)
-![minimum rustc 1.59](https://img.shields.io/badge/rustc-1.59+-red.svg)
+![minimum rustc 1.60](https://img.shields.io/badge/rustc-1.60+-red.svg)
 
 Digital signal processing based on real or complex vectors in time or frequency domain. Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations.
 
@@ -16,7 +16,7 @@ Digital signal processing based on real or complex vectors in time or frequency 
 
 ## ⚠ no active maintenance ⚠
 
-This lib was mostly developed and supported by a single person over years. 
+This lib was mostly developed and supported by a single person over years.
 This isn't sustainable anymore and I'm lacking the time and energy to continue doing this.
 Therefore I will only rarely respond to issues and won't develop further patches.
 Feel free to continue using the lib and please continue to open issues if you find something wrong.
