@@ -173,6 +173,7 @@ where
     fn drop(&mut self) {
         unsafe {
             let _ = Box::from_raw(self.vector); // make sure that the vector is deleted
+            let _ = Box::from_raw(self.argument); // make sure that the arg is deleted
         }
     }
 }
