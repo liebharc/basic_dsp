@@ -1,5 +1,4 @@
 #![feature(test)]
-#![feature(box_syntax)]
 extern crate basic_dsp;
 extern crate test;
 
