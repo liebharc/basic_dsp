@@ -28,7 +28,7 @@
 use super::{Simd, SimdApproximations, SimdFrom};
 use crate::numbers::*;
 use crate::Zero;
-use packed_simd_2::*;
+use packed_simd::*;
 use std::mem;
 use std::ops::*;
 

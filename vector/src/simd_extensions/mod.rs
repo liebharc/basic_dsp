@@ -1,6 +1,6 @@
 use crate::numbers::*;
 #[cfg(all(feature = "use_simd"))]
-use packed_simd_2::*;
+use packed_simd::*;
 use std;
 use std::mem;
 use std::ops::*;
